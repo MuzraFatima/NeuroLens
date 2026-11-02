@@ -1,7 +1,7 @@
 # Phase 5 Pre-Registration Document (`v1.0-prereg-phase5`)
 
 **Project:** TopoCircuit-SAE: Frequency-Ordered DAG Routing to Measure and Remove Multi-Parent Feature Absorption in Sparse Autoencoders  
-**Owner:** Farhan Aaqil Durrani (Final-Year B.Tech AI/ML, JPNCE Mahbubnagar)  
+**Owner:** Muzra Fatima  
 **Status:** Frozen prior to opening the MPAbs 20% held-out test split (Phase 5 Exit Gate G5).
 
 ---

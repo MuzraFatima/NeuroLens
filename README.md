@@ -1,6 +1,6 @@
 # TopoCircuit-SAE: Frequency-Ordered DAG Routing to Measure and Remove Multi-Parent Feature Absorption in Sparse Autoencoders
 
-**Author & Project Owner:** Farhan Aaqil Durrani (Final-Year B.Tech AI/ML, JPNCE Mahbubnagar · AI Engineer Intern @ Sydney Leads Digital Marketing)  
+**Author & Project Owner:** Muzra Fatima  
 **Version:** `1.0.0` (`v1.0-prereg-phase5`)  
 **Track:** AIML Capstone & Mechanistic Interpretability Research Submission
 

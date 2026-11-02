@@ -30,6 +30,6 @@ MPAbs provides:
 ---
 
 ## Citation & Attribution
-- **Author:** Farhan Aaqil Durrani (JPNCE Mahbubnagar)
+- **Author:** Muzra Fatima
 - **Built Upon:** SAEBench (Karvonen et al., ICML 2025), A is for Absorption (Chanin et al., NeurIPS 2025), SynthSAEBench (Chanin & Garriga-Alonso, 2026), and WordNet (Miller, 1995).
 - **License:** MIT License
