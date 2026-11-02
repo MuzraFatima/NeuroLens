@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TopoCircuit-SAE · Frequency-Ordered DAG Routing & Multi-Parent Absorption Workbench</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%236366f1'/><path d='M30 50 L50 30 L70 50 L50 70 Z' fill='%23ffffff'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
@@ -380,6 +381,7 @@
     </nav>
 
     <div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-2);">
+      <span id="backendStatusBadge" class="badge badge-cached" title="REST API /api/v1 integration status"><span class="badge-dot"></span>BACKEND · PROBING</span>
       <span id="qualityTierBadge" class="badge badge-local" title="Auto-selected 3D quality tier and live FPS"><span class="badge-dot"></span>Tier: High · 60 FPS</span>
       <button id="toggle3dPauseBtn" type="button" class="btn btn-ghost" aria-pressed="false" title="Pause or resume ambient 3D animation">Pause 3D</button>
       <button id="toggleThemeBtn" type="button" class="btn btn-ghost" title="Toggle dark and light theme">Light / Dark</button>
@@ -669,6 +671,7 @@
           <div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-2);">
             <span class="badge badge-local"><span class="badge-dot"></span>LOCAL STORE · MASTER_RESULTS.JSON</span>
             <span class="badge badge-synthetic"><span class="badge-dot"></span>SAMPLE / SYNTHETIC · 112 MPABS CELLS</span>
+            <span id="wbDbPoolBadge" class="badge badge-cached"><span class="badge-dot"></span>SQLITE POOL · READY</span>
             <span id="wbCacheStatsBadge" class="badge badge-cached"><span class="badge-dot"></span>CLIENT LRU CACHE · 0 HITS / 0 MISSES</span>
           </div>
           <div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-2);">
@@ -1030,6 +1033,70 @@
     let lastRenderedGraphSig = "";
     let lastRenderedTableSig = "";
 
+    /* ==========================================================================
+       BACKEND REST API INTEGRATION (/api/v1/*) WITH SEAMLESS LOCAL STORE FALLBACK
+       ========================================================================== */
+    const backendState = {
+      isOnline: false,
+      poolSize: 4,
+      serverProvenance: ""
+    };
+
+    async function checkBackendHealth() {
+      const badge = document.getElementById("backendStatusBadge");
+      try {
+        const t0 = performance.now();
+        const res = await fetch("/api/v1/health", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          const latency = Math.round(performance.now() - t0);
+          backendState.isOnline = true;
+          backendState.poolSize = data.db_pool_size || 4;
+          if (badge) {
+            badge.className = "badge badge-local";
+            badge.style.borderColor = "var(--ok)";
+            badge.innerHTML = `<span class="badge-dot" style="background:var(--ok);"></span>LIVE REST API · CONNECTED (${latency}ms · POOL: ${backendState.poolSize})`;
+          }
+          const wbDbBadge = document.getElementById("wbDbPoolBadge");
+          if (wbDbBadge) {
+            wbDbBadge.innerHTML = `<span class="badge-dot" style="background:var(--ok);"></span>SQLITE POOL (${backendState.poolSize} CONNS) · ONLINE`;
+          }
+          fetchMasterMetrics();
+          updateStoryProp2Simulator();
+        } else {
+          setOfflineBadge(badge);
+        }
+      } catch (e) {
+        setOfflineBadge(badge);
+      }
+    }
+
+    function setOfflineBadge(badge) {
+      backendState.isOnline = false;
+      if (badge) {
+        badge.className = "badge badge-cached";
+        badge.innerHTML = `<span class="badge-dot"></span>LOCAL STORE FALLBACK`;
+      }
+    }
+
+    async function fetchMasterMetrics() {
+      try {
+        const res = await fetch("/api/v1/metrics");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.provenance) {
+            backendState.serverProvenance = data.provenance;
+            const provBadges = document.querySelectorAll(".badge-local");
+            provBadges.forEach(b => {
+              if (b.textContent.includes("LOCAL STORE · MASTER_RESULTS.JSON")) {
+                b.innerHTML = `<span class="badge-dot"></span>LIVE BACKEND · /api/v1/metrics`;
+              }
+            });
+          }
+        }
+      } catch (e) {}
+    }
+
     /* Populate Section 5 Story Table Once */
     function initStoryEvidenceTable() {
       const tbody = document.getElementById("storyMainTableBody");
@@ -1092,6 +1159,25 @@
         explain.textContent = s1 < s2
           ? `Parent 1 (σ₁² = ${s1.toFixed(2)}) is selectively absorbed before Parent 2 (σ₂² = ${s2.toFixed(2)}), matching Proposition 2.`
           : `Parent 2 (σ₂² = ${s2.toFixed(2)}) is selectively absorbed before Parent 1 (σ₁² = ${s1.toFixed(2)}), matching Proposition 2.`;
+      }
+
+      // Query live backend /api/v1/prop2 if online
+      if (backendState.isOnline) {
+        const queryUrl = `/api/v1/prop2?s1=${s1.toFixed(2)}&s2=${s2.toFixed(2)}&lam=${lam.toFixed(2)}`;
+        fetch(queryUrl)
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (data && typeof data.abs_rate_p1 === "number") {
+              const liveP1 = (data.abs_rate_p1 * 100).toFixed(1);
+              const liveP2 = (data.abs_rate_p2 * 100).toFixed(1);
+              document.getElementById("storyFlatRates").textContent = `${liveP1}% / ${liveP2}%`;
+              const liveProofBadge = document.getElementById("liveProofCacheBadge");
+              if (liveProofBadge) {
+                liveProofBadge.innerHTML = `<span class="badge-dot"></span>LIVE BACKEND · PROPOSITION-2-SIMULATOR`;
+              }
+            }
+          })
+          .catch(() => {});
       }
     }
 
@@ -1286,49 +1372,77 @@
         return;
       }
 
+      function renderTableHtml(items, totalPages, totalCount, sourceNote) {
+        document.getElementById("wbPageIndicator").textContent = `Page ${appState.cellPage} / ${totalPages} (${totalCount} cells${sourceNote ? ' · ' + sourceNote : ''})`;
+
+        container.innerHTML = `
+          <div style="overflow-x:auto;">
+            <table class="data-table" aria-label="Paginated MPAbs cells table">
+              <thead>
+                <tr>
+                  <th>Cell ID</th>
+                  <th>Letter Parent</th>
+                  <th>WordNet Category</th>
+                  <th>Case Parent</th>
+                  <th>Exemplar Words</th>
+                  <th class="num">BatchTopK ↓</th>
+                  <th class="num">Matryoshka ↓</th>
+                  <th class="num">H-SAE (Tree) ↓</th>
+                  <th class="num">DR-SAE (Eff L0) ↓</th>
+                  <th class="num">DR-SAE (Ours) ↓</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${items.map(c => `
+                  <tr>
+                    <td class="mono-num">${c.cellId}</td>
+                    <td class="mono-num"><strong>${c.letter}</strong></td>
+                    <td class="mono-num">${c.category}</td>
+                    <td class="mono-num">${c.caseLabel}</td>
+                    <td style="color:var(--fg-1);">${c.words}</td>
+                    <td class="num" style="color:var(--danger);">${c.btk}</td>
+                    <td class="num" style="color:var(--highlight);">${c.mat}</td>
+                    <td class="num">${c.hsae}</td>
+                    <td class="num" style="color:var(--ok); font-weight:600;">${c.drEff}</td>
+                    <td class="num" style="color:var(--ok); font-weight:700;">${c.drOurs}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
       const totalPages = Math.max(1, Math.ceil(filtered.length / appState.cellPageSize));
       if (appState.cellPage > totalPages) appState.cellPage = totalPages;
       const start = (appState.cellPage - 1) * appState.cellPageSize;
       const pageItems = filtered.slice(start, start + appState.cellPageSize);
 
-      document.getElementById("wbPageIndicator").textContent = `Page ${appState.cellPage} / ${totalPages} (${filtered.length} cells)`;
+      renderTableHtml(pageItems, totalPages, filtered.length, backendState.isOnline ? "SQLite Pool" : "Local Store Cache");
 
-      container.innerHTML = `
-        <div style="overflow-x:auto;">
-          <table class="data-table" aria-label="Paginated MPAbs cells table">
-            <thead>
-              <tr>
-                <th>Cell ID</th>
-                <th>Letter Parent</th>
-                <th>WordNet Category</th>
-                <th>Case Parent</th>
-                <th>Exemplar Words</th>
-                <th class="num">BatchTopK ↓</th>
-                <th class="num">Matryoshka ↓</th>
-                <th class="num">H-SAE (Tree) ↓</th>
-                <th class="num">DR-SAE (Eff L0) ↓</th>
-                <th class="num">DR-SAE (Ours) ↓</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${pageItems.map(c => `
-                <tr>
-                  <td class="mono-num">${c.cellId}</td>
-                  <td class="mono-num"><strong>${c.letter}</strong></td>
-                  <td class="mono-num">${c.category}</td>
-                  <td class="mono-num">${c.caseLabel}</td>
-                  <td style="color:var(--fg-1);">${c.words}</td>
-                  <td class="num" style="color:var(--danger);">${c.btk}</td>
-                  <td class="num" style="color:var(--highlight);">${c.mat}</td>
-                  <td class="num">${c.hsae}</td>
-                  <td class="num" style="color:var(--ok); font-weight:600;">${c.drEff}</td>
-                  <td class="num" style="color:var(--ok); font-weight:700;">${c.drOurs}</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-        </div>
-      `;
+      if (backendState.isOnline && appState.tableUiMode === "ready") {
+        const url = `/api/v1/cells?page=${appState.cellPage}&page_size=${appState.cellPageSize}&letter=${appState.cellLetter}&category=${appState.cellCategory}`;
+        fetch(url)
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            if (data && Array.isArray(data.items) && data.items.length > 0) {
+              const mapped = data.items.map(item => ({
+                cellId: item.cell_id,
+                letter: item.letter,
+                category: item.category,
+                caseLabel: item.case_label,
+                words: Array.isArray(item.words) ? item.words.join(", ") : item.words,
+                btk: (item.mpabs_batchtopk * 100).toFixed(1) + "%",
+                mat: (item.mpabs_matryoshka * 100).toFixed(1) + "%",
+                hsae: (item.mpabs_hsae * 100).toFixed(1) + "%",
+                drEff: (item.mpabs_dr_eff_l0 * 100).toFixed(1) + "%",
+                drOurs: (item.mpabs_dr_sae * 100).toFixed(1) + "%"
+              }));
+              renderTableHtml(mapped, data.total_pages, data.total_items, "SQLite Pool (Zero N+1)");
+            }
+          })
+          .catch(() => {});
+      }
     }
 
     /* ==========================================================================
@@ -1588,6 +1702,7 @@
     window.addEventListener("DOMContentLoaded", () => {
       initStoryEvidenceTable();
       updateStoryProp2Simulator();
+      checkBackendHealth();
       const scheduleLazy = window.requestIdleCallback || (cb => setTimeout(cb, 120));
       scheduleLazy(initThreeDSceneLazy);
     });

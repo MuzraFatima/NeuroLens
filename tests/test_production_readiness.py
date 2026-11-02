@@ -1,14 +1,18 @@
 """Unit Tests for Production Engineering Checklist (SQLite Pool, Indexes, N+1, Gzip, ETag, Pagination)."""
 
+import importlib
 import os
 import sys
+import threading
 import unittest
+import urllib.request
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from topocircuit.models.saelens_plugin import DRSAELensConfig, DRSAELensWrapper
 from topocircuit.server.app import TopoCircuitAPIApp
 from topocircuit.server.db import TopoCircuitDatabase
+from topocircuit.server.serve import create_server
 
 
 class TestProductionReadiness(unittest.TestCase):
@@ -97,9 +101,6 @@ class TestProductionReadiness(unittest.TestCase):
         with open(req_path, encoding="utf-8") as f:
             packages = [line.strip().split(">=")[0] for line in f if line.strip()]
 
-        # All 6 packages in requirements.txt must be actively importable and needed
-        import importlib
-
         pkg_map = {
             "numpy": "numpy",
             "scipy": "scipy",
@@ -113,6 +114,26 @@ class TestProductionReadiness(unittest.TestCase):
             module_name = pkg_map[pkg]
             mod = importlib.import_module(module_name)
             self.assertIsNotNone(mod)
+
+    def test_http_server_and_rest_routing(self):
+        """Verifies unified ThreadingHTTPServer routes / and /api/v1/ endpoints correctly."""
+        server = create_server(host="127.0.0.1", port=8991, db_pool_size=2)
+        t = threading.Thread(target=server.serve_forever, daemon=True)
+        t.start()
+        try:
+            req = urllib.request.Request("http://127.0.0.1:8991/")
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                self.assertEqual(resp.status, 200)
+                self.assertIn("text/html", resp.headers.get("Content-Type", ""))
+                self.assertIn("*", resp.headers.get("Access-Control-Allow-Origin", ""))
+
+            req = urllib.request.Request("http://127.0.0.1:8991/api/v1/health")
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                self.assertEqual(resp.status, 200)
+                self.assertIn("application/json", resp.headers.get("Content-Type", ""))
+        finally:
+            server.shutdown()
+            server.server_close()
 
 
 if __name__ == "__main__":
