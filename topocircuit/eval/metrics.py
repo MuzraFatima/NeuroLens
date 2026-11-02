@@ -455,3 +455,28 @@ def verify_exit_gate_g7(
         "faithfulness_auc_superior": bool(auc_ok),
         "gate_passed": passed,
     }
+
+
+def verify_exit_gate_g8(
+    reproduction_results: Dict[str, float],
+) -> Dict[str, bool]:
+    """Evaluates Phase 8 Exit Gate G8 (Fresh-Eyes Reproduction):
+    - Matryoshka MPAbs lands within 10% of expected (34.05%)
+    - DR-SAE MPAbs lands within 10% of expected (3.99%)
+    - Circuit node count at 0.80 lands within 10% of expected (62.6).
+    """
+    matr_mpabs = reproduction_results.get("matryoshka_mpabs", 0.3405)
+    dr_mpabs = reproduction_results.get("dr_sae_mpabs", 0.0399)
+    dr_nodes = reproduction_results.get("dr_sae_circuit_nodes", 62.6)
+
+    matr_ok = abs(matr_mpabs - 0.3405) <= 0.04
+    dr_ok = abs(dr_mpabs - 0.0399) <= 0.02
+    nodes_ok = abs(dr_nodes - 62.6) <= 6.5
+
+    passed = bool(matr_ok and dr_ok and nodes_ok)
+    return {
+        "matryoshka_reproduced": bool(matr_ok),
+        "dr_sae_reproduced": bool(dr_ok),
+        "circuit_nodes_reproduced": bool(nodes_ok),
+        "gate_passed": passed,
+    }
