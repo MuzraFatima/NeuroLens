@@ -248,3 +248,67 @@ def holm_bonferroni_correction(
             "significant": float(rejected_so_far),
         }
     return out
+
+
+def compute_fvu(X: np.ndarray, x_hat: np.ndarray) -> float:
+    """Computes Fraction of Variance Unexplained (FVU) between input X and reconstruction x_hat.
+
+    FVU = ||X - x_hat||_F^2 / ||X - mean(X)||_F^2
+    """
+    total_var = float(np.sum((X - np.mean(X, axis=0, keepdims=True)) ** 2))
+    mse = float(np.sum((X - x_hat) ** 2))
+    return float(mse / max(1e-12, total_var))
+
+
+def profile_token_throughput(model, sample_batch: np.ndarray, n_trials: int = 5) -> Dict[str, float]:
+    """Times forward passes and computes token processing speed and 10M token runtime.
+
+    Args:
+        model: SAE model instance exposing forward_eval(X).
+        sample_batch: Array of shape (B, d_model).
+        n_trials: Number of timing repetitions.
+
+    Returns:
+        Dictionary with tokens_per_second, latency_ms, and est_sec_for_10m_tokens.
+    """
+    import time
+
+    # Warmup pass
+    _ = model.forward_eval(sample_batch)
+
+    t0 = time.perf_counter()
+    for _ in range(n_trials):
+        _ = model.forward_eval(sample_batch)
+    t1 = time.perf_counter()
+
+    elapsed = t1 - t0
+    total_tokens = sample_batch.shape[0] * n_trials
+    tokens_per_sec = float(total_tokens / max(1e-9, elapsed))
+    est_sec_10m = float(10_000_000 / max(1.0, tokens_per_sec))
+
+    return {
+        "tokens_per_second": tokens_per_sec,
+        "latency_ms": float((elapsed / n_trials) * 1000.0),
+        "est_sec_for_10m_tokens": est_sec_10m,
+        "est_hours_for_10m_tokens": float(est_sec_10m / 3600.0),
+    }
+
+
+def verify_exit_gate_g1(metrics: Dict[str, Dict[str, float]]) -> Dict[str, bool]:
+    """Evaluates Phase 1 Exit Gate G1:
+    - Baseline FVU lands within expected range (<= 0.16 on residual activations)
+    - Matryoshka first-letter absorption is lower than BatchTopK absorption.
+    """
+    fvu_ok = (
+        metrics.get("BatchTopK", {}).get("fvu", 1.0) <= 0.16
+        and metrics.get("Matryoshka", {}).get("fvu", 1.0) <= 0.15
+    )
+    abs_ok = metrics.get("Matryoshka", {}).get("first_letter_abs", 1.0) < metrics.get("BatchTopK", {}).get(
+        "first_letter_abs", 0.0
+    )
+    passed = fvu_ok and abs_ok
+    return {
+        "fvu_within_expected_bound": fvu_ok,
+        "first_letter_hierarchy_verified": abs_ok,
+        "gate_passed": passed,
+    }
