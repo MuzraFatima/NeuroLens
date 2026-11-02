@@ -1,0 +1,76 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+.eggs/
+
+# Testing & coverage
+.pytest_cache/
+.cache/
+.tox/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+.pytype/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Large data / model checkpoints (tracked via Git LFS or excluded)
+results/checkpoints/*
+!results/checkpoints/.gitkeep
+!results/checkpoints/*.json
+*.pt
+*.pth
+*.pkl
+*.safetensors
+
+# Compiled LaTeX
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.synctex.gz
+paper/*.bbl
+paper/*.blg
+
+# Temp / scratch
+*.tmp
+*.bak
+tmp/
+scratch/
+*.zip
+*.docx

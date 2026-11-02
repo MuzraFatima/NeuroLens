@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=67", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "topocircuit-sae"
+version = "1.0.0"
+description = "Frequency-Ordered DAG Routing to Measure and Remove Multi-Parent Feature Absorption in Sparse Autoencoders"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Farhan Aaqil Durrani" }]
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "PyYAML>=6.0",
+    "python-pptx>=0.6.21",
+    "Pillow>=9.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "ruff>=0.4.0",
+]
+torch = [
+    "torch>=2.1.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["topocircuit*"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in default arguments
+    "B006",  # do not use mutable data structures for argument defaults
+    "B019",  # use of lru_cache on class methods (intentional for database query memoization)
+    "UP006", # use `list` instead of `List` (keep 3.9 compat)
+    "UP007", # use `X | Y` instead of `Optional[X]` (keep 3.9 compat)
+    "UP035", # `typing` imports (keep 3.9 compat)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["topocircuit"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

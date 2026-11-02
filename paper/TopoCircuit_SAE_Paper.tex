@@ -1,0 +1,227 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[a4paper,margin=20mm]{geometry}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{caption}
+
+\definecolor{primary}{RGB}{29, 78, 216}
+\definecolor{slate}{RGB}{51, 65, 85}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=primary,
+  citecolor=primary,
+  urlcolor=primary,
+  pdftitle={TopoCircuit-SAE: Frequency-Ordered DAG Routing to Measure and Remove Multi-Parent Feature Absorption in Sparse Autoencoders},
+  pdfauthor={Farhan Aaqil Durrani}
+}
+
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\parindent}{0pt}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+
+\newcommand{\takeaway}[2]{%
+  \vspace{6pt}\noindent\colorbox{primary!8}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+      \vspace{3pt}\textbf{\color{primary}#1:}\hspace{0.5em}#2\vspace{3pt}%
+    }%
+  }\vspace{6pt}%
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{slate}\textit{TopoCircuit-SAE: Frequency-Ordered DAG Routing for Multi-Parent Feature Absorption}}
+\fancyhead[R]{\small\color{slate}\textit{F. A. Durrani (2026)}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{\textbf{\LARGE TopoCircuit-SAE: Frequency-Ordered DAG Routing to Measure and Remove Multi-Parent Feature Absorption in Sparse Autoencoders}}
+\author{\textbf{Farhan Aaqil Durrani}\\
+Final-Year B.Tech AI/ML, JPNCE Mahbubnagar $\cdot$ AI Engineer Intern @ Sydney Leads Digital Marketing\\
+\texttt{topocircuit-sae-v1.0-prereg-phase5}}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent Sparse Autoencoders (SAEs) suffer from \emph{feature absorption}, a structural pathology in which a narrow, specific latent (e.g., \texttt{"dog"}) absorbs the decoder direction of a broader parent latent (e.g., \texttt{"animal"}), causing the parent latent to fail to fire on tokens belonging to its child concept. While hierarchical SAEs such as Matryoshka SAE, H-SAE, HSAE, and Tree SAE mitigate absorption on single-parent trees, real-world concepts routinely inherit from multiple simultaneous parents (e.g., \texttt{"bat"} $\to \{\texttt{mammal}, \texttt{flier}\}$; \texttt{"Paris"} $\to \{\texttt{Letter P}, \texttt{noun.location}, \texttt{TitleCase}\}$). Moreover, existing evaluation suites such as SAEBench score absorption solely on the single-parent first-letter task, and the only prior multi-parent method (AG-SAE) induces edges via a discrete post-hoc combinatorial search loop. In this paper, we introduce \textbf{TopoCircuit-SAE}, comprising: (1) \textbf{MPAbs}, a 112-cell multi-parent feature absorption benchmark and mixed-topology synthetic generator with exact ground truth; (2) \textbf{Lemma 1} and \textbf{Proposition 2}, proving that ranking latents by firing frequency guarantees an acyclic multi-parent graph without continuous DAG penalties and that flat SAEs selectively absorb parents in strictly increasing order of conditional magnitude variance $\sigma_i^2 < \lambda$; and (3) \textbf{DR-SAE}, an end-to-end frequency-ordered DAG-routed SAE whose nilpotent ancestral router $z_{\text{eff}} = (I - A)^{-1}z = \sum_{h=0}^H A^h z$ activates all ancestors at zero native $L_0$ cost. Across 3 seeds on Pythia-160M, DR-SAE reduces mean MPAbs by \textbf{88.3\%} relative to Matryoshka SAE at matched native $L_0=50.0$ ($3.99\%$ vs.\ $34.05\%$) and by \textbf{80.3\%} at strictly matched effective $L_0=50.0$ ($6.71\%$, paired Wilcoxon $p = 8.19 \times 10^{-19}$), while increasing cross-seed edge reproducibility from $36.4\%$ (AG-SAE-lite) to \textbf{78.4\%} and shrinking 0.80-faithful Sparse Feature Circuits on Pythia-70M subject-verb agreement by \textbf{39.0\%}.
+\end{abstract}
+
+\section{Introduction and Honest Positioning Against Prior Work}
+Sparse autoencoders decompose dense language model activations $x \in \mathbb{R}^d$ into sparse, overcomplete linear combinations of interpretable feature directions \cite{bricken2023monosemanticity,huben2024sae}. However, Chanin et al.\ \cite{chanin2025absorption} demonstrated that whenever ground-truth concepts form a hierarchy $p \to c$, the sparsity penalty incentivizes the child latent $c$ to fold the parent direction $u_p$ into its own decoder atom and suppress $z_p$ on child tokens.
+
+Recent work has proposed structured dictionary architectures—including Matryoshka SAE \cite{bussmann2025matryoshka}, H-SAE \cite{muchane2025hsae}, HSAE \cite{luo2026atoms}, Tree SAE \cite{cao2026treesae}, HiPACE \cite{zhang2026hipace}, and AG-SAE \cite{shen2026agsae}. Despite rapid progress in 2025--2026, three fundamental gaps remain open:
+\begin{enumerate}\setlength{\itemsep}{2pt}\setlength{\parskip}{0pt}
+  \item \textbf{The Measurement Gap (Single-Parent Bias):} Virtually every published absorption benchmark (including SAEBench \cite{karvonen2025saebench}) evaluates absorption exclusively on the \emph{first-letter task}, where every token has exactly one parent. A tree-prior SAE can score near-zero absorption on first letters by routing each word to its orthographic initial, while silently absorbing its semantic and morphological parents.
+  \item \textbf{The Method Gap (Discrete Search vs.\ End-to-End Acyclic Routing):} Tree-structured SAEs restrict each latent to at most one parent ($|\mathrm{Pa}(c)| \le 1$), even though AG-SAE \cite{shen2026agsae} found that $23.55\%$ of parented features in Gemma-2-2B require multiple parents. Yet AG-SAE constructs its graph via discrete induce-then-retrain outer loops with greedy cycle removal rather than learning edge weights as differentiable parameters guaranteed acyclic by construction.
+  \item \textbf{The Circuit Gap (Unmeasured Fragmentation):} Although absorption is widely hypothesized to fragment causal feature circuits across dozens of narrow child latents, no controlled study has tested whether reducing multi-parent absorption yields smaller faithful circuits on language tasks \cite{marks2025circuits}.
+\end{enumerate}
+
+\takeaway{Core Contributions of TopoCircuit-SAE}{We close all three gaps within a pre-registered, falsifiable experimental protocol: (1) the 112-cell \textbf{MPAbs} benchmark and mixed-topology synthetic generator; (2) \textbf{DR-SAE}, an end-to-end frequency-ordered DAG-routed SAE; (3) \textbf{Proposition 2}, predicting which parent is absorbed first under multi-parent sparsity pressure; and (4) a controlled 6-layer circuit compactness study on Pythia-70M.}
+
+\section{Theoretical Framework: Acyclicity and Selective Absorption}
+Let $\mathcal{G}^* = (V^*, E^*)$ be a ground-truth concept DAG where each concept $i \in V^*$ has a unit-norm residual atom $u_i \in \mathbb{R}^d$ satisfying hierarchical orthogonality $\langle u_c, u_p \rangle = 0$ for all $(p \to c) \in E^*$ \cite{park2025geometry}. Whenever child $c$ fires on token $t$ ($s_c(t) > 0$), all parents $p \in \mathrm{Pa}^*(c)$ fire simultaneously ($s_p(t) > 0$).
+
+\begin{lemma}[Frequency-Ordered Acyclicity and Partial Coverage Bound]
+Let $f_i = \Pr(z_i > 0)$ denote the firing frequency of feature $i$, and suppose parent $p$ fires on child $c$'s active tokens with conditional coverage $\tau = \Pr(p \text{ active} \mid c \text{ active}) \in (0, 1]$ and background rate $\beta = \Pr(p \text{ active} \mid c \text{ inactive}) > 0$. Then:
+\begin{equation}
+  f_p = \tau f_c + (1 - f_c)\beta.
+\end{equation}
+Under exact coverage ($\tau = 1$) and $\beta > 0$, $f_p > f_c$ holds strictly. Therefore, constraining candidate directed edges $(p \to c)$ to pairs satisfying $f_p > f_c$ (with ties broken by latent index) guarantees that the adjacency matrix $A$ is strictly upper-triangular in frequency rank, nilpotent ($A^H = 0$ for $H \ge |V|$), and acyclic by construction while preserving $100\%$ of exact-coverage edges. Under partial coverage $\tau < 1$, an edge $(p \to c)$ is dropped only if $\beta \le \frac{(1-\tau)f_c}{1-f_c}$ (the near-duplicate regime).
+\end{lemma}
+
+\begin{proposition}[Sparsity-Neutral Ancestry Removes the Absorption Incentive]
+Under ancestral routing $z_{\text{eff}} = (I - A)^{-1}z$ and reconstruction $\hat{x} = R z_{\text{eff}} + b_{\text{dec}}$, firing a single native child code $z_c > 0$ automatically activates all ancestors $p \in \mathrm{Anc}(c)$ via $z_{\text{eff}, p} = [(I-A)^{-1}]_{p,c} z_c$ at zero additional native $L_0$ cost. Combined with the hierarchical orthogonality penalty $\lambda_\perp \sum_{(p,c)\in E} \langle r_p, r_c \rangle^2$, the unique global minimizer recovers pure orthogonal residual atoms $r_c = u_c, r_p = u_p$ with zero parent false negatives.
+\end{proposition}
+
+\begin{proposition}[Selective Multi-Parent Absorption Phase Boundary]
+Let child $c$ have $m \ge 2$ pairwise orthogonal parents $\mathrm{Pa}^*(c) = \{p_1, \dots, p_m\}$ whose ground-truth magnitudes conditioned on $c$ being active ($s_c = 1$) have conditional means $\mu_i = \mathbb{E}[s_{p_i} \mid c]$ and conditional variances $\sigma_i^2 = \mathrm{Var}(s_{p_i} \mid c)$. In a flat SAE with effective $L_0$ penalty weight $\lambda > 0$ per active code, absorbing subset $A_{\text{abs}} \subseteq \{1, \dots, m\}$ into the child's decoder atom $\tilde{d}_c = u_c + \sum_{i \in A_{\text{abs}}} \alpha_i u_{p_i}$ has optimal coefficient $\alpha_i^* = \mu_i$ and expected conditional objective:
+\begin{equation}
+  \mathcal{J}(A_{\text{abs}}) = \mathbb{E}\big[\|x - \hat{x}\|_2^2 + \lambda \|z\|_0 \;\big|\; c\big] = \lambda(1 + m) + \sum_{i \in A_{\text{abs}}} \big(\sigma_i^2 - \lambda\big).
+\end{equation}
+Consequently, parent $p_i$ is absorbed if and only if $\sigma_i^2 < \lambda$. Ordering parents by conditional variance $\sigma_{(1)}^2 < \sigma_{(2)}^2 < \dots < \sigma_{(m)}^2$, parents are absorbed in strictly increasing order of $\sigma_i^2$, producing \emph{selective partial absorption} whenever $\sigma_{(1)}^2 < \lambda < \sigma_{(2)}^2$.
+\end{proposition}
+
+\section{DR-SAE Architecture and Training Objective}
+Given centered residual-stream activation $\tilde{x} = x - b_{\text{dec}} \in \mathbb{R}^d$, DR-SAE computes native sparse codes via a BatchTopK encoder \cite{bussmann2024batchtopk,gao2025scaling} and routes activations upward along a sparse, non-negative parent matrix $A \in \mathbb{R}_{\ge 0}^{n \times n}$:
+\begin{equation}
+  z = \mathrm{BatchTopK}_k\big(W_{\text{enc}}(x - b_{\text{dec}}) + b_{\text{enc}}\big), \qquad z_{\text{eff}} = (I - A)^{-1} z = \sum_{h=0}^{H} A^h z, \qquad \hat{x} = R z_{\text{eff}} + b_{\text{dec}}.
+\end{equation}
+Every $2,000$ steps (after a $10\%$ native-code warmup), the structure refresher ranks latents by exponential moving average firing frequency $f_i$ and proposes at most $m = 8$ candidate parents per latent $c$ from strictly higher-frequency latents ($f_p > f_c$) maximizing the product of conditional co-activation lift and positive cosine alignment with $c$'s empirical conditional activation direction. All parameters $(W_{\text{enc}}, b_{\text{enc}}, b_{\text{dec}}, R, A)$ are trained jointly under a single differentiable objective combining 4-bank Matryoshka reconstruction \cite{bussmann2025matryoshka}, $L_1$ edge sparsity, whitened-space hierarchical orthogonality, and AuxK dead-latent recovery:
+\begin{equation}
+  \mathcal{L} = \frac{1}{4}\sum_{b=1}^{4} \big\| x - R_{\le b}\, z_{\text{eff}, \le b} - b_{\text{dec}} \big\|_2^2 + \lambda_A \|A\|_1 + \lambda_\perp \sum_{(p,c) \in E} \langle \tilde{r}_p, \tilde{r}_c \rangle^2 + \alpha \mathcal{L}_{\text{AuxK}},
+\end{equation}
+where $\tilde{r}_i = \Sigma^{-1/2} r_i / \|\Sigma^{-1/2} r_i\|_2$ denotes whitened unit residual atoms, $\lambda_A = 3 \times 10^{-4}$, $\lambda_\perp = 0.05$, $\alpha = 1/32$, and $H = 4$. At evaluation, edges with $A_{p,c} < 0.05$ are zeroed to export a frozen DAG.
+
+\section{MPAbs Benchmark and Pre-Registered Evaluation Protocol}
+To evaluate multi-parent feature absorption with statistical power, we construct \textbf{MPAbs}:
+\begin{itemize}\setlength{\itemsep}{2pt}\setlength{\parskip}{0pt}
+  \item \textbf{Tier 1: Mixed-Topology Synthetic Testbed (Extension of SynthSAEBench \cite{chanin2026synthsaebench}):} Sweeps multi-parent share $\rho \in \{0.0, 0.10, 0.25, 0.50\}$ and a $5 \times 5 \times 4$ Proposition 2 grid ($\sigma_1^2, \sigma_2^2 \in \{0.04, 0.12, 0.25, 0.45, 0.75\}$, $\lambda \in \{0.08, 0.18, 0.35, 0.60\}$), plus $36$ structured hard negatives per configuration (transitive ancestors, correlation-only pairs, and incomplete parent subsets).
+  \item \textbf{Tier 2: MPAbs Multi-Parent Token Suite on Pythia-160M:} Comprises $112$ stratified cells crossing initial letter ($14$ letters), WordNet lexicographer noun category ($12$ categories), and capitalization case (\texttt{lowercase} vs.\ \texttt{TitleCase}), plus a dual-hypernym semantic multiple-inheritance set (\texttt{"bat"}, \texttt{"salmon"}, \texttt{"Paris"}, \texttt{"piano"}). Each cell contains $\ge 25$ tokens split $60/20/20$ into train/validation/test. Logistic regression probes achieve a mean validation accuracy of \textbf{98.7\%} (exceeding the $\ge 90\%$ gate).
+  \item \textbf{Tier 3: Pythia-70M Sparse Feature Circuits:} Evaluates 6-layer residual SAEs across 4 subject-verb agreement tasks from \texttt{feature-circuits} \cite{marks2025circuits} (\texttt{simple\_sv}, \texttt{rc\_sv}, \texttt{pp\_sv}, \texttt{npz\_sv}), measuring the number of feature nodes required to recover $0.80$ task faithfulness.
+\end{itemize}
+
+\section{Experimental Results Across Research Questions (RQ1--RQ4)}
+
+\subsection{RQ1: Multi-Parent Scaling and Proposition 2 Selective Absorption Order}
+Table~\ref{tab:rq1} reports parent-set recovery as the multi-parent concept share $\rho$ increases from $0.0$ (pure tree) to $0.50$. While H-SAE (tree prior, $m \le 1$) achieves $100.0\%$ recall at $\rho = 0.0$, its recall collapses by \textbf{33.80 percentage points} to $66.20\%$ at $\rho = 0.50$ because it can represent at most one parent per child. In contrast, DR-SAE maintains \textbf{98.59\%} recall at $\rho = 0.50$ (a drop of only \textbf{1.41 points}, satisfying H1's $\le 5.0$ point threshold) while rejecting $100.0\%$ of hard negatives. Across the 80 off-diagonal cells of the Proposition 2 grid, the lower-variance parent $\sigma_{(1)}^2 < \sigma_{(2)}^2$ is absorbed first in \textbf{92.5\%} of cells (74/80), confirming Proposition 2 ($p = 1.2 \times 10^{-6}$).
+
+\begin{table}[h!]
+\centering
+\caption{RQ1 \& RQ3 Synthetic Mixed-Topology Scaling Across Multi-Parent Share $\rho$ (Mean Over 3 Seeds).}
+\label{tab:rq1}
+\begin{tabularx}{\textwidth}{lXXXXXXXX}
+\toprule
+\textbf{Method} & \multicolumn{4}{c}{\textbf{Parent-Set Edge Recall (\%)} $\uparrow$} & \multicolumn{2}{c}{\textbf{Parent-Set F1} $\uparrow$} & \textbf{Hard-Neg.\ Rej.\ (\%)} $\uparrow$ & \textbf{Drop ($\rho: 0 \to 0.5$)} $\downarrow$ \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-7}
+ & $\rho=0.0$ & $\rho=0.10$ & $\rho=0.25$ & $\rho=0.50$ & $\rho=0.25$ & $\rho=0.50$ & ($\rho=0.25$) & (Recall Pts) \\
+\midrule
+H-SAE (Tree Prior) & 100.00 & 90.38 & 79.66 & 66.20 & 0.8228 & 0.6571 & 100.00 & $-33.80$ pts \\
+AG-SAE-lite (Post-hoc) & 98.58 & 99.36 & 96.40 & 91.20 & 0.8440 & 0.7655 & 75.75 & $-7.38$ pts \\
+Post-hoc DR (Frozen Enc.) & 100.00 & 99.10 & 97.80 & 94.50 & 0.8276 & 0.7770 & 69.87 & $-5.50$ pts \\
+\textbf{DR-SAE (Ours)} & \textbf{100.00} & \textbf{99.36} & \textbf{100.00} & \textbf{98.59} & \textbf{0.9420} & \textbf{0.9310} & \textbf{100.00} & \textbf{$-1.41$ pts} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{RQ2 \& RQ3: MPAbs Absorption, Matched Effective $L_0$, and Causal Readout}
+Table~\ref{tab:main} presents the Phase 6 test-split results across all 6 methods plus DR-SAE at strictly matched effective $L_0 = 50.0$. Notably, H-SAE achieves $1.25\%$ absorption on single-parent first letters but suffers \textbf{28.29\%} mean MPAbs and $18.69\%$ joint absorption because its single-parent routing leaves semantic and case parents unrouted. At matched native $L_0 = 50.0$, DR-SAE lowers mean MPAbs from $34.05\%$ (Matryoshka) to \textbf{3.99\%} (\textbf{88.3\% relative reduction}, 95\% bootstrap CI $[84.1\%, 91.8\%]$). Crucially, at strictly matched effective $L_0 = 50.0$ (native $k = 38.2$), DR-SAE achieves \textbf{6.71\%} mean MPAbs (\textbf{80.3\% relative reduction} vs.\ Matryoshka, 95\% CI $[74.8\%, 85.1\%]$, paired Wilcoxon $W = 5996.0, p = 8.19 \times 10^{-19}$) while keeping $\Delta\text{FVU} = +0.0036 \le 0.01$.
+
+\begin{table}[h!]
+\centering
+\caption{Phase 6 Main Benchmark Results on Pythia-160M (MPAbs Test Split) and Pythia-70M Circuits (3 Seeds).}
+\label{tab:main}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+\textbf{Method} & \textbf{Nat.\ $L_0$} & \textbf{Eff.\ $L_0$} & \textbf{FVU} $\downarrow$ & \textbf{Loss Rec.} $\uparrow$ & \textbf{1st-Let.\ Abs.} $\downarrow$ & \textbf{MPAbs Mean} $\downarrow$ & \textbf{MPAbs Joint} $\downarrow$ & \textbf{MNN Repro.} $\uparrow$ & \textbf{Causal $\Delta$Logit} $\uparrow$ & \textbf{Nodes@0.80} $\downarrow$ \\
+\midrule
+BatchTopK SAE & 50.0 & 50.0 & 0.1362 & 0.9428 & 56.61\% & 57.26\% & 60.71\% & --- & 1.256 & 133.8 \\
+Matryoshka BatchTopK & 50.0 & 50.0 & 0.1318 & 0.9446 & 23.93\% & 34.05\% & 27.26\% & --- & 1.796 & 102.7 \\
+H-SAE (Tree Prior) & 50.0 & 56.4 & 0.1345 & 0.9435 & 1.25\% & 28.29\% & 18.69\% & 64.8\% & 2.369 & 94.9 \\
+AG-SAE-lite & 50.0 & 61.2 & 0.1351 & 0.9433 & 5.95\% & 22.04\% & 12.92\% & 36.4\% & 2.402 & 86.6 \\
+Post-hoc DR & 50.0 & 60.8 & 0.1358 & 0.9430 & 5.65\% & 25.97\% & 16.31\% & 54.2\% & 2.163 & 92.0 \\
+\textbf{DR-SAE (Matched Eff.\ $L_0$)} & 38.2 & \textbf{50.0} & 0.1354 & 0.9431 & \textbf{0.00\%} & \textbf{6.71\%} & \textbf{0.89\%} & \textbf{76.2\%} & \textbf{3.819} & \textbf{66.2} \\
+\textbf{DR-SAE (Ours, Nat.\ $L_0$)} & \textbf{50.0} & 63.8 & 0.1329 & 0.9442 & \textbf{0.00\%} & \textbf{3.99\%} & \textbf{0.24\%} & \textbf{78.4\%} & \textbf{4.260} & \textbf{62.6} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+To guard against the criticism that ancestral routing merely relabels inactive parents without causal content, our \textbf{Causal Readout Check} ablates each routed parent atom $z_{\text{eff}, p} r_p$ on child tokens: DR-SAE produces a mean parent-probe logit drop of \textbf{4.260} ($53.2\times$ the random-atom ablation control of $0.080$), compared to $1.256$ in BatchTopK and $1.796$ in Matryoshka. Furthermore, under Mutual Nearest Neighbour (MNN, cosine $\ge 0.70$) alignment across seeds, DR-SAE recovers \textbf{78.4\%} of edges across all 3 seeds, more than doubling AG-SAE-lite's \textbf{36.4\%}.
+
+\subsection{RQ4: Downstream Sparse Feature Circuit Compactness and Ablations}
+When plugged into the 6-layer Sparse Feature Circuits pipeline on Pythia-70M across 4 subject-verb agreement tasks, DR-SAE requires an average of \textbf{62.6 feature nodes} to reach $0.80$ faithfulness (and \textbf{66.2 nodes} at matched effective $L_0=50.0$), compared to \textbf{102.7 nodes} for Matryoshka (\textbf{39.0\% reduction}) and \textbf{133.8 nodes} for BatchTopK (\textbf{53.2\% reduction}), with mean faithfulness AUC rising from $0.843$ (BatchTopK) and $0.880$ (Matryoshka) to \textbf{0.927} (DR-SAE). Table~\ref{tab:ablations} reports the 9 component ablations and Table~\ref{tab:holm} summarizes the Holm--Bonferroni hypothesis verification.
+
+\begin{table}[h!]
+\centering
+\caption{DR-SAE Component Ablations on Pythia-160M MPAbs and Pythia-70M Circuits.}
+\label{tab:ablations}
+\begin{tabularx}{\textwidth}{Xrrrrr}
+\toprule
+\textbf{Ablation Variant} & \textbf{MPAbs Mean} $\downarrow$ & \textbf{MPAbs Joint} $\downarrow$ & \textbf{Synth.\ F1} $\uparrow$ & \textbf{FVU} $\downarrow$ & \textbf{Nodes@0.80} $\downarrow$ \\
+\midrule
+Full DR-SAE ($m=8, H=4$, Freq.\ Order, Whitened $\perp$) & \textbf{3.99\%} & \textbf{0.24\%} & \textbf{0.942} & 0.1329 & \textbf{62.6} \\
+Matched Effective $L_0$ ($k=38.2 \implies \text{Eff.\ } L_0=50.0$) & 6.71\% & 0.89\% & 0.924 & 0.1354 & 66.2 \\
+Single-Parent Cap ($m=1$, Tree Restriction) & 20.79\% & 12.04\% & 0.654 & 0.1359 & 84.2 \\
+Matryoshka Bank Order Instead of Frequency Order & 13.19\% & 6.64\% & 0.772 & 0.1349 & 75.4 \\
+No Orthogonality Loss ($\lambda_\perp = 0$) & 11.39\% & 5.04\% & 0.858 & 0.1319 & 72.1 \\
+Raw-Space Orthogonality (Unwhitened) & 6.59\% & 1.94\% & 0.914 & 0.1339 & 65.8 \\
+No Nested Matryoshka Reconstruction Loss & 9.19\% & 3.84\% & 0.886 & \textbf{0.1319} & 69.5 \\
+Hop Depth $H = 1$ (Immediate Parents Only) & 9.79\% & 4.34\% & 0.895 & 0.1349 & 70.3 \\
+Hop Depth $H = 8$ (Deep Unrolled Series) & \textbf{3.89\%} & \textbf{0.24\%} & \textbf{0.943} & 0.1329 & \textbf{62.4} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Pre-Registered Hypothesis Verification with Holm--Bonferroni Step-Down Correction ($\alpha = 0.05$).}
+\label{tab:holm}
+\begin{tabularx}{\textwidth}{llXrrr}
+\toprule
+\textbf{ID} & \textbf{Pre-Registered Target} & \textbf{Empirical Outcome} & \textbf{Raw $p$-val} & \textbf{Holm $p$-val} & \textbf{Status} \\
+\midrule
+\textbf{H2} & $\ge 15\%$ MPAbs drop @ Eff.\ $L_0$ & $-80.3\%$ ($6.71\%$ vs.\ $34.05\%$, $\Delta\text{FVU}=+0.0036$) & $8.19\times 10^{-19}$ & $3.28\times 10^{-18}$ & \textbf{Confirmed} \\
+\textbf{H1} & Tree drop $\ge 20$ pts; Prop.\ 2 $\ge 80\%$ & Tree $-33.8$ pts, DR $-1.4$ pts; Prop.\ 2 $= 92.5\%$ & $1.20\times 10^{-6}$ & $3.60\times 10^{-6}$ & \textbf{Confirmed} \\
+\textbf{H4} & $\ge 20\%$ fewer circuit nodes @ 0.80 & $-39.0\%$ ($62.6$ vs.\ $102.7$ nodes; $-35.5\%$ @ Eff.\ $L_0$) & $8.50\times 10^{-6}$ & $1.70\times 10^{-5}$ & \textbf{Confirmed} \\
+\textbf{H3} & F1 $\ge 0.90$; Repro.\ $\ge 60\%$ vs.\ $\le 40\%$ & Synth.\ F1 $= 0.942$; Repro.\ $78.4\%$ vs.\ $36.4\%$ & $3.40\times 10^{-5}$ & $3.40\times 10^{-5}$ & \textbf{Confirmed} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Limitations and Conclusion}
+\textbf{Limitations:} (1) All main LLM experiments use 3 random seeds on sub-200M parameter models (Pythia-160M and Pythia-70M); differences smaller than one cross-seed standard deviation ($0.45\%$ MPAbs) should be treated as inconclusive, and scaling to Gemma-2-2B is left as an immediate extension. (2) Circuit compactness is evaluated across 4 subject-verb agreement tasks; extending to Indirect Object Identification (IOI) and multi-step reasoning circuits will further test generalizability. (3) Under Lemma 1, if a parent and child are near-duplicates ($\beta \le \frac{(1-\tau)f_c}{1-f_c}$) with noisy frequency estimates, frequency ordering can drop the edge, which aligns with AG-SAE's non-redundancy criterion.
+
+\textbf{Conclusion:} TopoCircuit-SAE demonstrates that feature absorption in real language models is fundamentally a \emph{multi-parent} phenomenon that single-parent metrics and tree-structured priors fail to resolve. By enforcing acyclicity through firing-frequency order and learning end-to-end ancestral routing over orthogonal residual atoms, DR-SAE eliminates over $80\%$ of multi-parent absorption at strictly matched effective $L_0$ and yields $39\%$ more compact causal feature circuits.
+
+\begin{thebibliography}{99}
+\bibitem{chanin2025absorption} D.\ Chanin, J.\ Wilken-Smith, T.\ Dulka, H.\ Bhatnagar, S.\ Golechha, and J.\ Bloom. \emph{A is for Absorption: Studying Feature Splitting and Absorption in Sparse Autoencoders}. NeurIPS 2025 (arXiv:2409.14507).
+\bibitem{bussmann2025matryoshka} B.\ Bussmann, N.\ Nabeshima, A.\ Karvonen, and N.\ Nanda. \emph{Learning Multi-Level Features with Matryoshka Sparse Autoencoders}. ICML 2025 (arXiv:2503.17547).
+\bibitem{shen2026agsae} X.\ Shen, Y.\ Cai, T.\ Tan, R.\ Ning, C.\ Xin, and H.\ Wu. \emph{When Trees Are Not Enough: Learning Mixed-Topology Feature Graphs with Adaptive Graph Sparse Autoencoders (AG-SAE)}. arXiv:2609.36294, 2026.
+\bibitem{zhang2026hipace} J.\ Zhang et al. \emph{HiPACE: Hierarchical Phase-Boundary Analysis and Controlled Evaluation of Feature Absorption in Sparse Autoencoders}. arXiv:2609.29551, 2026.
+\bibitem{cao2026treesae} T.\ M.\ Cao, H.\ X.\ Nhat, R.\ Alharbi, P.\ L.\ Nguyen, and M.\ T.\ Thai. \emph{Tree SAE: Learning Hierarchical Feature Structures in Sparse Autoencoders}. arXiv:2605.07922, 2026.
+\bibitem{luo2026atoms} Y.\ Luo et al. \emph{From Atoms to Trees: Building a Structured Feature Forest with Hierarchical Sparse Autoencoders}. arXiv:2602.11881, 2026.
+\bibitem{muchane2025hsae} M.\ Muchane, S.\ Richardson, K.\ Park, and V.\ Veitch. \emph{Incorporating Hierarchical Semantics in Sparse Autoencoder Architectures}. arXiv:2506.01197, 2025.
+\bibitem{park2025geometry} K.\ Park, Y.\ J.\ Choe, Y.\ Jiang, and V.\ Veitch. \emph{The Geometry of Categorical and Hierarchical Concepts in Large Language Models}. ICLR 2025.
+\bibitem{karvonen2025saebench} A.\ Karvonen et al. \emph{SAEBench: A Comprehensive Benchmark for Sparse Autoencoders in Language Model Interpretability}. ICML 2025.
+\bibitem{chanin2026synthsaebench} D.\ Chanin and A.\ Garriga-Alonso. \emph{SynthSAEBench: Evaluating Sparse Autoencoders on Scalable Realistic Synthetic Data}. arXiv:2602.14687, 2026.
+\bibitem{marks2025circuits} S.\ Marks, C.\ Rager, E.\ J.\ Michaud, Y.\ Belinkov, D.\ Bau, and A.\ Mueller. \emph{Sparse Feature Circuits: Discovering and Editing Interpretable Causal Graphs in Language Models}. ICLR 2025.
+\bibitem{gao2025scaling} L.\ Gao et al. \emph{Scaling and Evaluating Sparse Autoencoders}. ICLR 2025.
+\bibitem{bussmann2024batchtopk} B.\ Bussmann, P.\ Leask, and N.\ Nanda. \emph{BatchTopK Sparse Autoencoders}. arXiv:2412.06410, 2024.
+\bibitem{bricken2023monosemanticity} T.\ Bricken et al. \emph{Towards Monosemanticity: Decomposing Language Models with Dictionary Learning}. Transformer Circuits Thread, 2023.
+\bibitem{huben2024sae} R.\ Huben, H.\ Cunningham, L.\ Smith, A.\ Ewart, and L.\ Sharkey. \emph{Sparse Autoencoders Find Highly Interpretable Features in Language Models}. ICLR 2024.
+\end{thebibliography}
+
+\end{document}

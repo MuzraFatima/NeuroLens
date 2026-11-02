@@ -1,0 +1,1257 @@
+{
+  "rq1_synthetic_and_prop2": {
+    "rhos": [
+      0.0,
+      0.1,
+      0.25,
+      0.5
+    ],
+    "rho_results": {
+      "H-SAE (Tree)": {
+        "parent_set_f1": [
+          0.7589,
+          0.6682,
+          0.639,
+          0.504
+        ],
+        "multi_parent_recall": [
+          75.89,
+          65.38,
+          62.15,
+          50.23
+        ],
+        "hn_rejection": [
+          58.77,
+          66.57,
+          79.42,
+          83.59
+        ]
+      },
+      "AG-SAE-lite": {
+        "parent_set_f1": [
+          0.6868,
+          0.6636,
+          0.6695,
+          0.6007
+        ],
+        "multi_parent_recall": [
+          72.34,
+          73.72,
+          72.88,
+          69.95
+        ],
+        "hn_rejection": [
+          66.9,
+          71.03,
+          77.94,
+          74.18
+        ]
+      },
+      "Post-hoc DR": {
+        "parent_set_f1": [
+          0.7422,
+          0.7242,
+          0.7205,
+          0.6689
+        ],
+        "multi_parent_recall": [
+          81.56,
+          83.97,
+          80.23,
+          77.93
+        ],
+        "hn_rejection": [
+          65.75,
+          67.55,
+          73.56,
+          70.64
+        ]
+      },
+      "DR-SAE (Ours)": {
+        "parent_set_f1": [
+          1.0,
+          0.995,
+          1.0,
+          0.9852
+        ],
+        "multi_parent_recall": [
+          100.0,
+          99.36,
+          100.0,
+          98.59
+        ],
+        "hn_rejection": [
+          100.0,
+          100.0,
+          100.0,
+          100.0
+        ]
+      }
+    },
+    "tree_recall_drop_pts": 25.66,
+    "dr_recall_drop_pts": 1.41,
+    "prop2_agreement_rate": 0.925,
+    "sigma_grid": [
+      0.04,
+      0.12,
+      0.25,
+      0.45,
+      0.75
+    ],
+    "phase_matrix_lambda_035": [
+      [
+        -2.7555074158636117e-05,
+        0.006572108987528469,
+        0.056048038566758995,
+        0.5512430144240066,
+        0.9877054035779932
+      ],
+      [
+        -0.0056183307963989515,
+        0.0029982256306850807,
+        0.031428497808401845,
+        0.7785967565737796,
+        0.985092125228896
+      ],
+      [
+        -0.06690313609879384,
+        -0.03284401030511597,
+        0.014571960978206233,
+        0.64438426472808,
+        0.9145735945843795
+      ],
+      [
+        -0.7787224977478756,
+        -0.7150127311336545,
+        -0.6512343943893351,
+        -0.30957256409850265,
+        0.29483906193418297
+      ],
+      [
+        -0.9940346216526718,
+        -0.9910351150935428,
+        -0.8880469226712593,
+        -0.2951656413417476,
+        0.006250138430476743
+      ]
+    ]
+  },
+  "rq2_rq3_main_benchmarks": {
+    "per_method": {
+      "BatchTopK": {
+        "mean_mpabs": 0.5726,
+        "std_mpabs": 0.0045,
+        "mean_joint_abs": 0.6071,
+        "first_letter_abs": 0.5661,
+        "semantic_cat_abs": 0.6,
+        "case_abs": 0.5518,
+        "fvu": 0.1362,
+        "loss_recovered": 0.9428,
+        "native_l0": 50.0,
+        "effective_l0": 50.0,
+        "cross_seed_edge_repro": 0.0,
+        "causal_parent_logit_drop": 1.256,
+        "causal_selectivity_ratio": 2777.91
+      },
+      "Matryoshka": {
+        "mean_mpabs": 0.3405,
+        "std_mpabs": 0.0076,
+        "mean_joint_abs": 0.2726,
+        "first_letter_abs": 0.2393,
+        "semantic_cat_abs": 0.425,
+        "case_abs": 0.3571,
+        "fvu": 0.1318,
+        "loss_recovered": 0.9446,
+        "native_l0": 50.0,
+        "effective_l0": 50.0,
+        "cross_seed_edge_repro": 0.0,
+        "causal_parent_logit_drop": 1.796,
+        "causal_selectivity_ratio": 201.83
+      },
+      "H-SAE (Tree)": {
+        "mean_mpabs": 0.2829,
+        "std_mpabs": 0.009,
+        "mean_joint_abs": 0.1869,
+        "first_letter_abs": 0.0125,
+        "semantic_cat_abs": 0.4661,
+        "case_abs": 0.3702,
+        "fvu": 0.1345,
+        "loss_recovered": 0.9435,
+        "native_l0": 50.0,
+        "effective_l0": 56.4,
+        "cross_seed_edge_repro": 0.648,
+        "causal_parent_logit_drop": 2.369,
+        "causal_selectivity_ratio": 223.07
+      },
+      "AG-SAE-lite": {
+        "mean_mpabs": 0.2204,
+        "std_mpabs": 0.0162,
+        "mean_joint_abs": 0.1292,
+        "first_letter_abs": 0.0595,
+        "semantic_cat_abs": 0.3024,
+        "case_abs": 0.2994,
+        "fvu": 0.1351,
+        "loss_recovered": 0.9433,
+        "native_l0": 50.0,
+        "effective_l0": 61.2,
+        "cross_seed_edge_repro": 0.364,
+        "causal_parent_logit_drop": 2.402,
+        "causal_selectivity_ratio": 744.95
+      },
+      "Post-hoc DR": {
+        "mean_mpabs": 0.2597,
+        "std_mpabs": 0.0152,
+        "mean_joint_abs": 0.1631,
+        "first_letter_abs": 0.0565,
+        "semantic_cat_abs": 0.3833,
+        "case_abs": 0.3393,
+        "fvu": 0.1358,
+        "loss_recovered": 0.943,
+        "native_l0": 50.0,
+        "effective_l0": 60.8,
+        "cross_seed_edge_repro": 0.542,
+        "causal_parent_logit_drop": 2.163,
+        "causal_selectivity_ratio": 218.33
+      },
+      "DR-SAE (Matched Eff. L0)": {
+        "mean_mpabs": 0.0671,
+        "std_mpabs": 0.0073,
+        "mean_joint_abs": 0.0089,
+        "first_letter_abs": 0.0,
+        "semantic_cat_abs": 0.0679,
+        "case_abs": 0.1333,
+        "fvu": 0.1354,
+        "loss_recovered": 0.9431,
+        "native_l0": 38.2,
+        "effective_l0": 50.0,
+        "cross_seed_edge_repro": 0.762,
+        "causal_parent_logit_drop": 3.819,
+        "causal_selectivity_ratio": 790.61
+      },
+      "DR-SAE (Ours)": {
+        "mean_mpabs": 0.0399,
+        "std_mpabs": 0.0069,
+        "mean_joint_abs": 0.0024,
+        "first_letter_abs": 0.0,
+        "semantic_cat_abs": 0.0452,
+        "case_abs": 0.0744,
+        "fvu": 0.1329,
+        "loss_recovered": 0.9442,
+        "native_l0": 50.0,
+        "effective_l0": 63.8,
+        "cross_seed_edge_repro": 0.784,
+        "causal_parent_logit_drop": 4.26,
+        "causal_selectivity_ratio": 2923.45
+      }
+    },
+    "stat_vs_matryoshka_native_l0": {
+      "mean_a": 0.039880952380952385,
+      "mean_b": 0.3404761904761905,
+      "relative_reduction": 0.8828671328645398,
+      "ci_95_low": 0.8449157623291845,
+      "ci_95_high": 0.9150161686891088,
+      "wilcoxon_stat": 5977.5,
+      "p_value_raw": 1.001428721439347e-19
+    },
+    "stat_vs_matryoshka_effective_l0": {
+      "mean_a": 0.06706349206349206,
+      "mean_b": 0.3404761904761905,
+      "relative_reduction": 0.8030303030279445,
+      "ci_95_low": 0.7512742200180191,
+      "ci_95_high": 0.8488636760448414,
+      "wilcoxon_stat": 5738.5,
+      "p_value_raw": 4.008703314157485e-19
+    },
+    "probe_mean_val_accuracy": 0.9712,
+    "n_mpabs_cells": 112
+  },
+  "rq4_circuits": {
+    "by_method": {
+      "BatchTopK": {
+        "method": "BatchTopK",
+        "node_budgets": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          80,
+          100,
+          125,
+          150,
+          200,
+          250,
+          300,
+          400,
+          500
+        ],
+        "mean_nodes_at_08": 133.78106971259172,
+        "std_nodes_at_08": 20.101514790543828,
+        "mean_faithfulness_auc": 0.8430019178231197,
+        "mean_faithfulness_curve": [
+          0.1182,
+          0.222,
+          0.3132,
+          0.3934,
+          0.4638,
+          0.5257,
+          0.6281,
+          0.7073,
+          0.7818,
+          0.836,
+          0.9046,
+          0.9413,
+          0.9612,
+          0.9778,
+          0.9828
+        ],
+        "per_task": {
+          "simple_sv_agreement": {
+            "nodes_at_faithfulness_08": 111.0,
+            "faithfulness_auc": 0.8704,
+            "faithfulness_curve": [
+              0.1391,
+              0.2586,
+              0.3612,
+              0.4493,
+              0.5249,
+              0.5899,
+              0.6936,
+              0.7701,
+              0.8382,
+              0.8846,
+              0.9381,
+              0.9631,
+              0.9748,
+              0.9828,
+              0.9845
+            ]
+          },
+          "rc_sv_agreement": {
+            "nodes_at_faithfulness_08": 125.2,
+            "faithfulness_auc": 0.852,
+            "faithfulness_curve": [
+              0.1232,
+              0.2309,
+              0.3252,
+              0.4077,
+              0.4799,
+              0.543,
+              0.6466,
+              0.7259,
+              0.7995,
+              0.8522,
+              0.9169,
+              0.9501,
+              0.9671,
+              0.9803,
+              0.9838
+            ]
+          },
+          "pp_sv_agreement": {
+            "nodes_at_faithfulness_08": 141.4,
+            "faithfulness_auc": 0.8338,
+            "faithfulness_curve": [
+              0.1105,
+              0.2085,
+              0.2956,
+              0.3729,
+              0.4416,
+              0.5025,
+              0.6047,
+              0.6852,
+              0.7623,
+              0.8196,
+              0.8938,
+              0.9347,
+              0.9572,
+              0.9765,
+              0.9824
+            ]
+          },
+          "npz_sv_agreement": {
+            "nodes_at_faithfulness_08": 157.5,
+            "faithfulness_auc": 0.8158,
+            "faithfulness_curve": [
+              0.1002,
+              0.1901,
+              0.2709,
+              0.3435,
+              0.4088,
+              0.4674,
+              0.5673,
+              0.6479,
+              0.7272,
+              0.7878,
+              0.8696,
+              0.9175,
+              0.9455,
+              0.9715,
+              0.9804
+            ]
+          }
+        }
+      },
+      "Matryoshka": {
+        "method": "Matryoshka",
+        "node_budgets": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          80,
+          100,
+          125,
+          150,
+          200,
+          250,
+          300,
+          400,
+          500
+        ],
+        "mean_nodes_at_08": 102.74064324518199,
+        "std_nodes_at_08": 15.310821624585431,
+        "mean_faithfulness_auc": 0.8797402869992215,
+        "mean_faithfulness_curve": [
+          0.1511,
+          0.2787,
+          0.3865,
+          0.4776,
+          0.5546,
+          0.6198,
+          0.7216,
+          0.7948,
+          0.858,
+          0.9,
+          0.9466,
+          0.9675,
+          0.9769,
+          0.9833,
+          0.9846
+        ],
+        "per_task": {
+          "simple_sv_agreement": {
+            "nodes_at_faithfulness_08": 85.0,
+            "faithfulness_auc": 0.9009,
+            "faithfulness_curve": [
+              0.1773,
+              0.3226,
+              0.4418,
+              0.5396,
+              0.6197,
+              0.6855,
+              0.7836,
+              0.8495,
+              0.9025,
+              0.9348,
+              0.9664,
+              0.9781,
+              0.9824,
+              0.9846,
+              0.985
+            ]
+          },
+          "rc_sv_agreement": {
+            "nodes_at_faithfulness_08": 96.6,
+            "faithfulness_auc": 0.8868,
+            "faithfulness_curve": [
+              0.1573,
+              0.2895,
+              0.4006,
+              0.494,
+              0.5724,
+              0.6383,
+              0.7402,
+              0.8122,
+              0.8731,
+              0.9126,
+              0.9547,
+              0.9723,
+              0.9797,
+              0.9841,
+              0.9848
+            ]
+          },
+          "pp_sv_agreement": {
+            "nodes_at_faithfulness_08": 109.0,
+            "faithfulness_auc": 0.8727,
+            "faithfulness_curve": [
+              0.1414,
+              0.2625,
+              0.3663,
+              0.4551,
+              0.5312,
+              0.5964,
+              0.6999,
+              0.7759,
+              0.8431,
+              0.8887,
+              0.9406,
+              0.9646,
+              0.9756,
+              0.983,
+              0.9846
+            ]
+          },
+          "npz_sv_agreement": {
+            "nodes_at_faithfulness_08": 120.4,
+            "faithfulness_auc": 0.8586,
+            "faithfulness_curve": [
+              0.1284,
+              0.2401,
+              0.3373,
+              0.4217,
+              0.4952,
+              0.559,
+              0.6629,
+              0.7414,
+              0.8132,
+              0.8639,
+              0.9248,
+              0.955,
+              0.9701,
+              0.9813,
+              0.9841
+            ]
+          }
+        }
+      },
+      "H-SAE (Tree)": {
+        "method": "H-SAE (Tree)",
+        "node_budgets": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          80,
+          100,
+          125,
+          150,
+          200,
+          250,
+          300,
+          400,
+          500
+        ],
+        "mean_nodes_at_08": 94.94877427053731,
+        "std_nodes_at_08": 14.287822017230178,
+        "mean_faithfulness_auc": 0.8888888385646446,
+        "mean_faithfulness_curve": [
+          0.1623,
+          0.2975,
+          0.4101,
+          0.5041,
+          0.5824,
+          0.6478,
+          0.7481,
+          0.8182,
+          0.8771,
+          0.915,
+          0.9553,
+          0.9722,
+          0.9795,
+          0.9839,
+          0.9848
+        ],
+        "per_task": {
+          "simple_sv_agreement": {
+            "nodes_at_faithfulness_08": 78.3,
+            "faithfulness_auc": 0.9084,
+            "faithfulness_curve": [
+              0.1902,
+              0.3436,
+              0.4675,
+              0.5674,
+              0.648,
+              0.7131,
+              0.8079,
+              0.8697,
+              0.9176,
+              0.9456,
+              0.9715,
+              0.9804,
+              0.9834,
+              0.9848,
+              0.985
+            ]
+          },
+          "rc_sv_agreement": {
+            "nodes_at_faithfulness_08": 89.8,
+            "faithfulness_auc": 0.8954,
+            "faithfulness_curve": [
+              0.169,
+              0.3089,
+              0.4249,
+              0.521,
+              0.6006,
+              0.6665,
+              0.7664,
+              0.835,
+              0.8913,
+              0.9264,
+              0.9621,
+              0.9761,
+              0.9815,
+              0.9845,
+              0.9849
+            ]
+          },
+          "pp_sv_agreement": {
+            "nodes_at_faithfulness_08": 99.8,
+            "faithfulness_auc": 0.8824,
+            "faithfulness_curve": [
+              0.152,
+              0.2805,
+              0.3892,
+              0.4812,
+              0.5589,
+              0.6247,
+              0.7273,
+              0.8007,
+              0.8638,
+              0.9053,
+              0.9505,
+              0.9701,
+              0.9785,
+              0.9838,
+              0.9848
+            ]
+          },
+          "npz_sv_agreement": {
+            "nodes_at_faithfulness_08": 111.9,
+            "faithfulness_auc": 0.8693,
+            "faithfulness_curve": [
+              0.1381,
+              0.2569,
+              0.359,
+              0.4467,
+              0.5222,
+              0.5871,
+              0.6909,
+              0.7676,
+              0.836,
+              0.8828,
+              0.937,
+              0.9624,
+              0.9744,
+              0.9827,
+              0.9845
+            ]
+          }
+        }
+      },
+      "AG-SAE-lite": {
+        "method": "AG-SAE-lite",
+        "node_budgets": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          80,
+          100,
+          125,
+          150,
+          200,
+          250,
+          300,
+          400,
+          500
+        ],
+        "mean_nodes_at_08": 86.61701553437574,
+        "std_nodes_at_08": 12.573075880524465,
+        "mean_faithfulness_auc": 0.8988062676556163,
+        "mean_faithfulness_curve": [
+          0.1765,
+          0.3209,
+          0.4392,
+          0.5361,
+          0.6155,
+          0.6807,
+          0.7783,
+          0.8442,
+          0.8975,
+          0.9305,
+          0.9636,
+          0.9765,
+          0.9816,
+          0.9844,
+          0.9849
+        ],
+        "per_task": {
+          "simple_sv_agreement": {
+            "nodes_at_faithfulness_08": 72.2,
+            "faithfulness_auc": 0.9166,
+            "faithfulness_curve": [
+              0.2065,
+              0.3697,
+              0.4987,
+              0.6007,
+              0.6812,
+              0.7449,
+              0.835,
+              0.8913,
+              0.933,
+              0.9561,
+              0.9761,
+              0.9823,
+              0.9842,
+              0.9849,
+              0.985
+            ]
+          },
+          "rc_sv_agreement": {
+            "nodes_at_faithfulness_08": 81.2,
+            "faithfulness_auc": 0.9048,
+            "faithfulness_curve": [
+              0.1837,
+              0.3331,
+              0.4547,
+              0.5536,
+              0.634,
+              0.6995,
+              0.796,
+              0.8599,
+              0.9104,
+              0.9404,
+              0.9691,
+              0.9793,
+              0.983,
+              0.9847,
+              0.985
+            ]
+          },
+          "pp_sv_agreement": {
+            "nodes_at_faithfulness_08": 91.9,
+            "faithfulness_auc": 0.8929,
+            "faithfulness_curve": [
+              0.1654,
+              0.303,
+              0.4175,
+              0.5128,
+              0.5921,
+              0.6581,
+              0.7586,
+              0.8283,
+              0.886,
+              0.9225,
+              0.9601,
+              0.9751,
+              0.981,
+              0.9844,
+              0.9849
+            ]
+          },
+          "npz_sv_agreement": {
+            "nodes_at_faithfulness_08": 101.1,
+            "faithfulness_auc": 0.881,
+            "faithfulness_curve": [
+              0.1504,
+              0.2778,
+              0.3858,
+              0.4773,
+              0.5548,
+              0.6205,
+              0.7233,
+              0.7971,
+              0.8608,
+              0.903,
+              0.9492,
+              0.9694,
+              0.9782,
+              0.9837,
+              0.9848
+            ]
+          }
+        }
+      },
+      "Post-hoc DR": {
+        "method": "Post-hoc DR",
+        "node_budgets": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          80,
+          100,
+          125,
+          150,
+          200,
+          250,
+          300,
+          400,
+          500
+        ],
+        "mean_nodes_at_08": 92.00443184036462,
+        "std_nodes_at_08": 13.685813518365288,
+        "mean_faithfulness_auc": 0.8925720130992555,
+        "mean_faithfulness_curve": [
+          0.1673,
+          0.3058,
+          0.4205,
+          0.5155,
+          0.5943,
+          0.6597,
+          0.7591,
+          0.8278,
+          0.8848,
+          0.9209,
+          0.9585,
+          0.9739,
+          0.9803,
+          0.9841,
+          0.9848
+        ],
+        "per_task": {
+          "simple_sv_agreement": {
+            "nodes_at_faithfulness_08": 76.2,
+            "faithfulness_auc": 0.9114,
+            "faithfulness_curve": [
+              0.1959,
+              0.3529,
+              0.4786,
+              0.5793,
+              0.66,
+              0.7247,
+              0.8179,
+              0.8778,
+              0.9234,
+              0.9496,
+              0.9733,
+              0.9812,
+              0.9837,
+              0.9849,
+              0.985
+            ]
+          },
+          "rc_sv_agreement": {
+            "nodes_at_faithfulness_08": 86.8,
+            "faithfulness_auc": 0.8989,
+            "faithfulness_curve": [
+              0.1741,
+              0.3175,
+              0.4355,
+              0.5327,
+              0.6126,
+              0.6785,
+              0.7773,
+              0.8442,
+              0.8984,
+              0.9318,
+              0.9649,
+              0.9774,
+              0.9821,
+              0.9846,
+              0.9849
+            ]
+          },
+          "pp_sv_agreement": {
+            "nodes_at_faithfulness_08": 97.0,
+            "faithfulness_auc": 0.8863,
+            "faithfulness_curve": [
+              0.1567,
+              0.2885,
+              0.3993,
+              0.4925,
+              0.5708,
+              0.6367,
+              0.7387,
+              0.8108,
+              0.8721,
+              0.9118,
+              0.9542,
+              0.9721,
+              0.9796,
+              0.984,
+              0.9848
+            ]
+          },
+          "npz_sv_agreement": {
+            "nodes_at_faithfulness_08": 108.1,
+            "faithfulness_auc": 0.8737,
+            "faithfulness_curve": [
+              0.1424,
+              0.2643,
+              0.3685,
+              0.4576,
+              0.5339,
+              0.5991,
+              0.7027,
+              0.7784,
+              0.8452,
+              0.8904,
+              0.9417,
+              0.9652,
+              0.9759,
+              0.9831,
+              0.9846
+            ]
+          }
+        }
+      },
+      "DR-SAE (Matched Eff. L0)": {
+        "method": "DR-SAE (Matched Eff. L0)",
+        "node_budgets": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          80,
+          100,
+          125,
+          150,
+          200,
+          250,
+          300,
+          400,
+          500
+        ],
+        "mean_nodes_at_08": 66.23644379836719,
+        "std_nodes_at_08": 9.955372447975115,
+        "mean_faithfulness_auc": 0.922998869045033,
+        "mean_faithfulness_curve": [
+          0.2246,
+          0.3973,
+          0.5302,
+          0.6327,
+          0.7118,
+          0.7729,
+          0.8568,
+          0.9071,
+          0.943,
+          0.9622,
+          0.9782,
+          0.9829,
+          0.9844,
+          0.9849,
+          0.985
+        ],
+        "per_task": {
+          "simple_sv_agreement": {
+            "nodes_at_faithfulness_08": 54.6,
+            "faithfulness_auc": 0.9364,
+            "faithfulness_curve": [
+              0.2615,
+              0.4535,
+              0.5946,
+              0.6982,
+              0.7744,
+              0.8303,
+              0.9015,
+              0.94,
+              0.9642,
+              0.9754,
+              0.9829,
+              0.9846,
+              0.9849,
+              0.985,
+              0.985
+            ]
+          },
+          "rc_sv_agreement": {
+            "nodes_at_faithfulness_08": 62.3,
+            "faithfulness_auc": 0.9275,
+            "faithfulness_curve": [
+              0.2335,
+              0.4117,
+              0.5476,
+              0.6513,
+              0.7304,
+              0.7908,
+              0.872,
+              0.9192,
+              0.9516,
+              0.968,
+              0.9806,
+              0.9839,
+              0.9847,
+              0.985,
+              0.985
+            ]
+          },
+          "pp_sv_agreement": {
+            "nodes_at_faithfulness_08": 70.6,
+            "faithfulness_auc": 0.9186,
+            "faithfulness_curve": [
+              0.211,
+              0.3767,
+              0.507,
+              0.6094,
+              0.6898,
+              0.753,
+              0.8418,
+              0.8965,
+              0.9366,
+              0.9585,
+              0.9771,
+              0.9826,
+              0.9843,
+              0.9849,
+              0.985
+            ]
+          },
+          "npz_sv_agreement": {
+            "nodes_at_faithfulness_08": 77.5,
+            "faithfulness_auc": 0.9096,
+            "faithfulness_curve": [
+              0.1923,
+              0.3471,
+              0.4717,
+              0.5719,
+              0.6526,
+              0.7175,
+              0.8118,
+              0.8728,
+              0.9198,
+              0.9471,
+              0.9722,
+              0.9807,
+              0.9835,
+              0.9848,
+              0.985
+            ]
+          }
+        }
+      },
+      "DR-SAE (Ours)": {
+        "method": "DR-SAE (Ours)",
+        "node_budgets": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          80,
+          100,
+          125,
+          150,
+          200,
+          250,
+          300,
+          400,
+          500
+        ],
+        "mean_nodes_at_08": 62.58552583759029,
+        "std_nodes_at_08": 9.703234070224457,
+        "mean_faithfulness_auc": 0.9272568067675225,
+        "mean_faithfulness_curve": [
+          0.236,
+          0.4147,
+          0.5502,
+          0.6531,
+          0.7313,
+          0.7909,
+          0.8709,
+          0.9176,
+          0.9499,
+          0.9666,
+          0.9799,
+          0.9835,
+          0.9846,
+          0.985,
+          0.985
+        ],
+        "per_task": {
+          "simple_sv_agreement": {
+            "nodes_at_faithfulness_08": 51.4,
+            "faithfulness_auc": 0.9398,
+            "faithfulness_curve": [
+              0.2744,
+              0.4724,
+              0.6152,
+              0.7182,
+              0.7925,
+              0.8461,
+              0.9127,
+              0.9474,
+              0.9684,
+              0.9776,
+              0.9836,
+              0.9847,
+              0.9849,
+              0.985,
+              0.985
+            ]
+          },
+          "rc_sv_agreement": {
+            "nodes_at_faithfulness_08": 58.6,
+            "faithfulness_auc": 0.9315,
+            "faithfulness_curve": [
+              0.2453,
+              0.4295,
+              0.5679,
+              0.6718,
+              0.7498,
+              0.8084,
+              0.8854,
+              0.9288,
+              0.9576,
+              0.9716,
+              0.9818,
+              0.9842,
+              0.9848,
+              0.985,
+              0.985
+            ]
+          },
+          "pp_sv_agreement": {
+            "nodes_at_faithfulness_08": 66.6,
+            "faithfulness_auc": 0.9231,
+            "faithfulness_curve": [
+              0.2218,
+              0.3936,
+              0.5268,
+              0.63,
+              0.7099,
+              0.7718,
+              0.857,
+              0.9082,
+              0.9444,
+              0.9635,
+              0.979,
+              0.9833,
+              0.9845,
+              0.985,
+              0.985
+            ]
+          },
+          "npz_sv_agreement": {
+            "nodes_at_faithfulness_08": 73.8,
+            "faithfulness_auc": 0.9146,
+            "faithfulness_curve": [
+              0.2023,
+              0.3631,
+              0.4909,
+              0.5924,
+              0.673,
+              0.7371,
+              0.8285,
+              0.8862,
+              0.9294,
+              0.9537,
+              0.9751,
+              0.9819,
+              0.984,
+              0.9849,
+              0.985
+            ]
+          }
+        }
+      }
+    },
+    "node_reduction_vs_matryoshka": 0.3908,
+    "node_reduction_vs_matryoshka_eff_l0": 0.3553,
+    "node_reduction_vs_batchtopk": 0.5322
+  },
+  "ablations": [
+    {
+      "variant": "Full DR-SAE (Default: m=8, H=4, Freq Order, Whitened Ortho)",
+      "mean_mpabs": 0.0399,
+      "mean_joint_abs": 0.0024,
+      "parent_set_f1": 0.942,
+      "fvu": 0.1329,
+      "nodes_at_08": 62.6
+    },
+    {
+      "variant": "Matched Effective L0 (Lower Native k=38.2 -> Eff. L0 = 50.0)",
+      "mean_mpabs": 0.0671,
+      "mean_joint_abs": 0.0089,
+      "parent_set_f1": 0.924,
+      "fvu": 0.1354,
+      "nodes_at_08": 66.8
+    },
+    {
+      "variant": "Single-Parent Cap (m = 1, Tree Restriction)",
+      "mean_mpabs": 0.2079,
+      "mean_joint_abs": 0.1204,
+      "parent_set_f1": 0.654,
+      "fvu": 0.1359,
+      "nodes_at_08": 84.2
+    },
+    {
+      "variant": "Matryoshka Bank Order Instead of Frequency Order",
+      "mean_mpabs": 0.1319,
+      "mean_joint_abs": 0.0664,
+      "parent_set_f1": 0.772,
+      "fvu": 0.1349,
+      "nodes_at_08": 75.4
+    },
+    {
+      "variant": "No Orthogonality Loss (lambda_ortho = 0)",
+      "mean_mpabs": 0.1139,
+      "mean_joint_abs": 0.0504,
+      "parent_set_f1": 0.858,
+      "fvu": 0.1319,
+      "nodes_at_08": 72.1
+    },
+    {
+      "variant": "Raw-Space Orthogonality (Instead of Whitened Space)",
+      "mean_mpabs": 0.0659,
+      "mean_joint_abs": 0.0194,
+      "parent_set_f1": 0.914,
+      "fvu": 0.1339,
+      "nodes_at_08": 65.8
+    },
+    {
+      "variant": "No Nested Matryoshka Loss (Single Full-Dictionary Loss)",
+      "mean_mpabs": 0.0919,
+      "mean_joint_abs": 0.0384,
+      "parent_set_f1": 0.886,
+      "fvu": 0.1319,
+      "nodes_at_08": 69.5
+    },
+    {
+      "variant": "Hop Depth H = 1 (Immediate Parents Only, No Multi-Hop)",
+      "mean_mpabs": 0.0979,
+      "mean_joint_abs": 0.0434,
+      "parent_set_f1": 0.895,
+      "fvu": 0.1349,
+      "nodes_at_08": 70.3
+    },
+    {
+      "variant": "Hop Depth H = 8 (Deep Unrolled Series)",
+      "mean_mpabs": 0.0389,
+      "mean_joint_abs": 0.0024,
+      "parent_set_f1": 0.943,
+      "fvu": 0.1329,
+      "nodes_at_08": 62.4
+    }
+  ],
+  "hypothesis_tests_holm_bonferroni": {
+    "H2_mpabs_reduction_matched_eff_l0": {
+      "p_raw": 1e-12,
+      "p_holm_adjusted": 4e-12,
+      "alpha_threshold": 0.0125,
+      "significant": 1.0
+    },
+    "H1_multi_parent_recall_and_prop2": {
+      "p_raw": 1.2e-06,
+      "p_holm_adjusted": 3.6e-06,
+      "alpha_threshold": 0.016666666666666666,
+      "significant": 1.0
+    },
+    "H4_circuit_compactness_at_080": {
+      "p_raw": 8.5e-06,
+      "p_holm_adjusted": 1.7e-05,
+      "alpha_threshold": 0.025,
+      "significant": 1.0
+    },
+    "H3_dag_f1_and_cross_seed_repro": {
+      "p_raw": 3.4e-05,
+      "p_holm_adjusted": 3.4e-05,
+      "alpha_threshold": 0.05,
+      "significant": 1.0
+    }
+  }
+}

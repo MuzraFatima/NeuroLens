@@ -1,0 +1,49 @@
+project:
+  name: "TopoCircuit-SAE"
+  version: "1.0.0"
+  owner: "Farhan Aaqil Durrani"
+  affiliation: "Final-Year B.Tech AI/ML, JPNCE Mahbubnagar"
+  preregistration_tag: "v1.0-prereg-phase5"
+  frozen_date: "2026-10-31"
+
+hypotheses:
+  H1_multi_parent_scaling_and_order:
+    tree_prior_recall_drop_min_pts: 20.0
+    dr_sae_recall_drop_max_pts: 5.0
+    prop2_order_agreement_min_rate: 0.80
+    falsified_if: "Tree priors degrade by < 10 pts OR Prop 2 order holds in < 60% of cells"
+  H2_mpabs_reduction:
+    rel_reduction_vs_matryoshka_native_l0_min: 0.30
+    rel_reduction_vs_matryoshka_effective_l0_min: 0.15
+    max_fvu_increase: 0.01
+    falsified_if: "95% CI of relative reduction includes 0 at matched effective L0"
+  H3_edge_validity_and_stability:
+    synthetic_parent_set_f1_rho_025_min: 0.90
+    dr_sae_cross_seed_repro_min: 0.60
+    ag_sae_lite_cross_seed_repro_max: 0.40
+    falsified_if: "Cross-seed edge reproducibility is not above post-hoc baseline"
+  H4_circuit_compactness:
+    faithfulness_target: 0.80
+    node_reduction_vs_matryoshka_min: 0.20
+    falsified_if: "Node-count reduction is < 5% or faithfulness curves cross"
+
+hyperparameters:
+  main_llm_setting:
+    base_model: "EleutherAI/pythia-160m-deduped"
+    hook_point: "blocks.6.hook_resid_post"
+    dictionary_width: 16384
+    native_k: 50
+    matched_eff_k: 34
+    m_candidates: 8
+    hop_depth_H: 4
+    refresh_interval_steps: 2000
+    lambda_a: 0.0003
+    lambda_ortho: 0.05
+    alpha_auxk: 0.03125
+    edge_threshold: 0.05
+    seeds: [42, 137, 2026]
+  statistical_protocol:
+    unit_of_analysis: "MPAbs stratified cell (n = 112 cells, >= 25 tokens/cell)"
+    paired_test: "Wilcoxon signed-rank test (one-sided)"
+    ci_method: "Non-parametric bootstrap over cells (2,000 resamples, 95% CI)"
+    multiple_testing: "Holm-Bonferroni step-down across H1-H4 (alpha = 0.05)"
