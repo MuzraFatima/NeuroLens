@@ -312,3 +312,34 @@ def verify_exit_gate_g1(metrics: Dict[str, Dict[str, float]]) -> Dict[str, bool]
         "first_letter_hierarchy_verified": abs_ok,
         "gate_passed": passed,
     }
+
+
+def verify_exit_gate_g3(
+    metrics_or_dag_eval: Dict[str, float],
+    learned_parents: Dict[int, List[int]],
+    n_features: int,
+    min_parent_set_f1: float = 0.80,
+    max_hub_frac: float = 0.25,
+) -> Dict[str, bool]:
+    """Evaluates Phase 3 Exit Gate G3:
+    - Parent-set F1 >= 0.80 on synthetic data at rho = 0.25
+    - No hub collapse: no latent parents more than max_hub_frac of total features.
+    """
+    f1 = metrics_or_dag_eval.get("parent_set_f1", 0.0)
+    f1_ok = f1 >= min_parent_set_f1
+
+    parent_counts: Dict[int, int] = {}
+    for ps in learned_parents.values():
+        for p in ps:
+            parent_counts[p] = parent_counts.get(p, 0) + 1
+
+    max_children = max(parent_counts.values()) if parent_counts else 0
+    hub_frac = max_children / float(max(1, n_features))
+    no_hub_collapse = hub_frac <= max_hub_frac
+
+    passed = bool(f1_ok and no_hub_collapse)
+    return {
+        "parent_set_f1_sufficient": bool(f1_ok),
+        "no_hub_collapse": bool(no_hub_collapse),
+        "gate_passed": passed,
+    }

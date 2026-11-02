@@ -15,6 +15,7 @@ from topocircuit.eval.metrics import (
     profile_token_throughput,
     run_causal_readout_check,
     verify_exit_gate_g1,
+    verify_exit_gate_g3,
 )
 
 __all__ = [
@@ -26,5 +27,6 @@ __all__ = [
     "compute_fvu",
     "profile_token_throughput",
     "verify_exit_gate_g1",
+    "verify_exit_gate_g3",
     "SparseFeatureCircuitEvaluator",
 ]
