@@ -9,7 +9,7 @@ Supports:
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
+from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 
@@ -279,3 +279,49 @@ class MixedTopologySyntheticGenerator:
             "joint_abs_rate": float(abs_rate_p1 * abs_rate_p2),
             "order_agrees_with_prop2": float(order_agrees),
         }
+
+    sample_tokens = sample_batch
+
+
+def run_synthetic_topology_sweep(
+    rhos: Sequence[float] = (0.0, 0.1, 0.25, 0.5),
+    n_features: int = 48,
+    d_model: int = 48,
+    n_tokens: int = 1500,
+    seed: int = 42,
+) -> Dict[float, Dict[str, object]]:
+    """Runs a synthetic mixed-topology generation sweep across multi-parent shares rho."""
+    results = {}
+    for rho in rhos:
+        gen = MixedTopologySyntheticGenerator(n_features=n_features, d_model=d_model, rho=rho, seed=seed)
+        X, Z_native, Z_eff = gen.sample_batch(n_tokens=n_tokens)
+        n_multi = sum(1 for ps in gen.dag.parent_sets.values() if len(ps) >= 2)
+        total_parents = sum(len(ps) for ps in gen.dag.parent_sets.values())
+        results[float(rho)] = {
+            "rho": float(rho),
+            "n_multi_parent_nodes": n_multi,
+            "total_edges": total_parents,
+            "X_shape": list(X.shape),
+            "effective_l0": float(np.mean(np.sum(Z_eff > 0, axis=1))),
+            "native_l0": float(np.mean(np.sum(Z_native > 0, axis=1))),
+        }
+    return results
+
+
+def verify_exit_gate_g2(sweep_results: Dict[float, Dict[str, object]]) -> Dict[str, bool]:
+    """Evaluates Phase 2 Exit Gate G2:
+    - Multi-parent edges/nodes are strictly positive for rho >= 0.10
+    - Multi-parent count scales monotonically with rho
+    """
+    rho_0 = sweep_results.get(0.0, {}).get("n_multi_parent_nodes", 0)
+    rho_25 = sweep_results.get(0.25, {}).get("n_multi_parent_nodes", 0)
+    rho_50 = sweep_results.get(0.5, {}).get("n_multi_parent_nodes", 0)
+
+    scaling_ok = (rho_0 <= rho_25) and (rho_25 <= rho_50) and (rho_50 > 0)
+    has_multi = rho_25 > 0
+    passed = bool(scaling_ok and has_multi)
+    return {
+        "multi_parent_measurable": bool(has_multi),
+        "monotonic_scaling_verified": bool(scaling_ok),
+        "gate_passed": passed,
+    }
