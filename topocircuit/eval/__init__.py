@@ -9,6 +9,7 @@ from topocircuit.eval.circuits import SparseFeatureCircuitEvaluator
 from topocircuit.eval.metrics import (
     compute_cross_seed_reproducibility,
     compute_fvu,
+    compute_minimum_detectable_effect,
     evaluate_dag_structure,
     holm_bonferroni_correction,
     paired_wilcoxon_and_bootstrap,
@@ -16,6 +17,7 @@ from topocircuit.eval.metrics import (
     run_causal_readout_check,
     verify_exit_gate_g1,
     verify_exit_gate_g3,
+    verify_exit_gate_g5,
 )
 
 __all__ = [
@@ -26,7 +28,9 @@ __all__ = [
     "holm_bonferroni_correction",
     "compute_fvu",
     "profile_token_throughput",
+    "compute_minimum_detectable_effect",
     "verify_exit_gate_g1",
     "verify_exit_gate_g3",
+    "verify_exit_gate_g5",
     "SparseFeatureCircuitEvaluator",
 ]
