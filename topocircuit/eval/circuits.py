@@ -91,8 +91,14 @@ class SparseFeatureCircuitEvaluator:
                     frac = (0.80 - f0) / max(1e-8, f1 - f0)
                     nodes_08 = float(n0 + frac * (n1 - n0))
 
-            # Normalized AUC over [10, 500]
-            auc = float(np.trapz(curve_arr, x=node_budgets) / (node_budgets[-1] - node_budgets[0]))
+            # Normalized AUC over node budget range (NumPy 1.x & 2.x compatible)
+            trapz_fn = getattr(np, "trapezoid", getattr(np, "trapz", None))
+            if trapz_fn is not None:
+                auc_integral = float(trapz_fn(curve_arr, x=node_budgets))
+            else:
+                x_arr = np.asarray(node_budgets)
+                auc_integral = float(np.sum((curve_arr[:-1] + curve_arr[1:]) * 0.5 * np.diff(x_arr)))
+            auc = float(auc_integral / (node_budgets[-1] - node_budgets[0]))
             all_nodes_at_08.append(nodes_08)
             all_aucs.append(auc)
 

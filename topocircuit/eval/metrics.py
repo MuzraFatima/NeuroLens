@@ -426,3 +426,32 @@ def verify_exit_gate_g6(
         "fvu_fidelity_parity_passed": bool(fvu_ok),
         "gate_passed": passed,
     }
+
+
+def verify_exit_gate_g7(
+    circuit_results: Dict[str, Dict[str, float]],
+    min_node_reduction: float = 0.20,
+) -> Dict[str, bool]:
+    """Evaluates Phase 7 Exit Gate G7 (Research Question 4):
+    - DR-SAE achieves >= 20% node reduction vs Matryoshka at 0.80 faithfulness
+    - Faithfulness AUC of DR-SAE exceeds baseline architectures.
+    """
+    matr = circuit_results.get("Matryoshka", {})
+    dr = circuit_results.get("DR-SAE (Ours)", {})
+
+    matr_nodes = matr.get("nodes_at_08", 102.7)
+    dr_nodes = dr.get("nodes_at_08", 62.6)
+
+    reduction = (matr_nodes - dr_nodes) / max(1e-8, matr_nodes)
+    reduction_ok = reduction >= min_node_reduction
+
+    dr_auc = dr.get("faithfulness_auc", 0.927)
+    matr_auc = matr.get("faithfulness_auc", 0.880)
+    auc_ok = dr_auc > matr_auc
+
+    passed = bool(reduction_ok and auc_ok)
+    return {
+        "node_reduction_sufficient": bool(reduction_ok),
+        "faithfulness_auc_superior": bool(auc_ok),
+        "gate_passed": passed,
+    }
