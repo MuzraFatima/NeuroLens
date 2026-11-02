@@ -1,8 +1,7 @@
 project:
   name: "TopoCircuit-SAE"
   version: "1.0.0"
-  owner: "Farhan Aaqil Durrani"
-  affiliation: "Final-Year B.Tech AI/ML, JPNCE Mahbubnagar"
+  owner: "Muzra Fatima"
   preregistration_tag: "v1.0-prereg-phase5"
   frozen_date: "2026-10-31"
 

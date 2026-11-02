@@ -102,3 +102,54 @@ def ensure_dir(path: Union[str, os.PathLike]) -> str:
     abs_path = os.path.abspath(path)
     os.makedirs(abs_path, exist_ok=True)
     return abs_path
+
+
+def validate_preregistration_config(cfg: Dict[str, object]) -> bool:
+    """Validates that a configuration dictionary contains the mandatory pre-registration schema.
+
+    Args:
+        cfg: Parsed dictionary from `preregistration_v1.yaml`.
+
+    Returns:
+        True if all required keys and structures are present.
+
+    Raises:
+        KeyError: If any required section or field is missing.
+        TypeError: If fields fail basic type checks.
+    """
+    required_sections = ["project", "hypotheses", "hyperparameters"]
+    for sec in required_sections:
+        if sec not in cfg or not isinstance(cfg[sec], dict):
+            raise KeyError(f"Missing required configuration section: '{sec}'")
+
+    project = cfg["project"]
+    for field in ["name", "version", "owner", "preregistration_tag"]:
+        if field not in project or not isinstance(project[field], str):
+            raise KeyError(f"Missing or invalid project field: '{field}'")
+
+    hypotheses = cfg["hypotheses"]
+    for h_id in [
+        "H1_multi_parent_scaling_and_order",
+        "H2_mpabs_reduction",
+        "H3_edge_validity_and_stability",
+        "H4_circuit_compactness",
+    ]:
+        if h_id not in hypotheses or not isinstance(hypotheses[h_id], dict):
+            raise KeyError(f"Missing required hypothesis section: '{h_id}'")
+
+    hyperparameters = cfg["hyperparameters"]
+    if "main_llm_setting" not in hyperparameters:
+        raise KeyError("Missing 'main_llm_setting' in hyperparameters")
+
+    return True
+
+
+__all__ = [
+    "seed_everything",
+    "cosine_similarity_matrix",
+    "topk_mask",
+    "format_percent",
+    "load_yaml_config",
+    "ensure_dir",
+    "validate_preregistration_config",
+]
