@@ -1,6 +1,6 @@
 # Theoretical Foundations of TopoCircuit-SAE
 
-**Author:** Farhan Aaqil Durrani (Final-Year B.Tech AI/ML, JPNCE Mahbubnagar)  
+**Author:** Muzra Fatima  
 **Project:** TopoCircuit-SAE — Frequency-Ordered DAG Routing to Measure and Remove Multi-Parent Feature Absorption in Sparse Autoencoders
 
 ---
