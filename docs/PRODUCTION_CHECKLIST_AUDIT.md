@@ -26,7 +26,7 @@
 | 16 | **Minify JS and CSS** | **Passed** | Generated minified production bundle `demo/explorer.min.html` (`88,608` bytes $\to$ `71,412` bytes, **19.41% reduction**). |
 | 17 | **Add lazy loading** | **Passed** | Deferred 3D WebGL scene initialization until after first paint (`requestIdleCallback`) and paused rendering when off-screen or when `document.hidden` is true. |
 | 18 | **Defer non-critical scripts** | **Passed** | Added `defer` attribute to `<script src="...three.min.js" defer></script>` so HTML parsing and first paint are never blocked. |
-| 19 | **Unused dependencies** | **Passed** | Audited `requirements.txt` (`numpy`, `scipy`, `pandas`, `matplotlib`, `PyYAML`, `python-pptx`, `Pillow`) — 100% of listed packages are actively imported in `topocircuit/` or `scripts/`. |
+| 19 | **Unused dependencies** | **Passed** | Audited `requirements.txt` (`numpy`, `scipy`, `pandas`, `matplotlib`, `PyYAML`, `Pillow`) — 100% of listed packages are actively imported in `topocircuit/` or `scripts/`. Optional packages (`python-pptx`, `torch`) isolated in `[project.optional-dependencies]`. |
 | 20 | **Database connection pooling** | **Passed** | Implemented thread-safe `SQLiteConnectionPool` (`queue.Queue` of 4 pre-warmed connections with `PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL;`) in `topocircuit/server/db.py`. |
 
 ---

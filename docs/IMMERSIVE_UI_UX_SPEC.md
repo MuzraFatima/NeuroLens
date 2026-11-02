@@ -1,6 +1,6 @@
 # TopoCircuit-SAE — Immersive UI/UX Playbook Specification (Phases U1–U8)
 
-**Author:** Farhan Aaqil Durrani (Final-Year B.Tech AI/ML, JPNCE Mahbubnagar)  
+**Author:** Muzra Fatima  
 **Playbook Version:** 1.0 (Applied to TopoCircuit-SAE Capstone)
 
 ---
