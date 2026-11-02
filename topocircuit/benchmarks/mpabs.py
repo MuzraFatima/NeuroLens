@@ -389,3 +389,26 @@ class MPAbsBenchmark:
             "n_cells": len(self.cells),
             "mean_probe_val_acc": float(np.mean(list(self.probe_val_accuracies.values()))),
         }
+
+
+def verify_exit_gate_g4(
+    mpabs_benchmark: MPAbsBenchmark,
+    probe_gate_threshold: float = 0.90,
+    min_cells: int = 100,
+    min_tokens_per_cell: int = 20,
+) -> Dict[str, bool]:
+    """Evaluates Phase 4 Exit Gate G4:
+    - Benchmark has >= 100 cells with >= 20 tokens per cell
+    - All parent logistic probes achieve validation accuracy >= 0.90.
+    """
+    n_cells = len(mpabs_benchmark.cells)
+    cells_ok = n_cells >= min_cells
+    tokens_ok = all(c.n_tokens >= min_tokens_per_cell for c in mpabs_benchmark.cells)
+    probes_ok = all(acc >= probe_gate_threshold for acc in mpabs_benchmark.probe_val_accuracies.values())
+    passed = bool(cells_ok and tokens_ok and probes_ok)
+    return {
+        "sufficient_cells": bool(cells_ok),
+        "sufficient_tokens_per_cell": bool(tokens_ok),
+        "probes_exceed_accuracy_gate": bool(probes_ok),
+        "gate_passed": passed,
+    }
