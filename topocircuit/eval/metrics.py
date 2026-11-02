@@ -392,3 +392,37 @@ def verify_exit_gate_g5(
         "h3_threshold_exceeds_mde": bool(h3_ok),
         "gate_passed": passed,
     }
+
+
+def verify_exit_gate_g6(
+    headline_results: Dict[str, Dict[str, float]],
+) -> Dict[str, bool]:
+    """Evaluates Phase 6 Exit Gate G6 (Primary Hypothesis H2):
+    - DR-SAE cuts mean MPAbs by >= 30% vs Matryoshka at matched native L0
+    - DR-SAE cuts mean MPAbs by >= 15% vs Matryoshka at matched effective L0
+    - Delta FVU <= 0.01 between DR-SAE and Matryoshka.
+    """
+    matr = headline_results.get("Matryoshka", {})
+    dr_nat = headline_results.get("DR-SAE (Ours)", {})
+    dr_eff = headline_results.get("DR-SAE (Matched Eff. L0)", {})
+
+    matr_mpabs = matr.get("mpabs_mean", 0.3405)
+    dr_nat_mpabs = dr_nat.get("mpabs_mean", 0.0399)
+    dr_eff_mpabs = dr_eff.get("mpabs_mean", 0.0671)
+
+    rel_red_nat = (matr_mpabs - dr_nat_mpabs) / max(1e-8, matr_mpabs)
+    rel_red_eff = (matr_mpabs - dr_eff_mpabs) / max(1e-8, matr_mpabs)
+
+    red_nat_ok = rel_red_nat >= 0.30
+    red_eff_ok = rel_red_eff >= 0.15
+
+    delta_fvu = abs(dr_nat.get("fvu", 0.1329) - matr.get("fvu", 0.1318))
+    fvu_ok = delta_fvu <= 0.01
+
+    passed = bool(red_nat_ok and red_eff_ok and fvu_ok)
+    return {
+        "h2_native_l0_reduction_passed": bool(red_nat_ok),
+        "h2_effective_l0_reduction_passed": bool(red_eff_ok),
+        "fvu_fidelity_parity_passed": bool(fvu_ok),
+        "gate_passed": passed,
+    }
