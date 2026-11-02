@@ -19,6 +19,7 @@ from topocircuit.eval.metrics import (
     verify_exit_gate_g3,
     verify_exit_gate_g5,
     verify_exit_gate_g6,
+    verify_exit_gate_g7,
 )
 
 __all__ = [
@@ -34,5 +35,6 @@ __all__ = [
     "verify_exit_gate_g3",
     "verify_exit_gate_g5",
     "verify_exit_gate_g6",
+    "verify_exit_gate_g7",
     "SparseFeatureCircuitEvaluator",
 ]
