@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "Frequency-Ordered DAG Routing to Measure and Remove Multi-Parent Feature Absorption in Sparse Autoencoders"
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "Farhan Aaqil Durrani" }]
+authors = [{ name = "Muzra Fatima" }]
 requires-python = ">=3.9"
 dependencies = [
     "numpy>=1.24.0",

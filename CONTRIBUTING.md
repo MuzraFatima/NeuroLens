@@ -7,7 +7,7 @@ This project is a capstone + mechanistic interpretability research submission. C
 
 ## Ground Rules
 
-- **One author per commit.** Commits must be authored by Farhan Aaqil Durrani.  
+- **One author per commit.** Commits must be authored by Muzra Fatima.  
   Do not add co-authors or modify `git config user.*` settings.
 - **Single branch model.** All work targets the `main` branch via pull requests from `master`.
 - **CI must be green before merging.** The `CI` workflow (lint + tests) must pass on every PR.

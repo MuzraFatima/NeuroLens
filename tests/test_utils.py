@@ -16,6 +16,7 @@ from topocircuit.utils import (
     load_yaml_config,
     seed_everything,
     topk_mask,
+    validate_preregistration_config,
 )
 
 
@@ -88,6 +89,21 @@ class TestUtils(unittest.TestCase):
             result = ensure_dir(target)
             self.assertTrue(os.path.isdir(result))
             self.assertEqual(result, os.path.abspath(target))
+
+    def test_validate_preregistration_config_valid(self):
+        """Validates that configs/preregistration_v1.yaml conforms strictly to schema."""
+        cfg_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "configs", "preregistration_v1.yaml")
+        )
+        cfg = load_yaml_config(cfg_path)
+        self.assertTrue(validate_preregistration_config(cfg))
+        self.assertEqual(cfg["project"]["owner"], "Muzra Fatima")
+
+    def test_validate_preregistration_config_invalid_raises(self):
+        """Validates that malformed config missing required fields raises KeyError."""
+        bad_cfg = {"project": {"name": "Test"}}
+        with self.assertRaises(KeyError):
+            validate_preregistration_config(bad_cfg)
 
 
 if __name__ == "__main__":

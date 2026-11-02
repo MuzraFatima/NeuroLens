@@ -1,7 +1,7 @@
 """TopoCircuit-SAE: Frequency-Ordered DAG Routing to Measure and Remove
 Multi-Parent Feature Absorption in Sparse Autoencoders.
 
-Author: Farhan Aaqil Durrani (Final-Year B.Tech AI/ML, JPNCE Mahbubnagar)
+Author: Muzra Fatima
 Version: 1.0.0
 """
 
@@ -22,7 +22,7 @@ from topocircuit.models.dr_sae import DRSAE
 from topocircuit.models.saelens_plugin import DRSAELensConfig, DRSAELensWrapper
 
 __version__ = "1.0.0"
-__author__ = "Farhan Aaqil Durrani"
+__author__ = "Muzra Fatima"
 
 __all__ = [
     "DRSAE",
