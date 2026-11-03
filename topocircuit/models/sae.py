@@ -191,15 +191,25 @@ class DRSAE(MatryoshkaSAE):
         A = torch.zeros(w, w, device=vals.device, dtype=vals.dtype)
         return A.index_put((self.cand_idx.reshape(-1), cols.reshape(-1)), vals.reshape(-1), accumulate=True)
 
+    def sparse_A(self) -> torch.Tensor:
+        """Same matrix as ``dense_A`` in sparse COO form (at most m entries per column)."""
+        w = self.cfg.width
+        j, c = torch.nonzero(self.cand_valid, as_tuple=True)
+        p = self.cand_idx[j, c]
+        vals = self.A_val.clamp(min=0)[j, c]
+        return torch.sparse_coo_tensor(torch.stack([p, c]), vals, (w, w)).coalesce()
+
     def route(self, z: torch.Tensor) -> torch.Tensor:
+        """z_eff = sum_{h=0..H} A^h z, computed with a sparse A (gradients reach A_val)."""
         if not bool(self.cand_valid.any()):
             return z
-        A_t = self.dense_A().t()
-        z_eff, cur = z, z
+        A = self.sparse_A()
+        cur = z.t()
+        z_eff = cur
         for _ in range(self.cfg.hop_depth):
-            cur = cur @ A_t
+            cur = torch.sparse.mm(A, cur)
             z_eff = z_eff + cur
-        return z_eff
+        return z_eff.t()
 
     def extra_losses(self, z: torch.Tensor) -> Dict[str, torch.Tensor]:
         if not bool(self.cand_valid.any()):
