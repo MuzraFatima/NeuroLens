@@ -426,12 +426,51 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
           <span class="pill">H from 0 to 4 hops</span>
           <span class="pill">Parent weights sum to 1.0</span>
           <span class="pill gold">Proposition 2 Proven</span>
+          <span class="pill" id="liveApiPill">REST API Ready</span>
         </div>
       </div>
-      <div class="stack">
-        <div class="card">
-          <h3>Routing Simulator Placeholder</h3>
-          <p class="sub">Next commit will wire the routing pulses.</p>
+      <div class="split">
+        <div class="stack">
+          <div class="card">
+            <h3>Simulation controls</h3>
+            <p class="sub">Pick a target and a depth, or play the hops one at a time.</p>
+            <div class="field"><label for="simFam">Concept subgraph family</label><select id="simFam"></select></div>
+            <div class="field"><label for="simTarget">Target latent</label><select id="simTarget"></select></div>
+            <div class="field">
+              <div class="lab"><label for="simH">Routing truncation depth (H)</label><span class="val" id="simHVal"></span></div>
+              <input type="range" id="simH" min="0" max="4" step="1" value="2">
+              <div class="ticks"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span></div>
+            </div>
+            <div class="play-row">
+              <button class="btn" id="playBtn" type="button">Play hops 0 to 4</button>
+              <button class="btn ghost" id="resetBtn" type="button">Reset to H = 2</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>At this depth (H)</h3>
+            <div class="kv" id="simKv"></div>
+            <p class="sub" id="simMsg" style="margin:0"></p>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card stage-card">
+            <div class="stage-head">
+              <h3>Routing in 3D</h3>
+              <p>Yellow pulses travel along the links the route uses at this H.</p>
+            </div>
+            <div id="slot-routing"></div>
+            <div class="legend"></div>
+          </div>
+          <div class="card">
+            <h3>Ancestral signal kept, by depth</h3>
+            <p class="sub">Share of total path weight reached within H hops (Proposition 2 bound).</p>
+            <div class="cov" id="cov"></div>
+          </div>
+          <div class="card">
+            <h3>Routed ancestors</h3>
+            <p class="sub">Each ancestor with the path weight it passes down. Faded rows fall outside H.</p>
+            <ul class="route" id="simRoute"></ul>
+          </div>
         </div>
       </div>
     </section>
@@ -598,7 +637,7 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
   /* ---------- 2. Three.js 3D Scene ---------- */
   var Scene3D = (function(){
     var stage = $('stage'), labelsEl = $('labels'), renderer = null, scene, camera, group;
-    var lbls = [], state = null, onSelect = null;
+    var lbls = [], pulses = [], state = null, onSelect = null;
     var theta = 0.7, phi = 0.4, dist = 17, targetY = 3, auto = !REDUCE, dragging = false, lx = 0, ly = 0, W = 0, H = 0;
     var PR = 4.0, GAP = 1.9;
     var v3 = null;
@@ -660,7 +699,7 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
         if(o.geometry) o.geometry.dispose();
         if(o.material) o.material.dispose();
       }
-      labelsEl.innerHTML = ''; lbls = [];
+      labelsEl.innerHTML = ''; lbls = []; pulses = [];
     }
     function addLabel(el, pos, off){ labelsEl.appendChild(el); lbls.push({ el: el, pos: pos, off: off }); }
 
@@ -718,6 +757,10 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
           var tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 28, on ? 0.055 : 0.02, 8, false),
             new THREE.MeshBasicMaterial({ color: on ? 0x0A7D55 : 0x7E9A89, transparent: !on, opacity: on ? 1 : 0.35 }));
           group.add(tube);
+          if(on){
+            var pu = new THREE.Mesh(new THREE.SphereGeometry(0.1, 14, 14), new THREE.MeshBasicMaterial({ color: 0xF4B400 }));
+            group.add(pu); pulses.push({ mesh: pu, curve: curve, t: Math.random(), speed: 0.004 + (p.w || 0.5) * 0.003 });
+          }
         });
       });
 
@@ -765,6 +808,7 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
       if(!renderer || !stage.offsetParent || document.hidden) return;
       resize(); if(!W) return;
       if(auto && !dragging) theta += 0.0035;
+      pulses.forEach(function(p){ p.t = (p.t + p.speed) % 1; p.mesh.position.copy(p.curve.getPoint(p.t)); });
       camera.position.set(Math.sin(theta) * Math.cos(phi) * dist, targetY + Math.sin(phi) * dist, Math.cos(theta) * Math.cos(phi) * dist);
       camera.lookAt(0, targetY, 0);
       renderer.render(scene, camera);
@@ -798,9 +842,10 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
 
   /* ---------- 3. Explorer Page Logic ---------- */
   var S = { fam: 'all', H: 2, sel: deepest('all'), q: '' };
-  var famSel = $('famSel');
+  var famSel = $('famSel'), simFam = $('simFam');
   Object.keys(FAM).forEach(function(k){
     famSel.add(new Option(FAM[k].name, k));
+    simFam.add(new Option(FAM[k].name, k));
   });
 
   function renderList(){
@@ -869,11 +914,110 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
     var b = e.target.closest('.row-btn'); if(b) select(b.dataset.id);
   });
 
-  Scene3D.setSelect(function(id){
-    if(page === 'explorer') select(id);
+  /* ---------- 4. Routing Page Logic & Simulator ---------- */
+  var R = { fam: 'all', target: deepest('all'), H: 2, timer: null };
+  function fillTargets(){
+    var f = FAM[R.fam], sel = $('simTarget'); sel.innerHTML = '';
+    f.list.filter(function(n){ return n.level > 0; }).sort(function(a, b){ return b.level - a.level || b.freq - a.freq; }).forEach(function(n){
+      sel.add(new Option('#' + n.id + ' ' + n.label.replace(/"/g, '') + ' (depth ' + n.level + ')', n.id));
+    });
+    if(!f.by[R.target] || f.by[R.target].level === 0){
+      R.target = deepest(R.fam);
+    }
+    sel.value = R.target;
+  }
+
+  function paths(f, id){
+    var by = FAM[f].by, mass = [0, 0, 0, 0, 0, 0], anc = {}, count = [0, 0, 0, 0, 0, 0];
+    if(!by[id]) return { mass: mass, anc: anc, count: count };
+    (function walk(n, len, w){
+      mass[len] += w; count[len]++;
+      if(len > 0){
+        var a = anc[n] || (anc[n] = { id: n, minD: len, byLen: [0, 0, 0, 0, 0, 0] });
+        a.minD = Math.min(a.minD, len);
+        a.byLen[len] += w;
+      }
+      if(by[n]){
+        by[n].parents.forEach(function(p){ walk(p.id, len + 1, w * p.w); });
+      }
+    })(id, 0, 1);
+    return { mass: mass, anc: anc, count: count };
+  }
+  function sum(a){ return a.reduce(function(x, y){ return x + y; }, 0); }
+
+  function renderSim(){
+    var P = paths(R.fam, R.target), f = FAM[R.fam];
+    var cum = [], s = 0; for(var h = 0; h <= 4; h++){ s += P.mass[h]; cum.push(s); }
+    var total = cum[4] > 0 ? cum[4] : 1.0;
+    var cov = cum.map(function(c){ return Math.min(1, c / total); });
+    $('simHVal').textContent = 'H = ' + R.H + (R.H === 1 ? ' hop' : ' hops');
+    $('simH').value = R.H;
+    var cnt = 0; for(var i = 1; i <= R.H; i++) cnt += P.count[i];
+    var reached = Object.keys(P.anc).filter(function(id){ return P.anc[id].minD <= R.H; }).length;
+
+    $('simKv').innerHTML =
+      '<div><span>Signal Kept</span><b>' + (cov[R.H] * 100).toFixed(1) + '%</b></div>' +
+      '<div><span>Residual</span><b>' + ((1 - cov[R.H]) * 100).toFixed(1) + '%</b></div>' +
+      '<div><span>Ancestors reached</span><b>' + reached + ' / ' + Object.keys(P.anc).length + '</b></div>' +
+      '<div><span>Paths followed</span><b>' + cnt + '</b></div>';
+
+    $('simMsg').textContent = R.H === 0
+      ? 'H = 0 is a flat SAE: the latent fires alone and no parent signal is routed.'
+      : (cov[R.H] >= 0.999
+        ? 'The whole ancestral signal is captured. Deeper hops add nothing for this latent.'
+        : 'Raising H to ' + (R.H + 1) + ' recovers another ' + ((cov[R.H + 1] - cov[R.H]) * 100).toFixed(1) + ' percentage points of path weight.');
+
+    $('cov').innerHTML = cov.map(function(c, h){
+      var cls = (h === R.H ? 'cur' : (h < R.H ? 'past' : ''));
+      return '<div class="col ' + cls + '"><span class="pct">' + (c * 100).toFixed(0) + '%</span><div class="bar" style="height:' + Math.max(c * 100 * 0.78, 4) + '%"></div><span class="hl">H = ' + h + '</span></div>';
+    }).join('');
+
+    var rows = Object.keys(P.anc).map(function(id){ return P.anc[id]; }).sort(function(a, b){
+      return a.minD - b.minD || sum(b.byLen) - sum(a.byLen);
+    });
+    $('simRoute').innerHTML = rows.map(function(a){
+      var n = f.by[a.id], m = sum(a.byLen);
+      return '<li class="' + (a.minD <= R.H ? '' : 'out') + '"><span class="hop">hop ' + a.minD + '</span><span>' + (n ? n.label : '#' + a.id) + ' <span class="mono" style="color:var(--muted)">#' + a.id + '</span></span><span class="mono">w ' + m.toFixed(2) + '</span></li>';
+    }).join('') || '<li><span class="hop"></span><span>Root latent, nothing to route.</span><span></span></li>';
+
+    renderLegend(R.fam);
+    if(page === 'routing') Scene3D.setView(R.fam, R.target, R.H);
+  }
+
+  function stopPlay(){
+    if(R.timer){ clearInterval(R.timer); R.timer = null; }
+    $('playBtn').disabled = false; $('playBtn').textContent = 'Play hops 0 to 4';
+  }
+  simFam.addEventListener('change', function(){
+    stopPlay(); R.fam = simFam.value; R.target = deepest(R.fam); fillTargets(); renderSim();
+  });
+  $('simTarget').addEventListener('change', function(e){ stopPlay(); R.target = e.target.value; renderSim(); });
+  $('simH').addEventListener('input', function(e){ stopPlay(); R.H = +e.target.value; renderSim(); });
+  $('resetBtn').addEventListener('click', function(){ stopPlay(); R.H = 2; renderSim(); });
+  $('playBtn').addEventListener('click', function(){
+    stopPlay(); R.H = 0; renderSim(); $('playBtn').disabled = true; $('playBtn').textContent = 'Playing…';
+    R.timer = setInterval(function(){
+      if(R.H >= 4){ stopPlay(); return; }
+      R.H++; renderSim();
+    }, 1000);
   });
 
-  /* ---------- 4. Routing & Menu ---------- */
+  Scene3D.setSelect(function(id){
+    if(page === 'explorer'){
+      select(id);
+    } else if(page === 'routing'){
+      if(FAM[R.fam].by[id] && FAM[R.fam].by[id].level === 0) return;
+      stopPlay(); R.target = id; $('simTarget').value = id; renderSim();
+    }
+  });
+
+  /* Optional REST API Check */
+  fetch('/api/v1/health').then(function(r){ return r.json(); }).then(function(d){
+    var p = $('liveApiPill');
+    if(p) p.textContent = 'REST API Connected';
+  }).catch(function(){});
+
+  /* ---------- 5. Routing & Menu ---------- */
   var PAGES = ['explorer', 'routing', 'leaderboard'];
   function route(){
     var h = (location.hash || '').slice(1);
@@ -887,9 +1031,10 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
       if(a.getAttribute('href') === '#' + h) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
-    if(h === 'explorer'){
-      $('slot-explorer').appendChild(Scene3D.el);
-      renderExplorer();
+    if(h !== 'routing') stopPlay();
+    if(h === 'explorer' || h === 'routing'){
+      $('slot-' + h).appendChild(Scene3D.el);
+      if(h === 'explorer') renderExplorer(); else renderSim();
     }
     closeMenu();
     window.scrollTo(0, 0);
@@ -910,7 +1055,7 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeMenu(); });
 
   /* ---------- Boot ---------- */
-  famSel.value = S.fam;
+  famSel.value = S.fam; simFam.value = R.fam; fillTargets();
   Scene3D.init();
   route();
 })();
