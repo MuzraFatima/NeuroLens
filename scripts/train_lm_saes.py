@@ -55,7 +55,8 @@ def load_acts(cfg, layer: int):
     tag = cfg["language_model"]["name"].split("/")[-1]
     path = os.path.join(ROOT, cfg["activations"]["cache_dir"], f"{tag}_L{layer}.npy")
     arr = np.load(path, mmap_mode="r")
-    arr = arr[: n_filled_chunks(cfg) * (cfg["language_model"]["context_length"] - 1)]
+    # Load into RAM (about 0.9 GB as float16): random minibatch reads from a memmap are disk-bound.
+    arr = np.ascontiguousarray(arr[: n_filled_chunks(cfg) * (cfg["language_model"]["context_length"] - 1)])
     sample = np.asarray(arr[:: max(1, arr.shape[0] // 20000)], dtype=np.float32)
     scale = float(np.sqrt(sample.shape[1] / (sample**2).sum(1).mean()))
     n_train = int(0.9 * arr.shape[0])
