@@ -1,0 +1,56 @@
+# CPU-only experiment configuration.
+#
+# The Master Research Blueprint assumes ~113 T4 GPU-hours (Pythia-160M, 150M tokens,
+# 16k-wide SAEs). This project is run on a 4-core / 8 GB laptop with no GPU, so every
+# setting below is a declared, scaled-down version of the blueprint. See docs/DEVIATIONS.md.
+
+project:
+  name: "TopoCircuit-SAE"
+  owner: "Muzra Fatima"
+  profile: "cpu_small"
+
+language_model:
+  name: "EleutherAI/pythia-70m-deduped"   # blueprint: pythia-160m-deduped
+  d_model: 512
+  main_layer: 3                            # blueprint: layer 6 of 12; here the middle of 6
+  context_length: 128
+
+activations:
+  dataset: "NeelNanda/pile-10k"            # blueprint: 150M streamed Pile tokens
+  n_tokens: 1_000_000
+  dtype: "float16"
+  cache_dir: "data/activations"
+
+sae:
+  width: 2048                              # blueprint: 16384
+  k: 32                                    # blueprint: 50
+  banks: [256, 512, 1024, 2048]            # 4 Matryoshka prefix banks, same ratios as blueprint
+  batch_size: 2048
+  epochs: 2
+  lr: 0.001
+  seeds: [42, 137, 2026]
+
+dr_sae:
+  m_candidates: 8
+  hop_depth: 4
+  refresh_every: 100                       # blueprint: 2000 steps (scaled with run length)
+  warmup_frac: 0.10
+  lambda_a: 0.0003
+  lambda_ortho: 0.1                        # blueprint grid {0.01, 0.1}
+  alpha_auxk: 0.03125
+  edge_threshold: 0.05
+  hub_cap_frac: 0.02
+
+synthetic:
+  n_features: 512                          # blueprint: 4096 (16384 scale check)
+  d_model: 128
+  rhos: [0.0, 0.1, 0.25, 0.5]
+  n_tokens: 20000
+
+circuits:
+  layers: [0, 1, 2, 3, 4, 5]
+  width: 1024
+  k: 32
+  n_tokens_per_layer: 500_000
+  methods: ["BatchTopK", "Matryoshka", "DR-SAE"]
+  n_examples_per_task: 200

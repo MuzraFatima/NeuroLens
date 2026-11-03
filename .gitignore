@@ -80,3 +80,8 @@ USER_GUIDE.md
 USERGUIDE.md
 TopoCircuit_SAE_Complete_Presentation.pptx
 
+
+# Cached activations, downloaded models and datasets (kept inside the project folder, never committed)
+data/
+.hf_cache/
+results/runs/
