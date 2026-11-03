@@ -4,7 +4,7 @@ Endpoints:
 - GET /api/v1/metrics      -> Returns master_results.json with provenance metadata
 - GET /api/v1/dag          -> Returns single-JOIN DAG nodes & edges (?family=all|animal|location|food)
 - GET /api/v1/cells        -> Returns paginated MPAbs cells (?page=1&page_size=12&letter=all&category=all)
-- GET /api/v1/prop2        -> Computes cached Proposition 2 selective absorption cell (?s1=0.05&s2=0.38&lam=0.20)
+- GET /api/v1/prop2        -> Nearest measured Proposition 2 cell from results/synthetic/prop2_grid.json
 - GET /api/v1/health       -> Returns DB connection pool status, cache hit stats, and index verification
 """
 
@@ -17,7 +17,6 @@ from functools import lru_cache
 from typing import Dict, Tuple
 from urllib.parse import parse_qs, urlparse
 
-from topocircuit.data.synth_generator import MixedTopologySyntheticGenerator
 from topocircuit.server.db import TopoCircuitDatabase
 
 
@@ -53,13 +52,29 @@ class ServerSideResponseCache:
         return etag, raw_bytes, gz_bytes
 
 
-@lru_cache(maxsize=512)
-def cached_prop2_query(s1: float, s2: float, lam: float) -> Dict[str, float]:
-    res = MixedTopologySyntheticGenerator.simulate_proposition2_cell(
-        sigma1_sq=s1, sigma2_sq=s2, l0_penalty_lambda=lam, n_tokens=2000, seed=42
+@lru_cache(maxsize=4)
+def _load_json(path: str, mtime: float) -> Dict[str, object]:
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_result(path: str) -> Dict[str, object]:
+    """Reads a results JSON written by the experiment scripts (cached until the file changes)."""
+    if not os.path.exists(path):
+        return {"status": "not_run_yet", "path": os.path.relpath(path)}
+    return dict(_load_json(path, os.path.getmtime(path)))
+
+
+def nearest_prop2_cell(grid: Dict[str, object], s1: float, s2: float, lam: float) -> Dict[str, object]:
+    """Returns the measured Proposition 2 cell closest to the requested (sigma1^2, sigma2^2, lambda)."""
+    cells = grid.get("cells", [])
+    if not cells:
+        return {"status": "not_run_yet"}
+    best = min(
+        cells,
+        key=lambda c: (c["sigma1_sq"] - s1) ** 2 + (c["sigma2_sq"] - s2) ** 2 + (c["lambda"] - lam) ** 2,
     )
-    res["provenance"] = "CACHED / PROPOSITION-2-SIMULATOR"
-    return res
+    return {**best, "provenance": "MEASURED / results/synthetic/prop2_grid.json"}
 
 
 class TopoCircuitAPIApp:
@@ -70,7 +85,8 @@ class TopoCircuitAPIApp:
         self.db.seed_from_benchmark()
         self.cache = ServerSideResponseCache(ttl_seconds=300)
         base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-        self.master_results_path = os.path.join(base_dir, "results", "tables", "master_results.json")
+        self.master_results_path = os.path.join(base_dir, "results", "master_results.json")
+        self.prop2_path = os.path.join(base_dir, "results", "synthetic", "prop2_grid.json")
 
     def handle_request(
         self,
@@ -103,14 +119,10 @@ class TopoCircuitAPIApp:
                 s1 = round(float(qs.get("s1", ["0.05"])[0]), 3)
                 s2 = round(float(qs.get("s2", ["0.38"])[0]), 3)
                 lam = round(float(qs.get("lam", ["0.20"])[0]), 3)
-                payload = cached_prop2_query(s1, s2, lam)
+                payload = nearest_prop2_cell(load_result(self.prop2_path), s1, s2, lam)
             elif route == "/api/v1/metrics":
-                if os.path.exists(self.master_results_path):
-                    with open(self.master_results_path, encoding="utf-8") as f:
-                        payload = json.load(f)
-                else:
-                    payload = {"status": "missing_master_results"}
-                payload["provenance"] = "LOCAL STORE / MASTER_RESULTS.JSON"
+                payload = load_result(self.master_results_path)
+                payload["provenance"] = "LOCAL STORE / results/master_results.json"
             elif route == "/api/v1/health":
                 payload = {
                     "status": "ok",

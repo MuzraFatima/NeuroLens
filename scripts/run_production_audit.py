@@ -144,11 +144,7 @@ def run_headless_chromium_lighthouse_audit(html_path: str) -> dict:
         )
         metrics.update(wb_checks)
         metrics["cdp_render_time_ms"] = load_ms
-        metrics["cls_score"] = 0.00
-        metrics["inp_ms"] = 14
-        metrics["lighthouse_performance_score"] = 99
-        metrics["lighthouse_accessibility_score"] = 100
-        metrics["lighthouse_best_practices_score"] = 100
+        # Lighthouse scores, CLS and INP are not measured here; run the `lighthouse` CLI for those.
         return metrics
     finally:
         driver.quit()

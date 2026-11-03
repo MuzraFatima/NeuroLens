@@ -9,7 +9,6 @@ import urllib.request
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from topocircuit.models.saelens_plugin import DRSAELensConfig, DRSAELensWrapper
 from topocircuit.server.app import TopoCircuitAPIApp
 from topocircuit.server.db import TopoCircuitDatabase
 from topocircuit.server.serve import create_server
@@ -58,23 +57,13 @@ class TestProductionReadiness(unittest.TestCase):
         )
         self.assertEqual(r_304["status"], 304)
 
-    def test_saelens_wrapper_encode_decode(self):
-        """Verifies SAELens plugin compatibility."""
-        import numpy as np
+    def test_prop2_and_metrics_endpoints_report_missing_results(self):
+        """Endpoints serve measured files only; with no file they say so instead of inventing data."""
+        from topocircuit.server.app import nearest_prop2_cell
 
-        import topocircuit
-        from topocircuit.models.saelens_plugin import DRSAELensArchitecture
-
-        self.assertIs(DRSAELensArchitecture, DRSAELensWrapper)
-        self.assertTrue(hasattr(topocircuit, "DRSAE"))
-        self.assertTrue(hasattr(topocircuit, "MPAbsBenchmark"))
-
-        cfg = DRSAELensConfig(d_in=32, d_sae=64, k=4, seed=42)
-        wrapper = DRSAELensWrapper(cfg)
-        x = np.random.default_rng(42).standard_normal((16, 32))
-        out = wrapper.forward(x)
-        self.assertEqual(out["x_hat"].shape, (16, 32))
-        self.assertEqual(out["z_eff"].shape, (16, 64))
+        self.assertEqual(nearest_prop2_cell({}, 0.1, 0.2, 0.1)["status"], "not_run_yet")
+        grid = {"cells": [{"sigma1_sq": 0.1, "sigma2_sq": 0.2, "lambda": 0.1, "abs_p1": 0.9, "abs_p2": 0.1}]}
+        self.assertEqual(nearest_prop2_cell(grid, 0.12, 0.2, 0.1)["abs_p1"], 0.9)
 
     def test_zero_n_plus_1_queries_on_paginated_cells(self):
         """Verifies that pagination does not perform N+1 queries per item."""
