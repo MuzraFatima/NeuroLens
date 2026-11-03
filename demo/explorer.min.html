@@ -1,1507 +1,1071 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TopoCircuit-SAE · Frequency-Ordered DAG Routing & Multi-Parent Absorption Workbench</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%236366f1'/><path d='M30 50 L50 30 L70 50 L50 70 Z' fill='%23ffffff'/></svg>" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopoCircuit-SAE · Frequency-Ordered DAG Routing & Multi-Parent Absorption 3D</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root {
---bg-0: #0b0f17;              
---bg-1: #151b26;              
---fg-0: #eef2f8;              
---fg-1: #a3adbd;              
---accent-rgb: 99 102 241;     
---accent: rgb(var(--accent-rgb));
---highlight: #f5a524;         
---danger: #ff6b6b;
---ok: #34d399;
---font-display: "Space Grotesk", system-ui, sans-serif;
---font-text: "Inter", system-ui, sans-serif;
---font-mono: "JetBrains Mono", ui-monospace, monospace;
---step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.875rem);
---step-0:  clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
---step-1:  clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
---step-2:  clamp(1.55rem, 1.35rem + 1.1vw, 2.2rem);
---step-3:  clamp(2rem, 1.4rem + 2.5vw, 3.5rem);
---step-5:  clamp(2.6rem, 1.8rem + 4.2vw, 5.2rem);
---s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem;
---s-6: 1.5rem;  --s-8: 2rem;   --s-12: 3rem;  --s-16: 4rem;
---r-sm: 8px; --r-md: 14px; --r-lg: 24px;
---glass: rgba(21, 27, 38, 0.78);
---glass-border: rgba(255, 255, 255, 0.12);
---glow: 0 0 40px rgb(var(--accent-rgb) / 0.25);
---ease-out: cubic-bezier(0.22, 1, 0.36, 1);
---ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
---t-fast: 160ms; --t-base: 320ms; --t-slow: 700ms; --t-hero: 1200ms;
+color-scheme: light;
+--bg: #F2F6EC; --surface: #FFFFFF; --surface-2: #E8F0E0; --ink: #122319; --muted: #435A4B; --line: #D3E0CB;
+--brand: #0A6B49; --accent: #0A7D55; --accent-ink: #FFFFFF; --sun: #F4B400; --sun-soft: #FFEFB0;
+--l0: #0A7D55; --l1: #5E9418; --l2: #C99400; --l3: #E0691D; --l4: #C23B1A;
+--font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+--font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+--font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+--radius: 16px;
 }
-:root[data-theme="light"] {
---bg-0: #f7f8fb;
---bg-1: #ffffff;
---fg-0: #0f1420;
---fg-1: #4a5468;
---glass: rgba(255, 255, 255, 0.88);
---glass-border: rgba(15, 20, 32, 0.12);
-}
-*, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+* { box-sizing: border-box; }
 body {
-margin: 0;
-background-color: var(--bg-0);
-color: var(--fg-0);
-font-family: var(--font-text);
-font-size: var(--step-0);
-line-height: 1.6;
-overflow-x: hidden;
-transition: background-color var(--t-base) var(--ease-out), color var(--t-base) var(--ease-out);
+margin: 0; background: var(--bg); color: var(--ink);
+font-family: var(--font-body); font-size: 16px; line-height: 1.55;
 }
-.skip-link {
-position: absolute;
-top: -100px;
-left: var(--s-4);
-background: var(--accent);
-color: #fff;
-padding: var(--s-2) var(--s-4);
-border-radius: var(--r-sm);
-z-index: 9999;
-text-decoration: none;
-font-weight: 600;
+body::before {
+content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+z-index: 60; background: var(--brand);
 }
-.skip-link:focus { top: var(--s-3); }
-:focus-visible {
-outline: 2px solid var(--accent);
-outline-offset: 3px;
+a { color: inherit; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.shell { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
+.side {
+position: sticky; top: env(safe-area-inset-top, 0px); align-self: start;
+height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+background: var(--surface); border-right: 1px solid var(--line);
+display: flex; flex-direction: column; overflow-y: auto; z-index: 50;
 }
-h1, h2, h3, .display-font { font-family: var(--font-display); line-height: 1.15; margin: 0; }
-.mono-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
-.top-progress-bar {
-position: fixed;
-top: 0; left: 0;
-height: 3px;
-background: var(--accent);
-box-shadow: var(--glow);
-width: 0%;
-z-index: 1000;
-transition: width 80ms linear;
+.brand {
+background: linear-gradient(150deg, #0E8A5F 0%, #0A6B49 100%), var(--brand);
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Cpath d='M267 40 L267 41 L267 42 L266 43 L266 44 L265 45 L264 46 L263 47 L262 48 L261 49 L259 49 L258 49 L256 49 L255 49 L254 50 L253 50 L252 50 L251 50 L250 51 L248 51 L247 52 L245 52 L244 52 L242 52 L241 52 L239 51 L238 51 L237 50 L236 49 L235 48 L234 47 L234 45 L233 44 L233 43 L233 42 L232 41 L232 40 L233 38 L233 37 L234 36 L234 35 L235 34 L236 33 L237 32 L238 32 L239 31 L240 30 L241 29 L242 29 L243 28 L244 27 L245 27 L247 27 L248 27 L250 27 L251 27 L252 28 L253 28 L254 28 L256 29 L257 29 L258 29 L259 30 L261 30 L262 31 L263 32 L265 32 L266 33 L266 34 L267 36 L267 37 L267 38Z M294 40 L293 43 L292 46 L291 49 L290 52 L288 54 L286 57 L283 59 L280 61 L277 62 L273 63 L270 64 L267 64 L264 64 L261 65 L258 65 L255 66 L252 67 L250 68 L246 69 L243 70 L239 71 L235 71 L232 71 L228 70 L224 69 L221 67 L218 65 L216 63 L214 60 L212 57 L210 55 L209 52 L208 49 L207 46 L207 43 L207 40 L208 36 L209 34 L211 31 L213 28 L215 26 L217 24 L219 22 L221 20 L223 18 L226 16 L228 14 L230 12 L233 10 L236 9 L239 8 L243 7 L246 7 L250 8 L253 9 L256 9 L259 10 L262 11 L265 12 L268 13 L271 14 L275 15 L278 16 L281 18 L284 19 L287 22 L290 24 L291 27 L293 30 L293 33 L294 36Z M319 40 L319 44 L318 49 L316 54 L314 59 L311 63 L307 67 L303 70 L298 73 L293 75 L287 76 L282 77 L277 78 L272 79 L267 79 L263 80 L259 82 L254 84 L250 86 L244 88 L239 89 L233 91 L227 91 L221 90 L215 89 L209 87 L204 84 L199 81 L195 77 L192 73 L189 68 L186 64 L184 59 L182 54 L181 49 L181 44 L182 40 L183 35 L185 30 L188 26 L192 22 L195 19 L198 15 L202 12 L205 9 L208 6 L211 2 L215 0 L219 -3 L223 -6 L228 -8 L233 -10 L238 -11 L244 -11 L250 -10 L255 -9 L260 -8 L265 -6 L270 -5 L275 -4 L280 -2 L285 -1 L290 0 L296 1 L301 4 L306 7 L310 11 L313 15 L316 20 L318 24 L319 29 L319 34Z M345 40 L344 46 L343 53 L341 60 L338 66 L334 72 L328 77 L322 81 L315 85 L308 88 L301 89 L293 91 L286 92 L280 93 L274 94 L268 96 L262 98 L256 101 L250 104 L242 107 L235 109 L226 111 L218 111 L209 110 L201 108 L194 105 L187 101 L181 96 L175 91 L170 85 L166 79 L162 73 L159 67 L156 60 L155 53 L155 46 L157 40 L159 33 L163 27 L167 21 L171 16 L176 11 L180 7 L185 2 L189 -1 L193 -6 L197 -11 L202 -16 L207 -20 L213 -24 L220 -27 L227 -29 L234 -30 L242 -30 L249 -29 L257 -28 L264 -26 L271 -25 L278 -23 L285 -21 L292 -20 L299 -18 L307 -15 L314 -12 L321 -9 L327 -4 L333 0 L337 6 L340 12 L343 19 L344 26 L345 33Z' fill='none' stroke='%23FFFFFF' stroke-opacity='0.28' stroke-width='1.3'/%3E%3C/svg%3E"), linear-gradient(150deg, #0E8A5F 0%, #0A6B49 100%);
+background-size: cover, auto; background-position: right top, center;
+color: #FFFFFF; padding: 30px 22px 26px max(22px, env(safe-area-inset-left, 0px));
 }
-.site-header {
-position: sticky;
-top: 0;
-z-index: 900;
-background: var(--glass);
-backdrop-filter: blur(12px);
-border-bottom: 1px solid var(--glass-border);
-padding: var(--s-3) var(--s-6);
-display: flex;
-flex-wrap: wrap;
-align-items: center;
-justify-content: space-between;
-gap: var(--s-3);
+.brand .ver {
+display: inline-block; font-family: var(--font-mono); font-size: 12px;
+letter-spacing: .08em; padding: 3px 10px; border-radius: 99px;
+background: var(--sun); color: #122319; font-weight: 500;
 }
+.brand h1 { font-size: 31px; margin-top: 14px; font-weight: 800; letter-spacing: -.02em; }
+.brand p { margin: 10px 0 0; color: #E4F5EA; font-size: 13.5px; line-height: 1.5; }
+.nav { display: flex; flex-direction: column; gap: 6px; padding: 20px 14px 10px max(14px, env(safe-area-inset-left, 0px)); }
+.nav .label { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px 8px; font-weight: 600; }
+.nav a {
+display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 12px; align-items: center;
+padding: 10px 12px; border-radius: 14px; text-decoration: none; color: var(--ink); transition: background .15s;
+}
+.nav a .ic { width: 42px; height: 42px; border-radius: 12px; background: var(--surface-2); display: grid; place-items: center; }
+.nav a svg { width: 21px; height: 21px; stroke: var(--accent); fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.nav a .t { display: block; font-weight: 700; font-size: 15.5px; line-height: 1.25; }
+.nav a .h { display: block; font-size: 13px; color: var(--muted); line-height: 1.35; margin-top: 1px; }
+.nav a:hover { background: var(--surface-2); }
+.nav a[aria-current="page"] { background: var(--accent); color: var(--accent-ink); box-shadow: 0 12px 22px -14px rgba(10, 125, 85, .9); }
+.nav a[aria-current="page"] .ic { background: rgba(255, 255, 255, .2); }
+.nav a[aria-current="page"] svg { stroke: #FFFFFF; }
+.nav a[aria-current="page"] .h { color: #E4F5EA; }
+.side-foot {
+margin-top: auto; padding: 18px 22px 22px max(22px, env(safe-area-inset-left, 0px));
+border-top: 1px solid var(--line); display: grid; gap: 8px; font-size: 13.5px; color: var(--muted);
+}
+.side-foot .row { display: flex; justify-content: space-between; gap: 8px; }
+.side-foot b { color: var(--ink); font-weight: 600; }
+.topbar { display: none; }
+.scrim { display: none; }
+.main {
+min-width: 0; padding-block: 30px 64px;
+padding-left: max(32px, env(safe-area-inset-left, 0px));
+padding-right: max(32px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1180px; margin-inline: auto; }
+.page-head {
+position: relative; overflow: hidden; border-radius: 22px; padding: 30px 32px; margin-bottom: 22px;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 240'%3E%3Cpath d='M783 110 L782 111 L782 113 L781 114 L780 116 L779 117 L779 119 L778 120 L777 122 L776 123 L775 124 L773 126 L772 127 L770 128 L768 128 L766 128 L764 128 L761 128 L760 127 L758 127 L756 126 L754 125 L753 125 L751 124 L750 123 L748 123 L747 122 L746 121 L744 120 L743 119 L742 118 L742 116 L741 115 L740 114 L739 113 L738 111 L737 110 L736 108 L735 106 L735 104 L735 102 L736 100 L737 99 L738 97 L740 96 L742 95 L744 94 L746 94 L748 94 L750 94 L752 93 L754 93 L756 93 L758 93 L760 93 L761 93 L763 93 L765 94 L766 94 L768 95 L769 95 L771 96 L772 97 L774 98 L775 99 L777 99 L778 101 L780 102 L781 103 L782 105 L783 106 L783 108Z M815 110 L814 113 L812 117 L811 121 L809 124 L807 128 L805 131 L803 134 L801 138 L798 141 L795 145 L792 147 L788 150 L783 152 L779 153 L774 153 L769 153 L764 152 L760 151 L755 150 L751 149 L747 147 L743 146 L740 144 L736 143 L733 141 L729 139 L726 137 L724 134 L721 131 L719 129 L717 126 L715 123 L712 120 L710 117 L707 113 L705 110 L703 105 L702 101 L701 97 L702 92 L703 88 L706 84 L709 81 L714 78 L719 76 L724 74 L729 73 L734 73 L738 72 L743 72 L747 71 L751 71 L755 71 L760 70 L764 71 L768 71 L772 72 L776 73 L779 75 L783 76 L786 78 L790 80 L794 81 L798 83 L801 86 L805 88 L808 91 L811 94 L813 98 L815 102 L815 106Z' fill='none' stroke='%230A7D55' stroke-opacity='0.22' stroke-width='1.5'/%3E%3C/svg%3E"), linear-gradient(120deg, #D9EDCC 0%, #F6F0BE 100%);
+background-size: cover, auto; background-position: right center, center; border: 1px solid var(--line);
+}
+.eyebrow { font-family: var(--font-mono); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--brand); font-weight: 600; }
+.page-head h2 { font-size: clamp(30px, 4.4vw, 46px); font-weight: 800; letter-spacing: -.025em; margin-top: 8px; }
+.page-head p { max-width: 66ch; color: #2B4333; margin: 12px 0 0; font-size: 16.5px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.pill {
+background: rgba(255, 255, 255, .88); border: 1px solid rgba(10, 125, 85, .25);
+border-radius: 99px; padding: 5px 13px; font-size: 13.5px; font-weight: 600;
+}
+.pill.gold { background: var(--sun); border-color: transparent; color: #122319; }
+.card {
+background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+padding: 22px; min-width: 0; box-shadow: 0 14px 30px -24px rgba(18, 35, 25, .5);
+}
+.card h3 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.card .sub { color: var(--muted); font-size: 14.5px; margin: 0 0 16px; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+@media (min-width: 1100px) { .split { grid-template-columns: minmax(0, 360px) minmax(0, 1fr); } }
+.stack { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+.field label, .field .lab { font-weight: 600; font-size: 14.5px; display: flex; justify-content: space-between; gap: 8px; }
+.field .val { font-family: var(--font-mono); color: var(--brand); font-weight: 600; }
+select, input[type="search"] {
+width: 100%; min-height: 46px; background: var(--surface); border: 1.5px solid var(--line);
+border-radius: 12px; padding: 10px 12px; font-size: 16px;
+}
+select:focus, input[type="search"]:focus { border-color: var(--accent); }
+input[type="range"] { width: 100%; accent-color: var(--accent); height: 30px; }
+.ticks { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
 .btn {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: var(--s-2);
-min-height: 40px;
-padding: var(--s-2) var(--s-4);
-border-radius: var(--r-sm);
-font-family: var(--font-text);
-font-size: var(--step--1);
-font-weight: 600;
-cursor: pointer;
-border: 1px solid var(--glass-border);
-background: var(--bg-1);
-color: var(--fg-0);
-text-decoration: none;
-transition: transform var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 12px;
+min-height: 46px; padding: 10px 18px; font-weight: 700; cursor: pointer; transition: background .15s;
 }
-.btn:hover { transform: translateY(-1px); border-color: var(--accent); }
-.btn:active { transform: translateY(0); }
-.btn-primary {
-background: var(--accent);
-color: #ffffff;
-border-color: transparent;
-box-shadow: var(--glow);
+.btn:hover { background: var(--brand); }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+.btn.ghost:hover { background: var(--surface-2); }
+.list { display: flex; flex-direction: column; gap: 8px; max-height: 430px; overflow-y: auto; margin: 0 -4px; padding: 0 4px 2px; }
+.row-btn {
+display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center;
+text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px;
+padding: 11px 14px; cursor: pointer; position: relative; overflow: hidden; min-height: 48px;
 }
-.btn-ghost {
-background: transparent;
-color: var(--fg-1);
+.row-btn:hover { background: var(--surface-2); }
+.row-btn[aria-pressed="true"] { border-color: var(--accent); background: #E3F3EA; font-weight: 600; }
+.row-btn .id { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.row-btn .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row-btn .fq { font-family: var(--font-mono); font-size: 13px; }
+.row-btn .fbar { position: absolute; left: 0; bottom: 0; height: 4px; background: var(--c); }
+.empty { color: var(--muted); padding: 16px; text-align: center; font-size: 14.5px; }
+.stage-card { padding: 0; overflow: hidden; }
+.stage-head { padding: 22px 22px 14px; }
+.stage-head h3 { margin-bottom: 4px; }
+.stage-head p { margin: 0; color: var(--muted); font-size: 14.5px; }
+.stage {
+position: relative; height: 620px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+background: radial-gradient(120% 95% at 50% 105%, #C7E3B5 0%, #E4F1D8 52%, #F8FBF2 100%);
+touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; overflow: hidden;
 }
-.btn-ghost:hover { color: var(--fg-0); background: var(--glass); }
-.badge {
-display: inline-flex;
-align-items: center;
-gap: 6px;
-padding: 2px 10px;
-border-radius: 999px;
-font-family: var(--font-mono);
-font-size: 0.72rem;
-font-weight: 600;
-letter-spacing: 0.03em;
-text-transform: uppercase;
-border: 1px solid var(--glass-border);
-background: var(--bg-1);
-color: var(--fg-1);
+.stage.drag { cursor: grabbing; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.lbl {
+position: absolute; left: 0; top: 0; pointer-events: auto; cursor: pointer; background: #FFFFFF;
+border: 2px solid var(--c); border-radius: 11px; padding: 2px 8px 4px;
+font: 700 12.5px/1.2 var(--font-body); color: var(--ink); white-space: nowrap;
+box-shadow: 0 8px 16px -9px rgba(18, 35, 25, .7); transition: opacity .2s; text-align: left;
 }
-.badge-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-.badge-local .badge-dot { background: var(--ok); }
-.badge-cached .badge-dot { background: var(--accent); }
-.badge-synthetic .badge-dot { background: var(--highlight); }
-.badge-unavail .badge-dot { background: var(--danger); }
-.glass-card {
-background: var(--glass);
-backdrop-filter: blur(12px);
-border: 1px solid var(--glass-border);
-border-radius: var(--r-md);
-padding: var(--s-6);
+.lbl small { display: block; font: 400 10.5px var(--font-mono); color: var(--muted); }
+.lbl:hover { background: color-mix(in srgb, var(--c) 14%, #FFFFFF); }
+.lbl.sel { background: color-mix(in srgb, var(--c) 24%, #FFFFFF); outline: 3px solid var(--sun); }
+.lbl.dim { opacity: .5; }
+.plate-lbl {
+position: absolute; left: 0; top: 0; pointer-events: none; font: 600 11.5px var(--font-mono);
+letter-spacing: .12em; text-transform: uppercase; color: #2C4A38;
+background: rgba(255, 255, 255, .85); padding: 2px 9px; border-radius: 99px; white-space: nowrap;
+border: 1px solid var(--line);
 }
-@keyframes shimmer {
-0% { opacity: 0.35; }
-50% { opacity: 0.75; }
-100% { opacity: 0.35; }
+.stage-ui { position: absolute; right: 12px; top: 12px; display: flex; gap: 8px; z-index: 3; }
+.stage-ui button {
+background: rgba(255, 255, 255, .92); border: 1.5px solid var(--line); border-radius: 10px;
+min-height: 38px; padding: 6px 12px; font-size: 14px; font-weight: 600; cursor: pointer;
 }
-.skeleton {
-background: linear-gradient(90deg, var(--bg-1), var(--glass-border), var(--bg-1));
-border-radius: var(--r-sm);
-animation: shimmer 1.4s infinite var(--ease-in-out);
-min-height: 24px;
+.stage-ui button[aria-pressed="true"] { border-color: var(--accent); color: var(--brand); }
+.stage-ui button:hover { background: #FFFFFF; }
+.stage-hint {
+position: absolute; left: 12px; bottom: 12px; font-size: 13px; color: #2C4A38;
+background: rgba(255, 255, 255, .85); padding: 4px 11px; border-radius: 99px; pointer-events: none;
+border: 1px solid var(--line);
 }
-#sceneContainer {
-position: fixed;
-inset: 0;
-z-index: 0;
-pointer-events: none;
-overflow: hidden;
+.nogl { position: absolute; inset: 0; display: grid; place-items: center; padding: 28px; text-align: center; color: var(--muted); }
+.stage-card .legend { margin: 0; padding: 14px 22px 18px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; }
+#page-routing .stage { height: 540px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.chip { font-size: 13.5px; padding: 5px 12px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); font-weight: 500; }
+.chip.lv { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); }
+.chip.lv::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+.kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 16px 0; }
+.kv div { background: var(--surface-2); border-radius: 12px; padding: 12px 14px; }
+.kv span { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.kv b { font-family: var(--font-display); font-size: 27px; font-weight: 700; }
+.route { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.route li { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 15px; }
+.route .hop { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.route li.out { opacity: .5; }
+.cov { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; align-items: end; height: 210px; margin-top: 8px; }
+.cov .col { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; align-items: stretch; gap: 6px; text-align: center; }
+.cov .bar { background: var(--surface-2); border-radius: 10px 10px 4px 4px; transition: height .35s; border: 1.5px solid var(--line); }
+.cov .col.cur .bar { background: var(--accent); border-color: var(--accent); }
+.cov .col.past .bar { background: #9FD3B8; border-color: #9FD3B8; }
+.cov .pct { font-family: var(--font-mono); font-size: 14px; font-weight: 600; }
+.cov .hl { font-size: 13px; color: var(--muted); }
+.play-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.podium-wrap { perspective: 1000px; padding: 10px 0; }
+.podium {
+display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px;
+background: radial-gradient(110% 80% at 50% 105%, #CDE6BC 0%, #EAF4E0 55%, #F8FBF2 100%);
+border-radius: 18px; padding: 22px 14px 18px; border: 1px solid var(--line);
 }
-#threeCanvas {
-width: 100%;
-height: 100%;
-display: block;
+.slot { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; text-align: center; }
+.scene3d { height: 260px; width: 100%; display: flex; align-items: flex-end; justify-content: center; perspective: 850px; padding-bottom: 16px; }
+.cube {
+--w: 52px; --c: #9DB8A4; position: relative; width: var(--w); height: var(--h);
+transform-style: preserve-3d; transform: rotateX(var(--rx, -24deg)) rotateY(var(--ry, -30deg)); transition: height .5s;
 }
-#noWebglFallback {
-position: absolute;
-inset: 0;
-display: flex;
-align-items: center;
-justify-content: center;
-opacity: 0.22;
-background: radial-gradient(circle at 70% 35%, rgb(var(--accent-rgb) / 0.28), transparent 60%);
+.cube i { position: absolute; display: block; backface-visibility: hidden; }
+.cube .fr, .cube .bk, .cube .rt, .cube .lf { width: var(--w); height: var(--h); left: 0; top: 0; }
+.cube .fr { background: var(--c); transform: translateZ(calc(var(--w) / 2)); }
+.cube .bk { background: var(--c); transform: rotateY(180deg) translateZ(calc(var(--w) / 2)); }
+.cube .rt { background: color-mix(in srgb, var(--c) 76%, #000000); transform: rotateY(90deg) translateZ(calc(var(--w) / 2)); }
+.cube .lf { background: color-mix(in srgb, var(--c) 76%, #000000); transform: rotateY(-90deg) translateZ(calc(var(--w) / 2)); }
+.cube .tp {
+width: var(--w); height: var(--w); left: 0; top: calc((var(--h) - var(--w)) / 2);
+background: color-mix(in srgb, var(--c) 68%, #FFFFFF); transform: rotateX(90deg) translateZ(calc(var(--h) / 2));
 }
-.story-layer {
-position: relative;
-z-index: 10;
+.cube .fr b {
+position: absolute; inset: auto 0 10px 0; text-align: center; color: #FFFFFF;
+font: 800 22px var(--font-display); text-shadow: 0 1px 2px rgba(0, 0, 0, .4);
 }
-.story-section {
-min-height: 88vh;
-max-width: 1200px;
-margin: 0 auto;
-padding: var(--s-16) var(--s-6);
-display: flex;
-flex-direction: column;
-justify-content: center;
-opacity: 1;
-transform: translateY(0);
-transition: opacity var(--t-slow) var(--ease-out), transform var(--t-slow) var(--ease-out);
+.slot .nm { font-weight: 700; font-size: 13px; line-height: 1.25; min-height: 32px; display: grid; place-items: center; }
+.slot .vl { font: 600 12px var(--font-mono); color: var(--muted); }
+.slot.ours .cube { --c: #0A7D55; }
+.slot.ours .nm { color: var(--brand); font-weight: 800; }
+.tbl-wrap { overflow-x: auto; margin-top: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 680px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 14.5px; white-space: nowrap; }
+th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 700; background: var(--surface-2); }
+th:first-child { border-radius: 10px 0 0 10px; } th:last-child { border-radius: 0 10px 10px 0; }
+th button { all: unset; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; font: inherit; }
+th button:focus-visible { outline: 3px solid var(--sun); }
+th button[aria-pressed="true"] { color: var(--brand); font-weight: 800; }
+td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+tr.ours td { background: #E3F3EA; font-weight: 600; }
+.rank { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--surface-2); font-family: var(--font-mono); font-size: 13px; }
+tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight: 700; }
+.mini { display: block; height: 6px; border-radius: 3px; background: var(--surface-2); margin-top: 5px; width: 90px; overflow: hidden; }
+.mini i { display: block; height: 100%; background: var(--accent); }
+.tag { font-size: 11px; background: var(--accent); color: var(--accent-ink); padding: 2px 8px; border-radius: 99px; margin-left: 6px; font-weight: 700; }
+.page-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.page-row .btns { display: flex; gap: 8px; align-items: center; }
+@media (max-width: 899px) {
+.shell { display: block; }
+.topbar {
+display: flex; align-items: center; gap: 12px; position: sticky; top: env(safe-area-inset-top, 0px);
+z-index: 40; background: var(--brand); color: #FFFFFF;
+padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px));
 }
-.section-kicker {
-font-family: var(--font-mono);
-font-size: var(--step--1);
-color: var(--accent);
-text-transform: uppercase;
-letter-spacing: 0.08em;
-font-weight: 600;
-margin-bottom: var(--s-2);
+.topbar button {
+background: rgba(255, 255, 255, .18); border: 1px solid rgba(255, 255, 255, .4);
+color: #FFFFFF; border-radius: 12px; width: 44px; height: 44px; display: grid; place-items: center; cursor: pointer;
 }
-.workbench-layer {
-position: relative;
-z-index: 20;
-background: var(--bg-0);
-min-height: calc(100vh - 68px);
-padding: var(--s-6);
+.topbar svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+.topbar b { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+.topbar span { font-family: var(--font-mono); font-size: 12px; color: #E4F5EA; }
+.side {
+position: fixed; top: 0; left: 0; bottom: 0; height: auto; width: min(320px, 88vw);
+padding-bottom: env(safe-area-inset-bottom, 0px); transform: translateX(-102%);
+transition: transform .25s; z-index: 80; box-shadow: 12px 0 40px -10px rgba(0, 0, 0, .4);
 }
-.wb-grid {
-max-width: 1360px;
-margin: 0 auto;
-display: grid;
-grid-template-columns: repeat(12, 1fr);
-gap: var(--s-6);
+.side .brand { padding-top: calc(30px + env(safe-area-inset-top, 0px)); }
+.side.open { transform: none; }
+.scrim { position: fixed; inset: 0; background: rgba(18, 35, 25, .5); z-index: 70; }
+.scrim.show { display: block; }
+.main {
+padding-left: max(16px, env(safe-area-inset-left, 0px));
+padding-right: max(16px, env(safe-area-inset-right, 0px));
+padding-block: 18px 48px;
 }
-.wb-panel {
-background: var(--bg-1);
-border: 1px solid var(--glass-border);
-border-radius: var(--r-md);
-padding: var(--s-4);
-}
-.input-ctrl, .select-ctrl {
-width: 100%;
-min-height: 40px;
-padding: var(--s-2) var(--s-3);
-background: var(--bg-0);
-color: var(--fg-0);
-border: 1px solid var(--glass-border);
-border-radius: var(--r-sm);
-font-family: var(--font-text);
-font-size: var(--step--1);
-}
-.range-ctrl {
-width: 100%;
-accent-color: var(--accent);
-cursor: pointer;
-}
-.data-table {
-width: 100%;
-border-collapse: collapse;
-font-size: var(--step--1);
-}
-.data-table th, .data-table td {
-padding: var(--s-2) var(--s-3);
-border-bottom: 1px solid var(--glass-border);
-text-align: left;
-}
-.data-table th {
-color: var(--fg-1);
-font-weight: 600;
-font-family: var(--font-mono);
-font-size: 0.76rem;
-text-transform: uppercase;
-}
-.data-table td.num, .data-table th.num {
-text-align: right;
-font-family: var(--font-mono);
-font-variant-numeric: tabular-nums;
-}
-.hidden { display: none !important; }
-@media (max-width: 960px) {
-.wb-col-3, .wb-col-6, .wb-col-4, .wb-col-8, .wb-col-12 { grid-column: span 12 !important; }
-.story-section { padding: var(--s-12) var(--s-4); min-height: auto; }
-}
-@media (min-width: 961px) {
-.wb-col-3 { grid-column: span 3; }
-.wb-col-4 { grid-column: span 4; }
-.wb-col-5 { grid-column: span 5; }
-.wb-col-6 { grid-column: span 6; }
-.wb-col-7 { grid-column: span 7; }
-.wb-col-8 { grid-column: span 8; }
-.wb-col-12 { grid-column: span 12; }
+.page-head { padding: 22px 18px; border-radius: 18px; }
+.card { padding: 18px 16px; }
+.list { max-height: 250px; }
+.stage, #page-routing .stage { height: 500px; }
+.podium { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cube { --w: 42px; }
 }
 @media (prefers-reduced-motion: reduce) {
-*, *::before, *::after {
-animation-duration: 0.01ms !important;
-animation-iteration-count: 1 !important;
-transition-duration: 0.01ms !important;
-scroll-behavior: auto !important;
-}
+*, *::before, *::after { transition: none !important; animation: none !important; }
+.cube { transition: none; }
 }
 </style>
 </head>
 <body>
-<a href="#mainContent" class="skip-link">Skip to main content</a>
-<div id="scrollProgressBar" class="top-progress-bar" role="progressbar" aria-label="Story scroll progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
-<div id="sceneContainer" aria-hidden="true">
-<div id="noWebglFallback">
-<svg width="700" height="420" viewBox="0 0 700 420" fill="none">
-<circle cx="200" cy="80" r="18" stroke="#34d399" stroke-width="2" />
-<circle cx="360" cy="80" r="18" stroke="#34d399" stroke-width="2" />
-<circle cx="520" cy="80" r="18" stroke="#34d399" stroke-width="2" />
-<circle cx="280" cy="210" r="16" stroke="#f5a524" stroke-width="2" />
-<circle cx="440" cy="210" r="16" stroke="#f5a524" stroke-width="2" />
-<circle cx="360" cy="340" r="20" stroke="#6366f1" stroke-width="3" />
-<line x1="360" y1="340" x2="280" y2="210" stroke="#6366f1" stroke-width="2" />
-<line x1="360" y1="340" x2="440" y2="210" stroke="#6366f1" stroke-width="2" />
-<line x1="280" y1="210" x2="200" y2="80" stroke="#6366f1" stroke-width="2" />
-<line x1="280" y1="210" x2="360" y2="80" stroke="#6366f1" stroke-width="2" />
-</svg>
-</div>
-<canvas id="threeCanvas"></canvas>
-</div>
-<header class="site-header" role="banner">
-<div style="display:flex; align-items:center; gap:var(--s-3);">
-<span class="badge badge-cached"><span class="badge-dot"></span>v1.0-prereg-phase5</span>
-<strong class="display-font" style="font-size:1.1rem;">TopoCircuit-SAE</strong>
-</div>
-<nav id="storyAnchorNav" aria-label="Story sections" style="display:flex; flex-wrap:wrap; gap:var(--s-2);">
-<a href="#sec-hero" class="btn btn-ghost">1. Hero</a>
-<a href="#sec-problem" class="btn btn-ghost">2. Problem</a>
-<a href="#sec-pipeline" class="btn btn-ghost">3. Pipeline</a>
-<a href="#sec-proof" class="btn btn-ghost">4. Live Proof</a>
-<a href="#sec-evidence" class="btn btn-ghost">5. Evidence</a>
-<a href="#sec-limits" class="btn btn-ghost">6. Limits</a>
-</nav>
-<div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-2);">
-<span id="backendStatusBadge" class="badge badge-cached" title="REST API /api/v1 integration status"><span class="badge-dot"></span>BACKEND · PROBING</span>
-<span id="qualityTierBadge" class="badge badge-local" title="Auto-selected 3D quality tier and live FPS"><span class="badge-dot"></span>Tier: High · 60 FPS</span>
-<button id="toggle3dPauseBtn" type="button" class="btn btn-ghost" aria-pressed="false" title="Pause or resume ambient 3D animation">Pause 3D</button>
-<button id="toggleThemeBtn" type="button" class="btn btn-ghost" title="Toggle dark and light theme">Light / Dark</button>
-<button id="layerSwitchStoryBtn" type="button" class="btn btn-primary">Story (/)</button>
-<button id="layerSwitchWbBtn" type="button" class="btn">Workbench (/app)</button>
-</div>
+<div class="shell">
+<header class="topbar">
+<button id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="side">
+<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+</button>
+<div><b>TopoCircuit-SAE</b><br><span>v2.0 · Pythia-70M · Layer 3</span></div>
 </header>
-<div id="mainContent">
-<main id="layerStory" class="story-layer" aria-label="Cinematic Narrative Layer">
-<section id="sec-hero" class="story-section" data-scene-state="0">
-<div class="glass-card" style="max-width: 780px;">
-<div style="display:flex; flex-wrap:wrap; gap:var(--s-2); margin-bottom:var(--s-3);">
-<span class="badge badge-local"><span class="badge-dot"></span>LOCAL STORE · MASTER_RESULTS.JSON</span>
-<span class="badge badge-synthetic"><span class="badge-dot"></span>SAMPLE / SYNTHETIC · MPABS-112-CELLS</span>
+<div class="scrim" id="scrim"></div>
+<aside class="side" id="side">
+<div class="brand">
+<span class="ver">v2.0</span>
+<h1>TopoCircuit-SAE</h1>
+<p>Pythia-70M, layer 3 · 2,048 latents in a learned, frequency-ordered DAG. Every number on these pages is measured.</p>
 </div>
-<div class="section-kicker">1 · Ancestral Ascent Metaphor</div>
-<h1 style="font-size: var(--step-5); letter-spacing: -0.02em; margin-bottom: var(--s-4);">
-Child Activations Flow Up to Their Ancestors, So Parents Never Go Silent.
-</h1>
-<p style="color: var(--fg-1); font-size: var(--step-1); margin-bottom: var(--s-6);">
-TopoCircuit-SAE trains a Sparse Autoencoder whose features form an end-to-end, frequency-ordered Directed Acyclic Graph (<strong>DR-SAE</strong>), removing multi-parent feature absorption at zero native L0 penalty.
-</p>
-<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:var(--s-4); margin-bottom:var(--s-6);">
-<div style="padding:var(--s-3); border-left:3px solid var(--ok); background:var(--bg-0); border-radius:var(--r-sm);">
-<div class="mono-num" style="font-size:var(--step-2); font-weight:700; color:var(--ok);">−80.3%</div>
-<div style="font-size:var(--step--1); color:var(--fg-1);">MPAbs Drop @ Matched Eff. L0 = 50.0 (6.71% vs 34.05%)</div>
+<nav class="nav" aria-label="Pages">
+<p class="label">Pages</p>
+<a href="#explorer" id="nav-explorer">
+<span class="ic"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="19" cy="18" r="2.2"/><path d="M7 12h4l4-6h2M11 12l4 6h2"/></svg></span>
+<span><span class="t">DAG Hierarchy Explorer</span><span class="h">Trace multi-parent concept chains</span></span>
+</a>
+<a href="#routing" id="nav-routing">
+<span class="ic"><svg viewBox="0 0 24 24"><path d="M4 18c6 0 4-12 10-12h6"/><path d="m16 3 4 3-4 3"/><circle cx="4" cy="18" r="1.6"/></svg></span>
+<span><span class="t">Routing Simulator</span><span class="h">How far routing reaches at each hop depth</span></span>
+</a>
+<a href="#leaderboard" id="nav-leaderboard">
+<span class="ic"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-6"/></svg></span>
+<span><span class="t">MPAbs &amp; Leaderboard</span><span class="h">Methods and recovered circuits</span></span>
+</a>
+</nav>
+<div class="side-foot">
+<div class="row"><span>Base model</span><b>Pythia-70M (L3)</b></div>
+<div class="row"><span>Total latents</span><b class="mono">2,048</b></div>
+<div class="row"><span>Max DAG depth</span><b class="mono">4 hops</b></div>
+<div class="row"><span>Dictionary</span><b class="mono">BatchTopK k=32</b></div>
 </div>
-<div style="padding:var(--s-3); border-left:3px solid var(--accent); background:var(--bg-0); border-radius:var(--r-sm);">
-<div class="mono-num" style="font-size:var(--step-2); font-weight:700; color:var(--accent);">−39.0%</div>
-<div style="font-size:var(--step--1); color:var(--fg-1);">Fewer Feature Nodes @ 0.80 Circuit Faithfulness (62.6 vs 102.7)</div>
-</div>
-<div style="padding:var(--s-3); border-left:3px solid var(--highlight); background:var(--bg-0); border-radius:var(--r-sm);">
-<div class="mono-num" style="font-size:var(--step-2); font-weight:700; color:var(--highlight);">78.4%</div>
-<div style="font-size:var(--step--1); color:var(--fg-1);">Cross-Seed Edge Reproducibility (vs 36.4% AG-SAE-lite)</div>
-</div>
-</div>
-<div style="display:flex; flex-wrap:wrap; gap:var(--s-3);">
-<button id="heroOpenWbBtn" type="button" class="btn btn-primary">Open Calm Data Workbench (/app)</button>
-<a href="#sec-proof" class="btn">Try Live Multi-Parent Routing Slice</a>
-</div>
-</div>
-</section>
-<section id="sec-problem" class="story-section" data-scene-state="1">
-<div class="glass-card" style="max-width: 920px;">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--s-2); margin-bottom:var(--s-3);">
-<span class="section-kicker" style="margin:0;">2 · The Measurement & Method Gap</span>
-<span class="badge badge-local"><span class="badge-dot"></span>SOURCE · MAIN_BENCHMARK_RESULTS.CSV</span>
-</div>
-<h2 style="font-size: var(--step-3); margin-bottom: var(--s-4);">
-Single-Parent Letter Metrics Hide Multi-Parent Feature Absorption.
-</h2>
-<p style="color: var(--fg-1); margin-bottom: var(--s-6);">
-Real concepts inherit from multiple simultaneous parents: <code>"bat"</code> is both a <code>mammal</code> and a <code>flying_creature</code> starting with <code>Letter 'B'</code>; <code>"Paris"</code> is a <code>capital_city</code>, a <code>noun.location</code>, and <code>TitleCase</code>. Tree-structured SAEs allow at most one parent per child—so they score well on single-parent letters while silently absorbing the second and third parents.
-</p>
-<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:var(--s-4);">
-<div style="padding:var(--s-4); background:var(--bg-0); border:1px solid var(--danger); border-radius:var(--r-sm);">
-<strong style="color:var(--danger); font-family:var(--font-mono); font-size:var(--step--1);">BEFORE · TREE-PRIOR SAE (H-SAE, m ≤ 1)</strong>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin:var(--s-2) 0;">
-Routes <code>"bat"</code> to <code>Letter 'B'</code> (1st-Letter Absorption: <strong class="mono-num" style="color:var(--ok);">1.25%</strong>), but drops <code>mammal</code> and <code>flying_creature</code>, leaving <strong class="mono-num" style="color:var(--danger);">28.29% Mean MPAbs</strong> and <strong class="mono-num" style="color:var(--danger);">18.69% Joint Absorption</strong>.
-</p>
-</div>
-<div style="padding:var(--s-4); background:var(--bg-0); border:1px solid var(--ok); border-radius:var(--r-sm);">
-<strong style="color:var(--ok); font-family:var(--font-mono); font-size:var(--step--1);">AFTER · DR-SAE (FREQUENCY-ORDERED DAG, m ≤ 8)</strong>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin:var(--s-2) 0;">
-Routes child activations across all learned ancestors simultaneously via <code class="mono-num">z_eff = (I − A)⁻¹ z</code>, cutting Mean MPAbs to <strong class="mono-num" style="color:var(--ok);">3.99%</strong> (native L0) and <strong class="mono-num" style="color:var(--ok);">6.71%</strong> (matched effective L0 = 50.0).
-</p>
+</aside>
+<main class="main" id="mainContent">
+<section class="page" id="page-explorer" hidden>
+<div class="page-head">
+<div class="eyebrow">Page 1 · Hierarchy</div>
+<h2>DAG Hierarchy Explorer</h2>
+<p>Inspect the multi-parent edges DR-SAE actually learned around the latents that best match each MPAbs parent probe, labelled by their top-activating tokens. Every plate is one depth level, stacked like terraces on a topographic map. Pick a latent to trace its ancestral routing.</p>
+<div class="pills">
+<span class="pill">Pythia-70M · Layer 3</span>
+<span class="pill">2,048 latents</span>
+<span class="pill">Depth up to 4</span>
+<span class="pill gold">Strict Nilpotent DAG</span>
 </div>
 </div>
+<div class="stack">
+<div class="card">
+<h3>Subgraph filter</h3>
+<p class="sub">Choose a concept family, set routing truncation depth H, then search.</p>
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;">
+<div class="field">
+<label for="famSel">Concept subgraph family</label>
+<select id="famSel"></select>
 </div>
-</section>
-<section id="sec-pipeline" class="story-section" data-scene-state="2">
-<div class="glass-card" style="max-width: 980px;">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--s-2); margin-bottom:var(--s-3);">
-<span class="section-kicker" style="margin:0;">3 · End-to-End Architecture & Mathematical Guarantees</span>
-<span class="badge badge-cached"><span class="badge-dot"></span>THEORY · LEMMA 1 & PROPOSITIONS 1–2</span>
+<div class="field">
+<div class="lab"><label for="hRange">Routing truncation depth (H)</label><span class="val" id="hVal"></span></div>
+<input type="range" id="hRange" min="0" max="4" step="1" value="2">
+<div class="ticks"><span>0 flat</span><span>1</span><span>2</span><span>3</span><span>4 exact</span></div>
 </div>
-<h2 style="font-size: var(--step-3); margin-bottom: var(--s-4);">
-Four Differentiable Steps, Guaranteed Acyclic by Construction.
-</h2>
-<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:var(--s-4);">
-<div style="padding:var(--s-4); background:var(--bg-0); border-radius:var(--r-sm); border:1px solid var(--glass-border);">
-<div class="mono-num" style="color:var(--accent); font-weight:700;">STEP 01 · ENCODE</div>
-<h3 style="font-size:var(--step-1); margin:var(--s-2) 0;">BatchTopK Native Codes</h3>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin:0;">
-Produces sparse native activations <code class="mono-num">z = BatchTopK_k(W_enc(x − b_dec) + b_enc)</code> at fixed average sparsity <code class="mono-num">k = 50</code>.
-</p>
+<div class="field">
+<label for="q">Search latent or token</label>
+<input type="search" id="q" placeholder="e.g. Letter B, lowercase, noun.location, 157">
 </div>
-<div style="padding:var(--s-4); background:var(--bg-0); border-radius:var(--r-sm); border:1px solid var(--glass-border);">
-<div class="mono-num" style="color:var(--accent); font-weight:700;">STEP 02 · ORDER (LEMMA 1)</div>
-<h3 style="font-size:var(--step-1); margin:var(--s-2) 0;">Strict Frequency Rank</h3>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin:0;">
-True parents fire strictly more often than children (<code class="mono-num">f_p = τ f_c + (1−f_c)β &gt; f_c</code>). Masking <code class="mono-num">A[p,c]</code> to <code class="mono-num">f_p &gt; f_c</code> guarantees a nilpotent DAG with zero cycles.
-</p>
 </div>
-<div style="padding:var(--s-4); background:var(--bg-0); border-radius:var(--r-sm); border:1px solid var(--glass-border);">
-<div class="mono-num" style="color:var(--accent); font-weight:700;">STEP 03 · ROUTE (PROP. 1)</div>
-<h3 style="font-size:var(--step-1); margin:var(--s-2) 0;">Sparsity-Neutral Ancestry</h3>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin:0;">
-Unrolls <code class="mono-num">z_eff = Σ_{h=0}^H A^h z</code> (<code class="mono-num">H = 4</code>). Every ancestor fires on child tokens at zero extra native L0 cost.
-</p>
 </div>
-<div style="padding:var(--s-4); background:var(--bg-0); border-radius:var(--r-sm); border:1px solid var(--glass-border);">
-<div class="mono-num" style="color:var(--accent); font-weight:700;">STEP 04 · ORTHO ATOMS</div>
-<h3 style="font-size:var(--step-1); margin:var(--s-2) 0;">Whitened Residual Dictionary</h3>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin:0;">
-Trains <code class="mono-num">x̂ = R z_eff + b_dec</code> with 4-bank Matryoshka loss, L1 edge pruning <code class="mono-num">λ_A ‖A‖₁</code>, and whitened orthogonality <code class="mono-num">⟨r̃_p, r̃_c⟩²</code>.
-</p>
+<div class="card stage-card">
+<div class="stage-head">
+<h3>3D concept map</h3>
+<p>Drag to rotate. Glowing green links are the route from the selected latent back toward the root.</p>
 </div>
+<div id="slot-explorer">
+<div class="stage" id="stage" tabindex="0" aria-label="3D concept map. Drag or use arrow keys to rotate.">
+<div class="labels" id="labels"></div>
+<div class="stage-ui">
+<button type="button" id="autoBtn" aria-pressed="true">Auto-rotate</button>
+<button type="button" id="resetView">Reset view</button>
+</div>
+<div class="stage-hint">Drag to rotate · tap a label to select</div>
+</div>
+</div>
+<div class="legend"></div>
+</div>
+<div class="split">
+<div class="card">
+<h3>Latents in view</h3>
+<p class="sub">Ordered by empirical activation frequency.</p>
+<div class="list" id="latList"></div>
+</div>
+<div class="card" id="detail"></div>
 </div>
 </div>
 </section>
-<section id="sec-proof" class="story-section" data-scene-state="3">
-<div class="glass-card" style="max-width: 1000px;">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--s-2); margin-bottom:var(--s-3);">
-<span class="section-kicker" style="margin:0;">4 · Interactive Live Proof</span>
-<span id="liveProofCacheBadge" class="badge badge-cached"><span class="badge-dot"></span>CACHED · LRU MEMO (0 HITS)</span>
-</div>
-<h2 style="font-size: var(--step-3); margin-bottom: var(--s-3);">
-Test Proposition 2 Selective Absorption & Ancestral Routing Live.
-</h2>
-<p style="color: var(--fg-1); font-size: var(--step--1); margin-bottom: var(--s-4);">
-<strong>Proposition 2 Law:</strong> In a flat SAE with L0 weight <code class="mono-num">λ</code>, absorbing parent <code class="mono-num">pᵢ</code> saves <code class="mono-num">λ</code> but adds conditional reconstruction MSE <code class="mono-num">σᵢ² = Var(s_{pᵢ} | c)</code>. Parents are absorbed in strictly increasing order of <code class="mono-num">σᵢ² &lt; λ</code>. Adjust the sliders below (debounced at 180 ms) to observe the phase boundary and drive the 3D scene:
-</p>
-<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:var(--s-6);">
-<div style="display:flex; flex-direction:column; gap:var(--s-3);">
-<div>
-<label for="storyChildSelect" style="font-size:var(--step--1); font-weight:600; display:block; margin-bottom:4px;">Active Multi-Parent Child Concept in 3D Scene</label>
-<select id="storyChildSelect" class="select-ctrl">
-<option value="11842">#11842 · "bat" → {Letter 'B', mammal, flying_creature}</option>
-<option value="14220">#14220 · "Paris" → {Letter 'P', capital_city, TitleCase}</option>
-<option value="13095">#13095 · "salmon" → {noun.animal, noun.food}</option>
-</select>
-</div>
-<div>
-<label for="storySigma1" style="font-size:var(--step--1); display:flex; justify-content:space-between;">
-<span>Parent 1 Conditional Variance (σ₁²)</span>
-<strong id="storySigma1Label" class="mono-num" style="color:var(--accent);">0.05</strong>
-</label>
-<input id="storySigma1" type="range" min="0.02" max="0.80" step="0.01" value="0.05" class="range-ctrl" />
-</div>
-<div>
-<label for="storySigma2" style="font-size:var(--step--1); display:flex; justify-content:space-between;">
-<span>Parent 2 Conditional Variance (σ₂²)</span>
-<strong id="storySigma2Label" class="mono-num" style="color:var(--ok);">0.38</strong>
-</label>
-<input id="storySigma2" type="range" min="0.02" max="0.80" step="0.01" value="0.38" class="range-ctrl" />
-</div>
-<div>
-<label for="storyLambda" style="font-size:var(--step--1); display:flex; justify-content:space-between;">
-<span>Sparsity Penalty Weight (λ)</span>
-<strong id="storyLambdaLabel" class="mono-num" style="color:var(--highlight);">0.20</strong>
-</label>
-<input id="storyLambda" type="range" min="0.02" max="0.80" step="0.01" value="0.20" class="range-ctrl" />
+<section class="page" id="page-routing" hidden>
+<div class="page-head">
+<div class="eyebrow">Page 2 · Routing</div>
+<h2>Live Routing Simulator</h2>
+<p>Watch activation pulses climb the plates from parents to the target latent. Raise H to let the route reach further back, and see how much of the ancestral signal it keeps.</p>
+<div class="pills">
+<span class="pill">H from 0 to 4 hops</span>
+<span class="pill">Learned DR-SAE edge weights</span>
+<span class="pill gold">Prop. 2 test: 65% agreement, inconclusive</span>
+<span class="pill" id="liveApiPill">REST API Ready</span>
 </div>
 </div>
-<div style="background:var(--bg-0); border:1px solid var(--glass-border); border-radius:var(--r-sm); padding:var(--s-4); display:flex; flex-direction:column; justify-content:space-between; gap:var(--s-3);">
-<div>
-<div id="storyRegimeBadge" class="mono-num" style="font-size:var(--step--1); font-weight:700; color:var(--highlight);">REGIME II · SELECTIVE PARTIAL ABSORPTION (σ₁² &lt; λ &lt; σ₂²)</div>
-<p id="storyRegimeExplain" style="font-size:var(--step--1); color:var(--fg-1); margin:var(--s-2) 0;">
-Parent 1 (rigid, σ₁² = 0.05) is swallowed by the child atom in flat SAEs, while Parent 2 (variable, σ₂² = 0.38) stays unabsorbed.
-</p>
+<div class="split">
+<div class="stack">
+<div class="card">
+<h3>Simulation controls</h3>
+<p class="sub">Pick a target and a depth, or play the hops one at a time.</p>
+<div class="field"><label for="simFam">Concept subgraph family</label><select id="simFam"></select></div>
+<div class="field"><label for="simTarget">Target latent</label><select id="simTarget"></select></div>
+<div class="field">
+<div class="lab"><label for="simH">Routing truncation depth (H)</label><span class="val" id="simHVal"></span></div>
+<input type="range" id="simH" min="0" max="4" step="1" value="2">
+<div class="ticks"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span></div>
 </div>
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--s-3);">
-<div style="padding:var(--s-3); background:var(--bg-1); border-radius:var(--r-sm);">
-<div style="font-size:0.75rem; color:var(--fg-1);">Flat SAE Abs(p₁) / Abs(p₂)</div>
-<div id="storyFlatRates" class="mono-num" style="font-size:var(--step-1); font-weight:700; color:var(--danger);">96.5% / 1.8%</div>
-</div>
-<div style="padding:var(--s-3); background:var(--bg-1); border-radius:var(--r-sm);">
-<div style="font-size:0.75rem; color:var(--fg-1);">DR-SAE Routed Abs(p₁) / Abs(p₂)</div>
-<div class="mono-num" style="font-size:var(--step-1); font-weight:700; color:var(--ok);">0.0% / 3.9%</div>
+<div class="play-row">
+<button class="btn" id="playBtn" type="button">Play hops 0 to 4</button>
+<button class="btn ghost" id="resetBtn" type="button">Reset to H = 2</button>
 </div>
 </div>
-<div style="font-size:0.78rem; color:var(--fg-1); display:flex; justify-content:space-between; border-top:1px solid var(--glass-border); padding-top:var(--s-2);">
-<span>Empirical Grid Agreement (80 off-diagonal cells):</span>
-<strong class="mono-num" style="color:var(--ok);">92.5% (74/80 · Holm p = 3.6e-6)</strong>
+<div class="card">
+<h3>At this depth (H)</h3>
+<div class="kv" id="simKv"></div>
+<p class="sub" id="simMsg" style="margin:0"></p>
 </div>
+</div>
+<div class="stack">
+<div class="card stage-card">
+<div class="stage-head">
+<h3>Routing in 3D</h3>
+<p>Yellow pulses travel along the links the route uses at this H.</p>
+</div>
+<div id="slot-routing"></div>
+<div class="legend"></div>
+</div>
+<div class="card">
+<h3>Ancestral signal kept, by depth</h3>
+<p class="sub">Share of total path weight reached within H hops (truncation of the routing series).</p>
+<div class="cov" id="cov"></div>
+</div>
+<div class="card">
+<h3>Routed ancestors</h3>
+<p class="sub">Each ancestor with the path weight it passes down. Faded rows fall outside H.</p>
+<ul class="route" id="simRoute"></ul>
 </div>
 </div>
 </div>
 </section>
-<section id="sec-evidence" class="story-section" data-scene-state="4">
-<div class="glass-card" style="max-width: 1080px;">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--s-2); margin-bottom:var(--s-3);">
-<span class="section-kicker" style="margin:0;">5 · Phase 6 Held-Out Test Split Evidence (3 Seeds)</span>
-<span class="badge badge-local"><span class="badge-dot"></span>LOCAL STORE · HOLM-BONFERRONI VERIFIED</span>
-</div>
-<h2 style="font-size: var(--step-3); margin-bottom: var(--s-4);">
-All Four Pre-Registered Hypotheses Confirmed at Matched Effective L0.
-</h2>
-<div style="overflow-x:auto;">
-<table class="data-table" aria-label="Phase 6 main benchmark results across six methods and matched effective L0">
-<thead>
-<tr>
-<th>Method</th>
-<th class="num">Native L0</th>
-<th class="num">Effective L0</th>
-<th class="num">FVU ↓</th>
-<th class="num">1st-Letter Abs ↓</th>
-<th class="num">MPAbs Mean ↓</th>
-<th class="num">MPAbs Joint ↓</th>
-<th class="num">MNN Repro ↑</th>
-<th class="num">Causal ΔLogit ↑</th>
-<th class="num">Circuit Nodes@0.80 ↓</th>
-</tr>
-</thead>
-<tbody id="storyMainTableBody"></tbody>
-</table>
+<section class="page" id="page-leaderboard" hidden>
+<div class="page-head">
+<div class="eyebrow">Page 3 · Evaluation</div>
+<h2>MPAbs &amp; Circuit Leaderboard</h2>
+<p>Multi-parent absorption (MPAbs) counts how often a child latent swallows activation that belongs to one of its parents. Taller blocks absorb less. Tap a column heading to sort the tables.</p>
+<div class="pills">
+<span class="pill">7 methods</span>
+<span class="pill">seed 42</span>
+<span class="pill">3 agreement tasks</span>
+<span class="pill gold" id="cellsPill">MPAbs cells</span>
 </div>
 </div>
-</section>
-<section id="sec-limits" class="story-section" data-scene-state="5">
-<div class="glass-card" style="max-width: 920px;">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--s-2); margin-bottom:var(--s-3);">
-<span class="section-kicker" style="margin:0;">6 · Explicit Limitations & Uncertainty Bounds</span>
-<span class="badge badge-synthetic"><span class="badge-dot"></span>SCIENTIFIC HONESTY GUARD</span>
-</div>
-<h2 style="font-size: var(--step-3); margin-bottom: var(--s-4);">
-What This Evidence Proves—and Where Its Boundaries Lie.
-</h2>
-<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:var(--s-4);">
-<div style="padding:var(--s-4); background:var(--bg-0); border-radius:var(--r-sm); border:1px solid var(--glass-border);">
-<strong style="color:var(--highlight); font-family:var(--font-mono); font-size:var(--step--1);">1. EFFECTIVE L0 TRADE-OFF</strong>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin:var(--s-2) 0 0;">
-At native <code class="mono-num">L0 = 50.0</code>, ancestral routing raises effective <code class="mono-num">L0</code> to <code class="mono-num">63.8</code>. That is why our primary headline claim uses <strong>DR-SAE (Matched Eff. L0 = 50.0)</strong> (<code class="mono-num">k = 38.2</code>, MPAbs <code class="mono-num">6.71%</code>, <code class="mono-num">ΔFVU = +0.0036 ≤ 0.01</code>).
-</p>
-</div>
-<div style="padding:var(--s-4); background:var(--bg-0); border-radius:var(--r-sm); border:1px solid var(--glass-border);">
-<strong style="color:var(--highlight); font-family:var(--font-mono); font-size:var(--step--1);">2. THREE-SEED MDE FLOOR</strong>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin:var(--s-2) 0 0;">
-With 3 random seeds (<code class="mono-num">42, 137, 2026</code>), cross-seed standard deviation is <code class="mono-num">0.45%</code> MPAbs (Minimum Detectable Effect <code class="mono-num">4.2%</code> relative). Differences smaller than 1 SD (such as <code class="mono-num">H=4</code> vs <code class="mono-num">H=8</code> at <code class="mono-num">3.99%</code> vs <code class="mono-num">3.89%</code>) are statistically indistinguishable.
-</p>
-</div>
-<div style="padding:var(--s-4); background:var(--bg-0); border-radius:var(--r-sm); border:1px solid var(--glass-border);">
-<strong style="color:var(--highlight); font-family:var(--font-mono); font-size:var(--step--1);">3. LEMMA 1 NEAR-DUPLICATE BOUND</strong>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin:var(--s-2) 0 0;">
-Under partial coverage <code class="mono-num">τ &lt; 1</code>, frequency order drops an edge when <code class="mono-num">β ≤ (1−τ)f_c / (1−f_c)</code>—i.e., when parent <code class="mono-num">p</code> almost never fires without child <code class="mono-num">c</code>, which aligns with AG-SAE's non-redundancy criterion.
-</p>
+<div class="stack">
+<div class="card" id="podiumCard">
+<h3>Absorption avoided (1 − MPAbs)</h3>
+<p class="sub">Block height shows absorption avoided scaled across methods. Move the pointer over the blocks to tilt them in 3D.</p>
+<div class="podium-wrap">
+<div class="podium" id="podium"></div>
 </div>
 </div>
+<div class="card">
+<h3>Method comparison benchmark</h3>
+<p class="sub">All methods trained on the same 857k cached Pythia-70M layer-3 activations (width 2,048, native k = 32 unless noted) and scored on the MPAbs test split. Source: results/lm_results.json.</p>
+<div class="tbl-wrap"><table id="methodTbl"></table></div>
 </div>
-</section>
-<section id="sec-cta" class="story-section" data-scene-state="6" style="min-height: 60vh;">
-<div class="glass-card" style="max-width: 760px; text-align:center; margin:0 auto;">
-<div class="section-kicker">7 · Explore the Full Dataset & DAG Workbench</div>
-<h2 style="font-size: var(--step-3); margin-bottom: var(--s-4);">
-Inspect Every Latent, Edge Weight, and MPAbs Cell in the Workbench.
-</h2>
-<p style="color: var(--fg-1); margin-bottom: var(--s-6);">
-Switch to the calm, zero-distraction <strong>Data Workbench (<code>/app</code>)</strong> to query the 112-cell paginated MPAbs benchmark, inspect causal parent-ablation drops, test loading/error states, or export JSON/CSV artifacts.
-</p>
-<div style="display:flex; justify-content:center; flex-wrap:wrap; gap:var(--s-3);">
-<button id="ctaOpenWbBtn" type="button" class="btn btn-primary">Launch Calm Workbench (/app)</button>
-<button id="ctaExportJsonBtn" type="button" class="btn">Export Master Metrics JSON</button>
+<div class="card">
+<h3>Feature circuits: subject-verb agreement</h3>
+<p class="sub">Latents needed at layer 3 to recover 80% of the agreement logit difference (attribution patching, SAE error term kept). A dash means 0.8 was never reached. Source: results/circuits/.</p>
+<div class="tbl-wrap"><table id="circuitTbl"></table></div>
+</div>
+<div class="card">
+<h3>MPAbs cells</h3>
+<p class="sub">Letter × WordNet-category cells with at least 20 tokens (lowercase and TitleCase forms). Values are each method&rsquo;s mean per-parent absorption in that cell on the test split.</p>
+<div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:14px; align-items:center;">
+<div style="flex:1; min-width:180px;">
+<select id="cellLetterFilter" aria-label="Filter cells by initial letter"><option value="all">All letters</option></select>
+</div>
+<div style="flex:1; min-width:180px;">
+<select id="cellCatFilter" aria-label="Filter cells by WordNet category"><option value="all">All categories</option></select>
+</div>
+</div>
+<div class="tbl-wrap"><table id="cellsTbl"></table></div>
+<div class="page-row">
+<span id="pageIndicator" class="mono" style="font-size:13.5px; color:var(--muted)">Page 1 of 12</span>
+<div class="btns">
+<button type="button" class="btn ghost" id="prevPageBtn" style="min-height:38px; padding:6px 14px;">← Prev</button>
+<button type="button" class="btn ghost" id="nextPageBtn" style="min-height:38px; padding:6px 14px;">Next →</button>
+</div>
+</div>
 </div>
 </div>
 </section>
 </main>
-<main id="layerWorkbench" class="workbench-layer hidden" aria-label="Analytical Data Workbench">
-<div class="wb-grid">
-<section class="wb-panel wb-col-12" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--s-3);">
-<div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-2);">
-<span class="badge badge-local"><span class="badge-dot"></span>LOCAL STORE · MASTER_RESULTS.JSON</span>
-<span class="badge badge-synthetic"><span class="badge-dot"></span>SAMPLE / SYNTHETIC · 112 MPABS CELLS</span>
-<span id="wbDbPoolBadge" class="badge badge-cached"><span class="badge-dot"></span>SQLITE POOL · READY</span>
-<span id="wbCacheStatsBadge" class="badge badge-cached"><span class="badge-dot"></span>CLIENT LRU CACHE · 0 HITS / 0 MISSES</span>
 </div>
-<div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-2);">
-<span style="font-size:0.78rem; color:var(--fg-1);">UI State Simulator:</span>
-<button id="stateReadyBtn" type="button" class="btn btn-primary" style="min-height:32px; padding:4px 10px;">Ready State</button>
-<button id="stateLoadingBtn" type="button" class="btn" style="min-height:32px; padding:4px 10px;">Loading Skeleton 💀</button>
-<button id="stateEmptyBtn" type="button" class="btn" style="min-height:32px; padding:4px 10px;">Empty State</button>
-<button id="stateErrorBtn" type="button" class="btn" style="min-height:32px; padding:4px 10px;">Error State</button>
-<button id="wbExportCsvBtn" type="button" class="btn" style="min-height:32px; padding:4px 10px;">Export CSV</button>
-</div>
-</section>
-<section class="wb-panel wb-col-3" style="display:flex; flex-direction:column; gap:var(--s-3);">
-<div style="display:flex; justify-content:space-between; align-items:center;">
-<h2 style="font-size:var(--step-0);">DAG Latent Directory</h2>
-<span class="badge badge-cached"><span class="badge-dot"></span>INDEXED</span>
-</div>
-<div>
-<label for="wbSearchInput" style="font-size:0.78rem; color:var(--fg-1); display:block; margin-bottom:4px;">Debounced Search (180 ms)</label>
-<input id="wbSearchInput" type="search" placeholder="Filter latent or token (e.g. bat, Paris)..." class="input-ctrl" />
-</div>
-<div>
-<label for="wbFamilySelect" style="font-size:0.78rem; color:var(--fg-1); display:block; margin-bottom:4px;">Concept Family Subgraph</label>
-<select id="wbFamilySelect" class="select-ctrl">
-<option value="all">All Multi-Parent Families (14)</option>
-<option value="animal">Biology & Letter 'B' ("bat", "beaver")</option>
-<option value="location">Capitals & Letter 'P' ("Paris", "Prague")</option>
-<option value="food">Dual-Hypernym Food ("salmon")</option>
-</select>
-</div>
-<div>
-<label for="wbHopSlider" style="font-size:0.78rem; color:var(--fg-1); display:flex; justify-content:space-between;">
-<span>Routing Truncation Depth (H)</span>
-<strong id="wbHopLabel" class="mono-num" style="color:var(--accent);">H = 4 hops</strong>
-</label>
-<input id="wbHopSlider" type="range" min="0" max="4" step="1" value="4" class="range-ctrl" />
-</div>
-<div id="wbNodeList" style="display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto; padding-right:4px;"></div>
-</section>
-<section class="wb-panel wb-col-5" style="display:flex; flex-direction:column; gap:var(--s-3);">
-<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--s-2);">
-<div>
-<h2 style="font-size:var(--step-0);">2D Frequency-Ordered DAG Canvas</h2>
-<div style="font-size:0.76rem; color:var(--fg-1);">Click any node to inspect <code class="mono-num">z_eff = Σ_{h=0}^H A^h z</code></div>
-</div>
-<button id="wbResetGraphBtn" type="button" class="btn" style="min-height:32px; padding:4px 10px;">Reset View</button>
-</div>
-<div id="wbGraphSurface" style="background:var(--bg-0); border:1px solid var(--glass-border); border-radius:var(--r-sm); min-height:380px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-<svg id="wbDagSvg" viewBox="0 0 680 410" style="width:100%; height:380px; user-select:none;" aria-label="Interactive 2D Directed Acyclic Graph of SAE Latents"></svg>
-</div>
-<div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:var(--s-2); font-size:0.76rem; color:var(--fg-1);">
-<span><strong style="color:var(--ok);">●</strong> Tier 0 Root Parent</span>
-<span><strong style="color:var(--highlight);">●</strong> Tier 1 Intermediate</span>
-<span><strong style="color:var(--accent);">●</strong> Tier 2 Multi-Parent Child</span>
-<span class="mono-num">Lemma 1: f_p &gt; f_c ⇒ 0 Cycles</span>
-</div>
-</section>
-<section class="wb-panel wb-col-4" style="display:flex; flex-direction:column; gap:var(--s-3);">
-<div style="display:flex; justify-content:space-between; align-items:center;">
-<span id="wbInspTierBadge" class="badge badge-cached"><span class="badge-dot"></span>Multi-Parent Child</span>
-<span class="badge badge-local"><span class="badge-dot"></span>CAUSAL CHECK</span>
-</div>
-<div>
-<h2 id="wbInspTitle" style="font-size:var(--step-1);">Latent #11842 · "bat"</h2>
-<div id="wbInspFreq" class="mono-num" style="font-size:0.8rem; color:var(--fg-1); margin-top:2px;">Firing Rate: 0.42% · Rank #10</div>
-</div>
-<div id="wbInspStatsGrid" style="display:grid; grid-template-columns:1fr 1fr; gap:var(--s-2); background:var(--bg-0); padding:var(--s-3); border-radius:var(--r-sm); border:1px solid var(--glass-border);">
-<div>
-<div style="font-size:0.74rem; color:var(--fg-1);">Native Code (z)</div>
-<div id="wbInspZNat" class="mono-num" style="font-size:var(--step-1); font-weight:700;">1.00</div>
-</div>
-<div>
-<div style="font-size:0.74rem; color:var(--fg-1);">Routed Code (z_eff)</div>
-<div id="wbInspZEff" class="mono-num" style="font-size:var(--step-1); font-weight:700; color:var(--accent);">1.00</div>
-</div>
-<div>
-<div style="font-size:0.74rem; color:var(--fg-1);">MPAbs (DR-SAE)</div>
-<div id="wbInspAbsDr" class="mono-num" style="font-size:var(--step-0); font-weight:700; color:var(--ok);">2.8%</div>
-</div>
-<div>
-<div style="font-size:0.74rem; color:var(--fg-1);">MPAbs (Matryoshka)</div>
-<div id="wbInspAbsMat" class="mono-num" style="font-size:var(--step-0); font-weight:700; color:var(--highlight);">36.4%</div>
-</div>
-</div>
-<div>
-<div style="font-size:0.76rem; font-weight:600; color:var(--fg-1); text-transform:uppercase; margin-bottom:6px;">Top Activating Tokens</div>
-<div id="wbInspTokens" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
-</div>
-<div>
-<div style="font-size:0.76rem; font-weight:600; color:var(--fg-1); text-transform:uppercase; margin-bottom:6px;">Learned Parent Edges A[p, c]</div>
-<div id="wbInspParents" style="display:flex; flex-direction:column; gap:6px;"></div>
-</div>
-<div style="margin-top:auto; padding-top:var(--s-2); border-top:1px solid var(--glass-border);">
-<div style="font-size:0.76rem; font-weight:600; color:var(--fg-1); text-transform:uppercase;">Causal Readout Ablation Result</div>
-<p id="wbInspCausal" style="font-size:0.8rem; color:var(--fg-1); margin:4px 0 0;"></p>
-</div>
-</section>
-<section class="wb-panel wb-col-12">
-<div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--s-3); margin-bottom:var(--s-4);">
-<div>
-<div style="display:flex; align-items:center; gap:var(--s-2);">
-<h2 style="font-size:var(--step-1);">Paginated 112-Cell MPAbs Benchmark Explorer</h2>
-<span class="badge badge-synthetic"><span class="badge-dot"></span>SAMPLE / SYNTHETIC · STRATIFIED 60/20/20 TEST SPLIT</span>
-</div>
-<div style="font-size:0.8rem; color:var(--fg-1);">Each cell represents ≥25 multi-parent tokens sharing an orthographic initial letter, WordNet lexicographer noun category, and capitalization case.</div>
-</div>
-<div style="display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-2);">
-<select id="wbCellLetterFilter" class="select-ctrl" style="width:auto;" aria-label="Filter cells by initial letter">
-<option value="all">All Letters (14)</option>
-<option value="A">Letter A</option>
-<option value="B">Letter B</option>
-<option value="C">Letter C</option>
-<option value="D">Letter D</option>
-<option value="P">Letter P</option>
-<option value="S">Letter S</option>
-</select>
-<select id="wbCellCatFilter" class="select-ctrl" style="width:auto;" aria-label="Filter cells by WordNet category">
-<option value="all">All WordNet Categories (8)</option>
-<option value="noun.animal">noun.animal</option>
-<option value="noun.food">noun.food</option>
-<option value="noun.artifact">noun.artifact</option>
-<option value="noun.location">noun.location</option>
-<option value="noun.person">noun.person</option>
-<option value="noun.plant">noun.plant</option>
-</select>
-<button id="wbPrevPageBtn" type="button" class="btn" style="min-height:36px;">← Prev</button>
-<span id="wbPageIndicator" class="mono-num" style="font-size:0.82rem; padding:0 8px;">Page 1 / 10</span>
-<button id="wbNextPageBtn" type="button" class="btn" style="min-height:36px;">Next →</button>
-</div>
-</div>
-<div id="wbTableStateContainer">
-<div style="overflow-x:auto;">
-<table class="data-table" aria-label="Paginated MPAbs cells table">
-<thead>
-<tr>
-<th>Cell ID</th>
-<th>Letter Parent</th>
-<th>WordNet Category</th>
-<th>Case Parent</th>
-<th>Exemplar Words</th>
-<th class="num">BatchTopK ↓</th>
-<th class="num">Matryoshka ↓</th>
-<th class="num">H-SAE (Tree) ↓</th>
-<th class="num">DR-SAE (Eff L0) ↓</th>
-<th class="num">DR-SAE (Ours) ↓</th>
-</tr>
-</thead>
-<tbody id="wbCellsTableBody"></tbody>
-</table>
-</div>
-</div>
-</section>
-</div>
-</main>
-</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="data/results.js"></script>
 <script>
-const MASTER_DATA = {
-provenance: "LOCAL STORE · MASTER_RESULTS.JSON (v1.0-prereg-phase5)",
-methods: [
-{ name: "BatchTopK SAE", natL0: 50.0, effL0: 50.0, fvu: 0.1362, letAbs: 56.61, mpabs: 57.26, joint: 60.71, repro: "—", causal: 1.256, nodes: 133.8 },
-{ name: "Matryoshka BatchTopK", natL0: 50.0, effL0: 50.0, fvu: 0.1318, letAbs: 23.93, mpabs: 34.05, joint: 27.26, repro: "—", causal: 1.796, nodes: 102.7 },
-{ name: "H-SAE (Tree Prior, m ≤ 1)", natL0: 50.0, effL0: 56.4, fvu: 0.1345, letAbs: 1.25, mpabs: 28.29, joint: 18.69, repro: "64.8%", causal: 2.369, nodes: 94.9 },
-{ name: "AG-SAE-lite (Post-hoc)", natL0: 50.0, effL0: 61.2, fvu: 0.1351, letAbs: 5.95, mpabs: 22.04, joint: 12.92, repro: "36.4%", causal: 2.402, nodes: 86.6 },
-{ name: "Post-hoc DR (Frozen Enc.)", natL0: 50.0, effL0: 60.8, fvu: 0.1358, letAbs: 5.65, mpabs: 25.97, joint: 16.31, repro: "54.2%", causal: 2.163, nodes: 92.0 },
-{ name: "DR-SAE (Matched Eff. L0)", natL0: 38.2, effL0: 50.0, fvu: 0.1354, letAbs: 0.00, mpabs: 6.71, joint: 0.89, repro: "76.2%", causal: 3.819, nodes: 66.2, highlight: true },
-{ name: "DR-SAE (Ours, Native L0)", natL0: 50.0, effL0: 63.8, fvu: 0.1329, letAbs: 0.00, mpabs: 3.99, joint: 0.24, repro: "78.4%", causal: 4.260, nodes: 62.6, primary: true }
-],
-nodes: [
-{ id: 14, code: "#0014", label: "Letter 'B'", tier: 0, freq: "6.40%", rank: 1, family: "animal", x: 95, y: 60, x3d: -3.2, y3d: 2.2, z3d: 0.2, zNat: 0.0, zEff: 0.84, absDr: "0.0%", absMat: "24.2%", tokens: ["bat", "badger", "beaver", "bison", "banana"], causal: "Ablating #0014 on 'bat' drops Letter-B probe logit by 4.41 (vs 0.07 random control)." },
-{ id: 89, code: "#0089", label: "noun.animal", tier: 0, freq: "4.85%", rank: 2, family: "animal", x: 225, y: 60, x3d: -1.2, y3d: 2.3, z3d: -0.4, zNat: 0.0, zEff: 1.12, absDr: "3.1%", absMat: "38.5%", tokens: ["dog", "bat", "whale", "salmon", "eagle"], causal: "Ablating #0089 on 'bat' drops noun.animal probe logit by 4.18." },
-{ id: 19, code: "#0019", label: "Letter 'P'", tier: 0, freq: "5.80%", rank: 3, family: "location", x: 375, y: 60, x3d: 1.1, y3d: 2.2, z3d: 0.3, zNat: 0.0, zEff: 0.79, absDr: "0.0%", absMat: "22.8%", tokens: ["Paris", "Prague", "Peru", "Poland", "piano"], causal: "Ablating #0019 on 'Paris' drops Letter-P probe logit by 4.52." },
-{ id: 104, code: "#0104", label: "noun.location", tier: 0, freq: "4.10%", rank: 4, family: "location", x: 495, y: 60, x3d: 2.5, y3d: 2.3, z3d: -0.3, zNat: 0.0, zEff: 0.96, absDr: "3.5%", absMat: "35.9%", tokens: ["Paris", "London", "Tokyo", "Peru", "Rome"], causal: "Ablating #0104 on 'Paris' drops noun.location probe logit by 4.09." },
-{ id: 42, code: "#0042", label: "TitleCase", tier: 0, freq: "5.50%", rank: 5, family: "location", x: 605, y: 60, x3d: 3.6, y3d: 2.1, z3d: 0.4, zNat: 0.0, zEff: 0.81, absDr: "1.2%", absMat: "29.4%", tokens: ["Paris", "Prague", "London", "Monday", "April"], causal: "Ablating #0042 on 'Paris' drops TitleCase probe logit by 3.95." },
-{ id: 112, code: "#0112", label: "noun.food", tier: 0, freq: "3.90%", rank: 6, family: "food", x: 605, y: 175, x3d: 0.2, y3d: 2.1, z3d: 1.4, zNat: 0.0, zEff: 0.74, absDr: "4.2%", absMat: "39.1%", tokens: ["salmon", "apple", "almond", "bread", "cheese"], causal: "Ablating #0112 on 'salmon' drops noun.food probe logit by 4.11." },
-{ id: 812, code: "#0812", label: "mammal", tier: 1, freq: "1.95%", rank: 7, family: "animal", x: 135, y: 195, x3d: -2.2, y3d: 0.2, z3d: 0.1, zNat: 0.0, zEff: 0.78, absDr: "2.4%", absMat: "33.0%", tokens: ["bat", "beaver", "whale", "dolphin", "bison"], causal: "Intermediate Tier-1 parent; receives routed activation from 'bat' (0.78) and routes up to 'noun.animal' (0.82)." },
-{ id: 1204, code: "#1204", label: "flying_creature", tier: 1, freq: "1.40%", rank: 8, family: "animal", x: 265, y: 195, x3d: -0.6, y3d: 0.2, z3d: -0.2, zNat: 0.0, zEff: 0.71, absDr: "3.8%", absMat: "41.2%", tokens: ["bat", "albatross", "eagle", "hawk", "dragonfly"], causal: "Second semantic parent of 'bat'; completely missed by single-parent Tree SAEs (H-SAE)." },
-{ id: 1540, code: "#1540", label: "capital_city", tier: 1, freq: "1.30%", rank: 9, family: "location", x: 450, y: 195, x3d: 2.0, y3d: 0.2, z3d: 0.0, zNat: 0.0, zEff: 0.83, absDr: "2.9%", absMat: "37.6%", tokens: ["Paris", "Prague", "London", "Tokyo", "Berlin"], causal: "Intermediate Tier-1 semantic parent linking 'Paris' and 'Prague' to 'noun.location'." },
-{ id: 11842, code: "#11842", label: "bat", tier: 2, freq: "0.42%", rank: 10, family: "animal", x: 110, y: 345, x3d: -2.4, y3d: -1.9, z3d: 0.3, zNat: 1.0, zEff: 1.00, absDr: "2.8%", absMat: "36.4%", tokens: ["bat", "bats", "fruit bat", "vampire bat"], causal: "Multi-parent child with 3 parents: Letter 'B' (0.84), 'mammal' (0.78), and 'flying_creature' (0.71)." },
-{ id: 12410, code: "#12410", label: "beaver", tier: 2, freq: "0.31%", rank: 11, family: "animal", x: 225, y: 345, x3d: -1.1, y3d: -1.9, z3d: -0.3, zNat: 1.0, zEff: 1.00, absDr: "3.1%", absMat: "34.8%", tokens: ["beaver", "beavers", "beaver dam"], causal: "Multi-parent child routing simultaneously to Letter 'B' (0.81) and 'mammal' (0.76)." },
-{ id: 13095, code: "#13095", label: "salmon", tier: 2, freq: "0.38%", rank: 12, family: "food", x: 340, y: 345, x3d: 0.1, y3d: -1.9, z3d: 0.8, zNat: 1.0, zEff: 1.00, absDr: "3.6%", absMat: "42.1%", tokens: ["salmon", "smoked salmon", "Atlantic salmon"], causal: "Dual-hypernym concept inheriting simultaneously from 'noun.animal' (0.79) and 'noun.food' (0.74)." },
-{ id: 14220, code: "#14220", label: "Paris", tier: 2, freq: "0.64%", rank: 13, family: "location", x: 465, y: 345, x3d: 1.8, y3d: -1.9, z3d: 0.2, zNat: 1.0, zEff: 1.00, absDr: "2.1%", absMat: "35.2%", tokens: ["Paris", "Parisian", "central Paris"], causal: "3-parent token routing to Letter 'P' (0.79), 'capital_city' (0.83), and 'TitleCase' (0.81)." },
-{ id: 15108, code: "#15108", label: "Prague", tier: 2, freq: "0.29%", rank: 14, family: "location", x: 585, y: 345, x3d: 3.2, y3d: -1.9, z3d: -0.2, zNat: 1.0, zEff: 1.00, absDr: "2.5%", absMat: "36.9%", tokens: ["Prague", "Old Town Prague"], causal: "3-parent token routing to Letter 'P' (0.76), 'capital_city' (0.80), and 'TitleCase' (0.79)." }
-],
-edges: [
-{ p: 89, c: 812, w: 0.82 },
-{ p: 89, c: 1204, w: 0.74 },
-{ p: 104, c: 1540, w: 0.85 },
-{ p: 14, c: 11842, w: 0.84 },
-{ p: 812, c: 11842, w: 0.78 },
-{ p: 1204, c: 11842, w: 0.71 },
-{ p: 14, c: 12410, w: 0.81 },
-{ p: 812, c: 12410, w: 0.76 },
-{ p: 89, c: 13095, w: 0.79 },
-{ p: 112, c: 13095, w: 0.74 },
-{ p: 19, c: 14220, w: 0.79 },
-{ p: 1540, c: 14220, w: 0.83 },
-{ p: 42, c: 14220, w: 0.81 },
-{ p: 19, c: 15108, w: 0.76 },
-{ p: 1540, c: 15108, w: 0.80 },
-{ p: 42, c: 15108, w: 0.79 }
-]
-};
-const LETTERS_14 = ["A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "P", "S", "T", "W"];
-const CATS_8 = ["noun.animal", "noun.food", "noun.artifact", "noun.location", "noun.person", "noun.plant", "noun.substance", "noun.body"];
-const EXEMPLARS_MAP = {
-"A_noun.animal": "alligator, antelope, albatross",
-"B_noun.animal": "bat, badger, beaver, bison",
-"C_noun.animal": "camel, cheetah, chimpanzee",
-"D_noun.animal": "dolphin, donkey, dragonfly",
-"A_noun.food": "almond, apple, apricot, avocado",
-"B_noun.food": "bacon, bagel, banana, broccoli",
-"P_noun.location": "Paris, Prague, Peru, Poland",
-"S_noun.artifact": "scalpel, scissors, shield, sword"
-};
-const ALL_112_CELLS = [];
-let cellCounter = 0;
-LETTERS_14.forEach((letStr, lIdx) => {
-CATS_8.forEach((catStr, cIdx) => {
-const isTitle = (lIdx + cIdx) % 2 === 1;
-const caseLabel = isTitle ? "TitleCase" : "lowercase";
-const key = `${letStr}_${catStr}`;
-const rawWords = EXEMPLARS_MAP[key] || `${letStr.toLowerCase()}_${catStr.split(".")[1]}_1, ${letStr.toLowerCase()}_${catStr.split(".")[1]}_2`;
-const shift = ((lIdx * 7 + cIdx * 3) % 11) - 5;
-ALL_112_CELLS.push({
-idx: cellCounter,
-cellId: `cell_${String(cellCounter).padStart(3, "0")}_${letStr}_${catStr.split(".")[1]}`,
-letter: letStr,
-category: catStr,
-caseLabel: caseLabel,
-words: rawWords,
-btk: (57.26 + shift * 0.85).toFixed(1) + "%",
-mat: (34.05 + shift * 0.65).toFixed(1) + "%",
-hsae: (28.29 + shift * 0.55).toFixed(1) + "%",
-drEff: Math.max(1.8, 6.71 + shift * 0.25).toFixed(1) + "%",
-drOurs: Math.max(0.8, 3.99 + shift * 0.18).toFixed(1) + "%"
+(function(){
+var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function $(id){ return document.getElementById(id); }
+function pct(x){ return (typeof x === 'number' ? x.toFixed(2) : parseFloat(x).toFixed(2)) + '%'; }
+var D = window.TC_DATA || { raw: { all: { name: "No results yet: run scripts/build_demo_data.py", nodes: [] } }, extra: {}, methods: [], circuits: [], cells: [], methodKeys: [], display: {} };
+var RAW = D.raw;
+var NODE_EXTRA = D.extra;
+function debounce(fn, ms){ var t; return function(){ var a = arguments, c = this; clearTimeout(t); t = setTimeout(function(){ fn.apply(c, a); }, ms); }; }
+var LCOL = ['--l0', '--l1', '--l2', '--l3', '--l4'];
+var FAM = {};
+Object.keys(RAW).forEach(function(k){
+var by = {}, list = [];
+RAW[k].nodes.forEach(function(r){
+var n = { id: r[0], label: r[1], freq: r[2], parents: r[3].map(function(p){ return { id: p[0], w: p[1] }; }), children: [], level: 0 };
+by[n.id] = n; list.push(n);
 });
-cellCounter++;
+list.forEach(function(n){
+n.parents.forEach(function(p){ if(by[p.id]) by[p.id].children.push(n.id); });
 });
-});
-class ClientLRUCache {
-constructor(limit = 128) {
-this.limit = limit;
-this.map = new Map();
-this.hits = 0;
-this.misses = 0;
+function lvl(n){
+if(!n.parents.length) return 0;
+if(n._l != null) return n._l;
+var m = 0;
+n.parents.forEach(function(p){ if(by[p.id]) m = Math.max(m, lvl(by[p.id]) + 1); });
+n._l = m; return m;
 }
-get(key) {
-if (this.map.has(key)) {
-const val = this.map.get(key);
-this.map.delete(key);
-this.map.set(key, val);
-this.hits++;
-this.updateBadge();
-return val;
-}
-this.misses++;
-this.updateBadge();
-return undefined;
-}
-set(key, val) {
-if (this.map.size >= this.limit) {
-const oldest = this.map.keys().next().value;
-this.map.delete(oldest);
-}
-this.map.set(key, val);
-}
-updateBadge() {
-const b1 = document.getElementById("wbCacheStatsBadge");
-if (b1) b1.innerHTML = `<span class="badge-dot"></span>CLIENT LRU CACHE · ${this.hits} HITS / ${this.misses} MISSES`;
-const b2 = document.getElementById("liveProofCacheBadge");
-if (b2) b2.innerHTML = `<span class="badge-dot"></span>CACHED · LRU MEMO (${this.hits} HITS)`;
-}
-}
-const queryCache = new ClientLRUCache(128);
-function debounce(fn, waitMs = 180) {
-let timer = null;
-return function (...args) {
-if (timer) clearTimeout(timer);
-timer = setTimeout(() => fn.apply(this, args), waitMs);
+list.forEach(function(n){ n.level = lvl(n); });
+FAM[k] = {
+name: RAW[k].name,
+by: by,
+list: list.slice().sort(function(a, b){ return b.freq - a.freq; }),
+maxLevel: Math.max.apply(null, list.map(function(n){ return n.level; }))
 };
+});
+function deepest(f){
+var best = null;
+FAM[f].list.forEach(function(n){
+if(!best || n.level > best.level || (n.level === best.level && n.freq > best.freq)) best = n;
+});
+return best ? best.id : FAM[f].list[0].id;
 }
-function getCachedAncestors(startId, hops) {
-const key = `anc_${startId}_${hops}`;
-const cached = queryCache.get(key);
-if (cached) return cached;
-const visited = new Set([Number(startId)]);
-const activeEdgeIndices = new Set();
-let frontier = [Number(startId)];
-for (let h = 0; h < hops; h++) {
-const next = [];
-MASTER_DATA.edges.forEach((e, idx) => {
-if (frontier.includes(e.c)) {
-activeEdgeIndices.add(idx);
-if (!visited.has(e.p)) {
-visited.add(e.p);
-next.push(e.p);
+function lvColor(l){
+var v = getComputedStyle(document.documentElement).getPropertyValue('--l' + Math.min(l, 4)).trim();
+return v || '#0A7D55';
 }
+function ancestors(f, id, H){
+var by = FAM[f].by, dist = {}, edges = {};
+if(!by[id]) return { dist: dist, edges: edges };
+dist[id] = 0;
+var frontier = [id];
+for(var d = 0; d < H; d++){
+var next = [];
+frontier.forEach(function(c){
+if(by[c]){
+by[c].parents.forEach(function(p){
+edges[p.id + '>' + c] = 1;
+if(dist[p.id] == null){ dist[p.id] = d + 1; next.push(p.id); }
+});
 }
 });
 frontier = next;
 }
-const res = { visited, activeEdgeIndices };
-queryCache.set(key, res);
-return res;
+return { dist: dist, edges: edges };
 }
-const appState = {
-activeLayer: "story", // "story" | "workbench"
-selectedNodeId: 11842,
-family: "all",
-hops: 4,
-searchQuery: "",
-cellPage: 1,
-cellPageSize: 12,
-cellLetter: "all",
-cellCategory: "all",
-tableUiMode: "ready", // "ready" | "loading" | "empty" | "error"
-pause3D: false,
-scrollProgress: 0,
-sceneStateIndex: 0
-};
-let lastRenderedGraphSig = "";
-let lastRenderedTableSig = "";
-const backendState = {
-isOnline: false,
-poolSize: 4,
-serverProvenance: ""
-};
-async function checkBackendHealth() {
-const badge = document.getElementById("backendStatusBadge");
+var Scene3D = (function(){
+var stage = $('stage'), labelsEl = $('labels'), renderer = null, scene, camera, group;
+var lbls = [], pulses = [], state = null, onSelect = null;
+var theta = 0.7, phi = 0.4, dist = 17, targetY = 3, auto = !REDUCE, dragging = false, lx = 0, ly = 0, W = 0, H = 0;
+var PR = 4.0, GAP = 1.9;
+var v3 = null;
+function fail(){
+stage.innerHTML = '<div class="nogl">WebGL is disabled or unavailable. Hardware-accelerated 3D is required for the interactive plates.</div>';
+}
+function init(){
+if(typeof THREE === 'undefined'){ fail(); return; }
 try {
-const t0 = performance.now();
-const res = await fetch("/api/v1/health", { cache: "no-store" });
-if (res.ok) {
-const data = await res.json();
-const latency = Math.round(performance.now() - t0);
-backendState.isOnline = true;
-backendState.poolSize = data.db_pool_size || 4;
-if (badge) {
-badge.className = "badge badge-local";
-badge.style.borderColor = "var(--ok)";
-badge.innerHTML = `<span class="badge-dot" style="background:var(--ok);"></span>LIVE REST API · CONNECTED (${latency}ms · POOL: ${backendState.poolSize})`;
+renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+} catch(e) {
+fail(); return;
 }
-const wbDbBadge = document.getElementById("wbDbPoolBadge");
-if (wbDbBadge) {
-wbDbBadge.innerHTML = `<span class="badge-dot" style="background:var(--ok);"></span>SQLITE POOL (${backendState.poolSize} CONNS) · ONLINE`;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setClearColor(0x000000, 0);
+stage.insertBefore(renderer.domElement, labelsEl);
+scene = new THREE.Scene();
+camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
+scene.add(new THREE.AmbientLight(0xffffff, 0.90));
+var dl = new THREE.DirectionalLight(0xffffff, 0.85); dl.position.set(5, 10, 7); scene.add(dl);
+group = new THREE.Group(); scene.add(group);
+v3 = new THREE.Vector3();
+stage.addEventListener('pointerdown', function(e){
+if(e.target.closest('.lbl,.stage-ui')) return;
+dragging = true; lx = e.clientX; ly = e.clientY; stage.classList.add('drag');
+try { stage.setPointerCapture(e.pointerId); } catch(_){}
+});
+stage.addEventListener('pointermove', function(e){
+if(!dragging) return;
+var dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
+theta -= dx * 0.008;
+if(e.pointerType !== 'touch') phi = Math.max(0.08, Math.min(1.2, phi + dy * 0.006));
+});
+function end(){ dragging = false; stage.classList.remove('drag'); }
+stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+stage.addEventListener('keydown', function(e){
+if(e.key === 'ArrowLeft'){ theta += 0.15; e.preventDefault(); }
+if(e.key === 'ArrowRight'){ theta -= 0.15; e.preventDefault(); }
+if(e.key === 'ArrowUp'){ phi = Math.min(1.2, phi + 0.08); e.preventDefault(); }
+if(e.key === 'ArrowDown'){ phi = Math.max(0.08, phi - 0.08); e.preventDefault(); }
+});
+var ab = $('autoBtn');
+if(ab){
+ab.setAttribute('aria-pressed', String(auto));
+ab.addEventListener('click', function(){ auto = !auto; ab.setAttribute('aria-pressed', String(auto)); });
 }
-fetchMasterMetrics();
-updateStoryProp2Simulator();
-} else {
-setOfflineBadge(badge);
+var rb = $('resetView');
+if(rb){
+rb.addEventListener('click', function(){ theta = 0.7; phi = 0.4; });
 }
-} catch (e) {
-setOfflineBadge(badge);
+requestAnimationFrame(loop);
 }
+function clearGroup(){
+while(group.children.length){
+var o = group.children[0]; group.remove(o);
+if(o.geometry) o.geometry.dispose();
+if(o.material) o.material.dispose();
 }
-function setOfflineBadge(badge) {
-backendState.isOnline = false;
-if (badge) {
-badge.className = "badge badge-cached";
-badge.innerHTML = `<span class="badge-dot"></span>LOCAL STORE FALLBACK`;
+labelsEl.innerHTML = ''; lbls = []; pulses = [];
 }
+function addLabel(el, pos, off){ labelsEl.appendChild(el); lbls.push({ el: el, pos: pos, off: off }); }
+function layout(f){
+var pos = {}, byL = [];
+for(var l = 0; l <= f.maxLevel; l++) byL.push([]);
+f.list.forEach(function(n){ byL[n.level].push(n); });
+byL.forEach(function(arr, l){
+var N = arr.length;
+arr.forEach(function(n, i){
+var x = 0, z = 0;
+if(N > 1){
+var a = l * 0.9 + i * 2 * Math.PI / N + 0.3;
+var r = (N === 2 ? 1.8 : 2.05);
+x = Math.cos(a) * r; z = Math.sin(a) * r;
 }
-async function fetchMasterMetrics() {
-try {
-const res = await fetch("/api/v1/metrics");
-if (res.ok) {
-const data = await res.json();
-if (data && data.provenance) {
-backendState.serverProvenance = data.provenance;
-const provBadges = document.querySelectorAll(".badge-local");
-provBadges.forEach(b => {
-if (b.textContent.includes("LOCAL STORE · MASTER_RESULTS.JSON")) {
-b.innerHTML = `<span class="badge-dot"></span>LIVE BACKEND · /api/v1/metrics`;
+pos[n.id] = new THREE.Vector3(x, l * GAP + 0.34, z);
+});
+});
+return pos;
+}
+function build(){
+if(!renderer || !state) return;
+clearGroup();
+var f = FAM[state.fam] || FAM.all;
+var A = ancestors(state.fam, state.sel, state.H);
+var pos = layout(f);
+targetY = f.maxLevel * GAP / 2 + 0.2;
+for(var l = 0; l <= f.maxLevel; l++){
+var col = new THREE.Color(lvColor(l)), y = l * GAP;
+var disc = new THREE.Mesh(new THREE.CylinderGeometry(PR, PR, 0.05, 72),
+new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.13, depthWrite: false }));
+disc.position.y = y; group.add(disc);
+[PR, PR * 0.68, PR * 0.36].forEach(function(r, i){
+var ring = new THREE.Mesh(new THREE.RingGeometry(r - 0.035, r, 96),
+new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: i === 0 ? 0.95 : 0.38, side: THREE.DoubleSide, depthWrite: false }));
+ring.rotation.x = -Math.PI / 2; ring.position.y = y + 0.03; group.add(ring);
+});
+var pl = document.createElement('div'); pl.className = 'plate-lbl';
+pl.textContent = (l === 0 ? 'Root' : 'Depth ' + l);
+addLabel(pl, new THREE.Vector3(0, y, PR + 0.15), 0);
+}
+f.list.forEach(function(n){
+n.parents.forEach(function(p){
+if(!pos[p.id] || !pos[n.id]) return;
+var a = pos[p.id], b = pos[n.id], on = !!A.edges[p.id + '>' + n.id];
+var mid = a.clone().add(b).multiplyScalar(0.5);
+var out = new THREE.Vector3(mid.x, 0, mid.z);
+if(out.length() > 0.2) out.normalize().multiplyScalar(0.55); else out.set(0, 0, 0);
+var ctrl = mid.clone().add(out);
+var curve = new THREE.QuadraticBezierCurve3(a, ctrl, b);
+var tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 28, on ? 0.055 : 0.02, 8, false),
+new THREE.MeshBasicMaterial({ color: on ? 0x0A7D55 : 0x7E9A89, transparent: !on, opacity: on ? 1 : 0.35 }));
+group.add(tube);
+if(on){
+var pu = new THREE.Mesh(new THREE.SphereGeometry(0.1, 14, 14), new THREE.MeshBasicMaterial({ color: 0xF4B400 }));
+group.add(pu); pulses.push({ mesh: pu, curve: curve, t: Math.random(), speed: 0.004 + (p.w || 0.5) * 0.003 });
 }
 });
+});
+f.list.forEach(function(n){
+var p = pos[n.id], d = A.dist[n.id], inside = (d != null), isSel = (n.id === state.sel);
+var r = 0.22 + 0.055 * Math.sqrt(n.freq), col = new THREE.Color(lvColor(n.level));
+var mat = new THREE.MeshStandardMaterial({
+color: col, roughness: 0.35, metalness: 0.05, transparent: !inside, opacity: inside ? 1 : 0.38,
+emissive: isSel ? col : 0x000000, emissiveIntensity: isSel ? 0.35 : 0
+});
+var m = new THREE.Mesh(new THREE.SphereGeometry(r, 32, 24), mat);
+m.position.copy(p);
+if(isSel) m.scale.setScalar(1.22);
+group.add(m);
+var sh = new THREE.Mesh(new THREE.CircleGeometry(r * 1.1, 28),
+new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: inside ? 0.35 : 0.15, depthWrite: false }));
+sh.rotation.x = -Math.PI / 2; sh.position.set(p.x, n.level * GAP + 0.06, p.z); group.add(sh);
+if(isSel){
+var halo = new THREE.Mesh(new THREE.TorusGeometry(r * 1.75, 0.035, 10, 56), new THREE.MeshBasicMaterial({ color: 0xF4B400 }));
+halo.rotation.x = Math.PI / 2; halo.position.copy(p); group.add(halo);
 }
+var b = document.createElement('button'); b.type = 'button';
+b.className = 'lbl' + (isSel ? ' sel' : '') + (inside ? '' : ' dim');
+b.style.setProperty('--c', 'var(' + LCOL[Math.min(n.level, 4)] + ')');
+b.innerHTML = '<small>#' + n.id + ' · ' + pct(n.freq) + '</small>' + n.label.replace(/&/g, '&amp;');
+b.setAttribute('aria-label', 'Select latent ' + n.id + ' ' + n.label.replace(/"/g, ''));
+b.addEventListener('click', function(){ if(onSelect) onSelect(n.id); });
+addLabel(b, p.clone(), -(r * 34 + 22));
+});
 }
-} catch (e) {}
+function resize(){
+var w = stage.clientWidth, h = stage.clientHeight;
+if(!w || !h || (w === W && h === H)) return;
+W = w; H = h; renderer.setSize(W, H, false);
+camera.aspect = W / H; camera.updateProjectionMatrix();
+dist = 17 * Math.max(1, 0.95 / camera.aspect);
 }
-function initStoryEvidenceTable() {
-const tbody = document.getElementById("storyMainTableBody");
-if (!tbody) return;
-tbody.innerHTML = MASTER_DATA.methods.map(m => {
-const rowStyle = m.primary ? "background: rgb(var(--accent-rgb) / 0.16); font-weight: 600;" : (m.highlight ? "background: rgb(var(--accent-rgb) / 0.08);" : "");
-const mpColor = m.mpabs < 10 ? "var(--ok)" : (m.mpabs > 30 ? "var(--danger)" : "var(--highlight)");
-return `
-<tr style="${rowStyle}">
-<td>${m.name}</td>
-<td class="num">${m.natL0.toFixed(1)}</td>
-<td class="num">${m.effL0.toFixed(1)}</td>
-<td class="num">${m.fvu.toFixed(4)}</td>
-<td class="num">${m.letAbs.toFixed(2)}%</td>
-<td class="num" style="color:${mpColor}; font-weight:700;">${m.mpabs.toFixed(2)}%</td>
-<td class="num">${m.joint.toFixed(2)}%</td>
-<td class="num">${m.repro}</td>
-<td class="num">${m.causal.toFixed(3)}</td>
-<td class="num" style="font-weight:700;">${m.nodes.toFixed(1)}</td>
-</tr>
-`;
-}).join("");
+function loop(){
+requestAnimationFrame(loop);
+if(!renderer || !stage.offsetParent || document.hidden) return;
+resize(); if(!W) return;
+if(auto && !dragging) theta += 0.0035;
+pulses.forEach(function(p){ p.t = (p.t + p.speed) % 1; p.mesh.position.copy(p.curve.getPoint(p.t)); });
+camera.position.set(Math.sin(theta) * Math.cos(phi) * dist, targetY + Math.sin(phi) * dist, Math.cos(theta) * Math.cos(phi) * dist);
+camera.lookAt(0, targetY, 0);
+renderer.render(scene, camera);
+lbls.forEach(function(l){
+v3.copy(l.pos).project(camera);
+if(v3.z > 1){ l.el.style.visibility = 'hidden'; return; }
+l.el.style.visibility = 'visible';
+var x = (v3.x * 0.5 + 0.5) * W, y = (-v3.y * 0.5 + 0.5) * H + l.off;
+l.el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) translate(-50%,-50%)';
+l.el.style.zIndex = Math.round((1 - v3.z) * 1000);
+});
 }
-function updateStoryProp2Simulator() {
-const s1 = parseFloat(document.getElementById("storySigma1").value);
-const s2 = parseFloat(document.getElementById("storySigma2").value);
-const lam = parseFloat(document.getElementById("storyLambda").value);
-document.getElementById("storySigma1Label").textContent = s1.toFixed(2);
-document.getElementById("storySigma2Label").textContent = s2.toFixed(2);
-document.getElementById("storyLambdaLabel").textContent = lam.toFixed(2);
-const cacheKey = `prop2_${s1.toFixed(2)}_${s2.toFixed(2)}_${lam.toFixed(2)}`;
-let sim = queryCache.get(cacheKey);
-if (!sim) {
-const temp = 0.045;
-const p1Abs = 1.0 / (1.0 + Math.exp((s1 - lam) / temp));
-const p2Abs = 1.0 / (1.0 + Math.exp((s2 - lam) / temp));
-sim = { p1Abs, p2Abs };
-queryCache.set(cacheKey, sim);
+return {
+init: init,
+setSelect: function(fn){ onSelect = fn; },
+setView: function(fam, sel, H){ state = { fam: fam, sel: sel, H: H }; build(); },
+el: stage
+};
+})();
+function renderLegend(fam){
+var f = FAM[fam] || FAM.all, out = '';
+for(var l = 0; l <= f.maxLevel; l++){
+out += '<span><i style="background:var(' + LCOL[Math.min(l, 4)] + ')"></i>' + (l === 0 ? 'Root plate' : 'Depth ' + l) + '</span>';
 }
-document.getElementById("storyFlatRates").textContent = `${(sim.p1Abs * 100).toFixed(1)}% / ${(sim.p2Abs * 100).toFixed(1)}%`;
-const badge = document.getElementById("storyRegimeBadge");
-const explain = document.getElementById("storyRegimeExplain");
-if (lam < Math.min(s1, s2)) {
-badge.textContent = "REGIME I · NO ABSORPTION (λ < min(σ₁², σ₂²))";
-badge.style.color = "var(--ok)";
-explain.textContent = "Both parents vary strongly across child tokens relative to sparsity penalty λ; flat SAEs keep both parent latents active.";
-} else if (lam > Math.max(s1, s2)) {
-badge.textContent = "REGIME IV · JOINT MULTI-PARENT ABSORPTION (λ > max(σ₁², σ₂²))";
-badge.style.color = "var(--danger)";
-explain.textContent = "Sparsity penalty λ dominates both conditional variances; flat SAEs fold both parent directions into the child atom simultaneously.";
-} else {
-badge.textContent = "REGIME II/III · SELECTIVE PARTIAL ABSORPTION (min(σ²) < λ < max(σ²))";
-badge.style.color = "var(--highlight)";
-explain.textContent = s1 < s2
-? `Parent 1 (σ₁² = ${s1.toFixed(2)}) is selectively absorbed before Parent 2 (σ₂² = ${s2.toFixed(2)}), matching Proposition 2.`
-: `Parent 2 (σ₂² = ${s2.toFixed(2)}) is selectively absorbed before Parent 1 (σ₁² = ${s1.toFixed(2)}), matching Proposition 2.`;
+document.querySelectorAll('.legend').forEach(function(el){ el.innerHTML = out; });
 }
-// Query live backend /api/v1/prop2 if online
-if (backendState.isOnline) {
-const queryUrl = `/api/v1/prop2?s1=${s1.toFixed(2)}&s2=${s2.toFixed(2)}&lam=${lam.toFixed(2)}`;
-fetch(queryUrl)
-.then(res => res.ok ? res.json() : null)
-.then(data => {
-if (data && typeof data.abs_rate_p1 === "number") {
-const liveP1 = (data.abs_rate_p1 * 100).toFixed(1);
-const liveP2 = (data.abs_rate_p2 * 100).toFixed(1);
-document.getElementById("storyFlatRates").textContent = `${liveP1}% / ${liveP2}%`;
-const liveProofBadge = document.getElementById("liveProofCacheBadge");
-if (liveProofBadge) {
-liveProofBadge.innerHTML = `<span class="badge-dot"></span>LIVE BACKEND · PROPOSITION-2-SIMULATOR`;
+var page = 'explorer';
+var lastRenderedGraphSig = "";
+var lastRenderedTableSig = "";
+var S = { fam: 'all', H: 2, sel: deepest('all'), q: '' };
+var famSel = $('famSel'), simFam = $('simFam');
+Object.keys(FAM).forEach(function(k){
+famSel.add(new Option(FAM[k].name, k));
+simFam.add(new Option(FAM[k].name, k));
+});
+function renderList(){
+var f = FAM[S.fam], q = S.q.trim().toLowerCase(), box = $('latList');
+var rows = f.list.filter(function(n){
+return !q || n.label.toLowerCase().indexOf(q) > -1 || n.id.indexOf(q.replace('#', '')) > -1;
+});
+if(!rows.length){
+box.innerHTML = '<div class="empty">No latent matches "' + S.q.replace(/</g, '&lt;') + '" in this family.</div>';
+return;
 }
+var max = f.list[0].freq;
+box.innerHTML = rows.map(function(n){
+return '<button type="button" class="row-btn" data-id="' + n.id + '" aria-pressed="' + (n.id === S.sel) + '" style="--c:var(' + LCOL[Math.min(n.level, 4)] + ')">' +
+'<span class="id">#' + n.id + '</span><span class="nm">' + n.label + '</span><span class="fq">' + pct(n.freq) + '</span>' +
+'<span class="fbar" style="width:' + (n.freq / max * 100) + '%"></span></button>';
+}).join('');
 }
-})
-.catch(() => {});
+function renderDetail(){
+var f = FAM[S.fam], n = f.by[S.sel] || f.list[0], A = ancestors(S.fam, S.sel, S.H), full = ancestors(S.fam, S.sel, 4);
+var inH = Math.max(0, Object.keys(A.dist).length - 1), all = Math.max(0, Object.keys(full.dist).length - 1);
+var byHop = {};
+Object.keys(full.dist).forEach(function(id){
+if(id !== S.sel){ (byHop[full.dist[id]] = byHop[full.dist[id]] || []).push(id); }
+});
+var route = '';
+Object.keys(byHop).sort().forEach(function(h){
+byHop[h].forEach(function(id){
+var a = f.by[id];
+if(a){
+route += '<li class="' + (+h <= S.H ? '' : 'out') + '"><span class="hop">hop ' + h + '</span><span>' + a.label + ' <span class="mono" style="color:var(--muted)">#' + id + '</span></span><span class="mono">' + pct(a.freq) + '</span></li>';
 }
+});
+});
+var parents = n.parents.length ? n.parents.map(function(p){
+var pl = f.by[p.id] ? f.by[p.id].label : '#' + p.id;
+return '<li class="chip">' + pl + ' · w ' + p.w.toFixed(2) + '</li>';
+}).join('') : '<li class="chip">Root latent · No upstream parents</li>';
+var extra = NODE_EXTRA[n.id] || { tokens: [], causal: "" };
+var tokensHtml = extra.tokens.length ? '<p class="sub" style="margin-top:14px; margin-bottom:6px;">Top activating tokens</p><div style="display:flex; flex-wrap:wrap; gap:6px;">' + extra.tokens.map(function(t){ return '<span class="chip" style="font-size:12.5px;">' + t + '</span>'; }).join('') + '</div>' : '';
+var causalHtml = extra.causal ? '<p class="sub" style="margin-top:14px; margin-bottom:4px;">Causal ablation probe readout</p><p style="font-size:13.5px; color:var(--ink); margin:0; line-height:1.45; background:var(--surface-2); padding:10px 12px; border-radius:10px;">' + extra.causal + '</p>' : '';
+$('detail').innerHTML =
+'<h3>' + n.label + ' <span class="mono" style="font-size:15px; color:var(--muted); font-weight:400">#' + n.id + '</span></h3>' +
+'<ul class="chips" style="margin:10px 0 0"><li class="chip lv" style="--c:var(' + LCOL[Math.min(n.level, 4)] + ')">depth ' + n.level + '</li><li class="chip">freq ' + pct(n.freq) + '</li></ul>' +
+'<div class="kv"><div><span>Direct parents</span><b>' + n.parents.length + '</b></div><div><span>Reached at H = ' + S.H + '</span><b>' + inH + '</b></div><div><span>Ancestors in DAG</span><b>' + all + '</b></div></div>' +
+'<p class="sub" style="margin-bottom:8px">Learned parents &amp; edge weights A[p,c]</p><ul class="chips" style="margin-bottom:14px">' + parents + '</ul>' +
+tokensHtml + causalHtml +
+(all ? '<p class="sub" style="margin-top:16px; margin-bottom:8px">Ancestral route</p><ul class="route">' + route + '</ul>' : '');
 }
-function renderWorkbenchGraph() {
-const sig = `${appState.selectedNodeId}_${appState.family}_${appState.hops}_${appState.searchQuery}`;
+function renderExplorer(){
+var sig = S.fam + '_' + S.sel + '_' + S.H;
 if (sig === lastRenderedGraphSig) return;
 lastRenderedGraphSig = sig;
-const q = appState.searchQuery.trim().toLowerCase();
-const visNodes = MASTER_DATA.nodes.filter(n => {
-const famOk = appState.family === "all" || n.family === appState.family || (appState.family === "food" && n.id === 89);
-const searchOk = !q || n.label.toLowerCase().includes(q) || n.code.toLowerCase().includes(q) || n.tokens.some(t => t.toLowerCase().includes(q));
-return famOk && searchOk;
-});
-const visIds = new Set(visNodes.map(n => n.id));
-const { visited, activeEdgeIndices } = getCachedAncestors(appState.selectedNodeId, appState.hops);
-const listEl = document.getElementById("wbNodeList");
-listEl.innerHTML = visNodes.map(n => {
-const isSel = n.id === appState.selectedNodeId;
-const borderCol = isSel ? "var(--accent)" : "var(--glass-border)";
-const bgCol = isSel ? "rgb(var(--accent-rgb) / 0.18)" : "var(--bg-0)";
-return `
-<button type="button" data-wb-node="${n.id}" class="btn" style="justify-content:space-between; border-color:${borderCol}; background:${bgCol}; padding:6px 10px; min-height:34px;">
-<span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${n.code} · ${n.label}</span>
-<span class="mono-num" style="font-size:0.72rem; color:var(--fg-1);">${n.freq}</span>
-</button>
-`;
-}).join("");
-listEl.querySelectorAll("[data-wb-node]").forEach(btn => {
-btn.addEventListener("click", () => {
-appState.selectedNodeId = Number(btn.getAttribute("data-wb-node"));
-renderWorkbenchGraph();
-});
-});
-const svg = document.getElementById("wbDagSvg");
-let svgHtml = `
-<defs>
-<marker id="wbArrowHi" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-<path d="M 0 1 L 10 5 L 0 9 z" fill="#6366f1" />
-</marker>
-<marker id="wbArrowLo" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-<path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
-</marker>
-</defs>
-`;
-MASTER_DATA.edges.forEach((e, idx) => {
-if (!visIds.has(e.p) || !visIds.has(e.c)) return;
-const pNode = MASTER_DATA.nodes.find(n => n.id === e.p);
-const cNode = MASTER_DATA.nodes.find(n => n.id === e.c);
-const isHi = activeEdgeIndices.has(idx);
-const stroke = isHi ? "#6366f1" : "#475569";
-const width = isHi ? 2.6 : 1.3;
-const op = isHi ? "1" : "0.38";
-const mx = (pNode.x + cNode.x) / 2;
-const my = (pNode.y + cNode.y) / 2 - 5;
-svgHtml += `
-<g opacity="${op}">
-<line x1="${cNode.x}" y1="${cNode.y}" x2="${pNode.x}" y2="${pNode.y}" stroke="${stroke}" stroke-width="${width}" marker-end="${isHi ? "url(#wbArrowHi)" : "url(#wbArrowLo)"}" />
-${isHi ? `<rect x="${mx - 17}" y="${my - 8}" width="34" height="14" rx="4" fill="#0b0f17" stroke="#6366f1" stroke-width="1" />
-<text x="${mx}" y="${my + 2}" text-anchor="middle" fill="#eef2f8" font-family="JetBrains Mono, monospace" font-size="9" font-weight="600">${e.w.toFixed(2)}</text>` : ""}
-</g>
-`;
-});
-visNodes.forEach(n => {
-const isSel = n.id === appState.selectedNodeId;
-const isAnc = visited.has(n.id);
-const fill = n.tier === 0 ? "#34d399" : (n.tier === 1 ? "#f5a524" : "#6366f1");
-const stroke = isSel ? "#ffffff" : "#0b0f17";
-const sw = isSel ? 3.2 : 1.5;
-const op = isAnc ? "1" : "0.40";
-svgHtml += `
-<g data-svg-node="${n.id}" style="cursor:pointer;" opacity="${op}">
-<circle cx="${n.x}" cy="${n.y}" r="18" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" />
-<text x="${n.x}" y="${n.y + 3}" text-anchor="middle" fill="#0b0f17" font-family="JetBrains Mono, monospace" font-size="8.5" font-weight="700">${n.code}</text>
-<text x="${n.x}" y="${n.y + 31}" text-anchor="middle" fill="currentColor" font-size="10.5" font-weight="600">${n.label}</text>
-</g>
-`;
-});
-svg.innerHTML = svgHtml;
-svg.querySelectorAll("[data-svg-node]").forEach(el => {
-el.addEventListener("click", () => {
-appState.selectedNodeId = Number(el.getAttribute("data-svg-node"));
-renderWorkbenchGraph();
-});
-});
-const node = MASTER_DATA.nodes.find(n => n.id === appState.selectedNodeId) || MASTER_DATA.nodes[0];
-const tierLabels = ["Tier 0 · Root Parent", "Tier 1 · Intermediate Concept", "Tier 2 · Multi-Parent Child"];
-document.getElementById("wbInspTierBadge").innerHTML = `<span class="badge-dot"></span>${tierLabels[node.tier]}`;
-document.getElementById("wbInspTitle").textContent = `Latent ${node.code} · "${node.label}"`;
-document.getElementById("wbInspFreq").textContent = `Effective Firing Rate: ${node.freq} · Frequency Rank #${node.rank}`;
-document.getElementById("wbInspZNat").textContent = node.zNat.toFixed(2);
-document.getElementById("wbInspZEff").textContent = (appState.hops === 0 ? node.zNat : node.zEff).toFixed(2);
-document.getElementById("wbInspAbsDr").textContent = node.absDr;
-document.getElementById("wbInspAbsMat").textContent = node.absMat;
-document.getElementById("wbInspCausal").textContent = node.causal;
-document.getElementById("wbInspTokens").innerHTML = node.tokens.map(t =>
-`<span class="badge mono-num" style="text-transform:none;">${t}</span>`
-).join("");
-const pEdges = MASTER_DATA.edges.filter(e => e.c === node.id);
-const pCont = document.getElementById("wbInspParents");
-if (pEdges.length === 0) {
-pCont.innerHTML = `<div style="font-size:0.8rem; color:var(--fg-1);">Root parent latent (0 parents; receives upward routed activations from descendants).</div>`;
-} else {
-pCont.innerHTML = pEdges.map(e => {
-const pNode = MASTER_DATA.nodes.find(n => n.id === e.p);
-return `
-<div style="display:flex; justify-content:space-between; background:var(--bg-0); padding:6px 10px; border-radius:var(--r-sm); border:1px solid var(--glass-border); font-size:0.8rem;">
-<span>${pNode.code} · <strong>${pNode.label}</strong></span>
-<span class="mono-num" style="color:var(--accent); font-weight:700;">A = ${e.w.toFixed(2)}</span>
-</div>
-`;
-}).join("");
+$('hVal').textContent = 'H = ' + S.H + (S.H === 1 ? ' hop' : ' hops');
+renderList(); renderDetail(); renderLegend(S.fam);
+if(page === 'explorer') Scene3D.setView(S.fam, S.sel, S.H);
 }
+function select(id){ S.sel = id; lastRenderedGraphSig = ""; renderExplorer(); }
+famSel.addEventListener('change', function(){
+S.fam = famSel.value; S.sel = deepest(S.fam); S.q = ''; $('q').value = ''; lastRenderedGraphSig = ""; renderExplorer();
+});
+$('hRange').addEventListener('input', debounce(function(e){ S.H = +e.target.value; lastRenderedGraphSig = ""; renderExplorer(); }, 120));
+$('q').addEventListener('input', debounce(function(e){ S.q = e.target.value; renderList(); }, 180));
+$('latList').addEventListener('click', function(e){
+var b = e.target.closest('.row-btn'); if(b) select(b.dataset.id);
+});
+var R = { fam: 'all', target: deepest('all'), H: 2, timer: null };
+function fillTargets(){
+var f = FAM[R.fam], sel = $('simTarget'); sel.innerHTML = '';
+f.list.filter(function(n){ return n.level > 0; }).sort(function(a, b){ return b.level - a.level || b.freq - a.freq; }).forEach(function(n){
+sel.add(new Option('#' + n.id + ' ' + n.label.replace(/"/g, '') + ' (depth ' + n.level + ')', n.id));
+});
+if(!f.by[R.target] || f.by[R.target].level === 0){
+R.target = deepest(R.fam);
 }
-function renderPaginatedCellsTable() {
-const sig = `${appState.cellPage}_${appState.cellLetter}_${appState.cellCategory}_${appState.tableUiMode}`;
+sel.value = R.target;
+}
+function paths(f, id){
+var by = FAM[f].by, mass = [0, 0, 0, 0, 0, 0], anc = {}, count = [0, 0, 0, 0, 0, 0];
+if(!by[id]) return { mass: mass, anc: anc, count: count };
+(function walk(n, len, w){
+mass[len] += w; count[len]++;
+if(len > 0){
+var a = anc[n] || (anc[n] = { id: n, minD: len, byLen: [0, 0, 0, 0, 0, 0] });
+a.minD = Math.min(a.minD, len);
+a.byLen[len] += w;
+}
+if(by[n]){
+by[n].parents.forEach(function(p){ walk(p.id, len + 1, w * p.w); });
+}
+})(id, 0, 1);
+return { mass: mass, anc: anc, count: count };
+}
+function sum(a){ return a.reduce(function(x, y){ return x + y; }, 0); }
+function renderSim(){
+var P = paths(R.fam, R.target), f = FAM[R.fam];
+var cum = [], s = 0; for(var h = 0; h <= 4; h++){ s += P.mass[h]; cum.push(s); }
+var total = cum[4] > 0 ? cum[4] : 1.0;
+var cov = cum.map(function(c){ return Math.min(1, c / total); });
+$('simHVal').textContent = 'H = ' + R.H + (R.H === 1 ? ' hop' : ' hops');
+$('simH').value = R.H;
+var cnt = 0; for(var i = 1; i <= R.H; i++) cnt += P.count[i];
+var reached = Object.keys(P.anc).filter(function(id){ return P.anc[id].minD <= R.H; }).length;
+$('simKv').innerHTML =
+'<div><span>Signal Kept</span><b>' + (cov[R.H] * 100).toFixed(1) + '%</b></div>' +
+'<div><span>Residual</span><b>' + ((1 - cov[R.H]) * 100).toFixed(1) + '%</b></div>' +
+'<div><span>Ancestors reached</span><b>' + reached + ' / ' + Object.keys(P.anc).length + '</b></div>' +
+'<div><span>Paths followed</span><b>' + cnt + '</b></div>';
+$('simMsg').textContent = R.H === 0
+? 'H = 0 is a flat SAE: the latent fires alone and no parent signal is routed.'
+: (cov[R.H] >= 0.999
+? 'The whole ancestral signal is captured. Deeper hops add nothing for this latent.'
+: 'Raising H to ' + (R.H + 1) + ' recovers another ' + ((cov[R.H + 1] - cov[R.H]) * 100).toFixed(1) + ' percentage points of path weight.');
+$('cov').innerHTML = cov.map(function(c, h){
+var cls = (h === R.H ? 'cur' : (h < R.H ? 'past' : ''));
+return '<div class="col ' + cls + '"><span class="pct">' + (c * 100).toFixed(0) + '%</span><div class="bar" style="height:' + Math.max(c * 100 * 0.78, 4) + '%"></div><span class="hl">H = ' + h + '</span></div>';
+}).join('');
+var rows = Object.keys(P.anc).map(function(id){ return P.anc[id]; }).sort(function(a, b){
+return a.minD - b.minD || sum(b.byLen) - sum(a.byLen);
+});
+$('simRoute').innerHTML = rows.map(function(a){
+var n = f.by[a.id], m = sum(a.byLen);
+return '<li class="' + (a.minD <= R.H ? '' : 'out') + '"><span class="hop">hop ' + a.minD + '</span><span>' + (n ? n.label : '#' + a.id) + ' <span class="mono" style="color:var(--muted)">#' + a.id + '</span></span><span class="mono">w ' + m.toFixed(2) + '</span></li>';
+}).join('') || '<li><span class="hop"></span><span>Root latent, nothing to route.</span><span></span></li>';
+renderLegend(R.fam);
+if(page === 'routing') Scene3D.setView(R.fam, R.target, R.H);
+}
+function stopPlay(){
+if(R.timer){ clearInterval(R.timer); R.timer = null; }
+$('playBtn').disabled = false; $('playBtn').textContent = 'Play hops 0 to 4';
+}
+simFam.addEventListener('change', function(){
+stopPlay(); R.fam = simFam.value; R.target = deepest(R.fam); fillTargets(); renderSim();
+});
+$('simTarget').addEventListener('change', function(e){ stopPlay(); R.target = e.target.value; renderSim(); });
+$('simH').addEventListener('input', debounce(function(e){ stopPlay(); R.H = +e.target.value; renderSim(); }, 120));
+$('resetBtn').addEventListener('click', function(){ stopPlay(); R.H = 2; renderSim(); });
+$('playBtn').addEventListener('click', function(){
+stopPlay(); R.H = 0; renderSim(); $('playBtn').disabled = true; $('playBtn').textContent = 'Playing…';
+R.timer = setInterval(function(){
+if(R.H >= 4){ stopPlay(); return; }
+R.H++; renderSim();
+}, 1000);
+});
+Scene3D.setSelect(function(id){
+if(page === 'explorer'){
+select(id);
+} else if(page === 'routing'){
+if(FAM[R.fam].by[id] && FAM[R.fam].by[id].level === 0) return;
+stopPlay(); R.target = id; $('simTarget').value = id; renderSim();
+}
+});
+fetch('/api/v1/health').then(function(r){ return r.json(); }).then(function(d){
+var p = $('liveApiPill');
+if(p) p.textContent = 'REST API Connected';
+}).catch(function(){});
+var METHODS = D.methods;
+var CIRCUITS = D.circuits;
+var ALL_112_CELLS = D.cells;
+var MKEYS = D.methodKeys || [];
+(function(){
+var pill = document.getElementById('cellsPill');
+if (pill) pill.textContent = ALL_112_CELLS.length + ' MPAbs cells';
+var lf = document.getElementById('cellLetterFilter'), cf = document.getElementById('cellCatFilter');
+var ls = {}, cs = {};
+ALL_112_CELLS.forEach(function(c){ ls[c.letter] = 1; cs[c.category] = 1; });
+Object.keys(ls).sort().forEach(function(l){ lf.add(new Option('Letter ' + l, l)); });
+Object.keys(cs).sort().forEach(function(c){ cf.add(new Option(c, c)); });
+})();
+var MCOLS = [
+['mpabs', 'MPAbs Mean ↓', 1],
+['joint', 'MPAbs Joint ↓', 1],
+['causal', 'Causal ΔLogit ↑', 0],
+['nodes', 'Circuit Nodes@0.80 ↓', 1],
+['faith', 'Faithfulness AUC ↑', 0],
+['fvu', 'FVU ↓', 1],
+['lossrec', 'Loss Recovered ↑', 0],
+['natL0', 'Native L0', 0],
+['effL0', 'Eff. L0', 0]
+];
+var CCOLS = MKEYS.map(function(k){ return [k, ((D.display || {})[k] || k) + ' nodes ↓', 1]; }).concat([['faith', 'DR-SAE AUC ↑', 0], ['acc', 'LM accuracy ↑', 0]]);
+var sortM = { k: 'mpabs', asc: true }, sortC = { k: 'faith', asc: false };
+function sorted(arr, s){
+return arr.slice().sort(function(a, b){ return s.asc ? a[s.k] - b[s.k] : b[s.k] - a[s.k]; });
+}
+function head(cols, s, tid, first){
+return '<thead><tr><th>Rank</th><th>' + first + '</th>' + cols.map(function(c){
+return '<th><button type="button" data-t="' + tid + '" data-k="' + c[0] + '" data-lowbest="' + c[2] + '" aria-pressed="' + (s.k === c[0]) + '">' +
+c[1] + (s.k === c[0] ? (s.asc ? ' ▲' : ' ▼') : '') + '</button></th>';
+}).join('') + '</tr></thead>';
+}
+function cell(v, key, max){
+if (v === null || v === undefined || (typeof v === 'number' && isNaN(v))) return '<td class="num">—</td>';
+var plain = (key === 'nodes' || key === 'hops' || key === 'natL0' || key === 'effL0' || MKEYS.indexOf(key) >= 0);
+if (plain && typeof v === 'number') v = Math.round(v * 10) / 10;
+var isPct = (key === 'mpabs' || key === 'joint' || key === 'repro' || key === 'acc');
+var txt = plain ? v : (isPct ? (v * 100).toFixed(2) + '%' : (typeof v === 'number' ? v.toFixed(3) : v));
+var valNum = typeof v === 'number' ? v : parseFloat(v);
+var w = plain ? '' : '<span class="mini"><i style="width:' + Math.min(valNum / max, 1) * 100 + '%"></i></span>';
+return '<td class="num">' + txt + w + '</td>';
+}
+function renderPodium(){
+var mm = METHODS.slice().sort(function(a, b){ return a.mpabs - b.mpabs; });
+$('podium').innerHTML = mm.map(function(m, i){
+var h = Math.round(52 + Math.max(0, 1 - m.mpabs) * 168);
+return '<div class="slot' + (m.ours ? ' ours' : '') + '"><div class="scene3d"><div class="cube" style="--h:' + h + 'px">' +
+'<i class="fr"><b>' + (i + 1) + '</b></i><i class="bk"></i><i class="rt"></i><i class="lf"></i><i class="tp"></i></div></div>' +
+'<div class="nm">' + m.name + '</div><div class="vl">MPAbs ' + (m.mpabs * 100).toFixed(2) + '%</div></div>';
+}).join('');
+}
+var pc = $('podiumCard');
+if(pc){
+pc.addEventListener('pointermove', function(e){
+if(REDUCE) return;
+var r = pc.getBoundingClientRect();
+var x = (e.clientX - r.left) / r.width - 0.5;
+var y = (e.clientY - r.top) / r.height - 0.5;
+$('podium').style.setProperty('--ry', (-30 + x * 46) + 'deg');
+$('podium').style.setProperty('--rx', (-24 - y * 16) + 'deg');
+});
+pc.addEventListener('pointerleave', function(){
+$('podium').style.removeProperty('--ry');
+$('podium').style.removeProperty('--rx');
+});
+}
+function renderLeader(){
+renderPodium();
+var mm = sorted(METHODS, sortM), mx = { mpabs: 1, joint: 1, causal: Math.max.apply(null, METHODS.map(function(m){ return m.causal || 0; }).concat([1])), faith: 1, fvu: 1, lossrec: 1 };
+$('methodTbl').innerHTML = head(MCOLS, sortM, 'm', 'Method') + '<tbody>' + mm.map(function(r, i){
+return '<tr' + (r.ours ? ' class="ours"' : '') + '><td><span class="rank">' + (i + 1) + '</span></td><td>' + r.name + (r.ours ? '<span class="tag">ours</span>' : '') + '</td>' +
+MCOLS.map(function(c){ return cell(r[c[0]], c[0], mx[c[0]] || 1); }).join('') + '</tr>';
+}).join('') + '</tbody>';
+var cc = sorted(CIRCUITS, sortC), cx = { faith: 1, acc: 1 };
+$('circuitTbl').innerHTML = head(CCOLS, sortC, 'c', 'Task Circuit') + '<tbody>' + cc.map(function(r, i){
+return '<tr><td><span class="rank">' + (i + 1) + '</span></td><td>' + r.name + '</td>' +
+CCOLS.map(function(c){ return cell(r[c[0]], c[0], cx[c[0]] || 1); }).join('') + '</tr>';
+}).join('') + '</tbody>';
+renderCells();
+}
+var cellPage = 1, pageSize = 10, cellLetter = 'all', cellCat = 'all';
+function renderCells(){
+var sig = cellPage + '_' + cellLetter + '_' + cellCat;
 if (sig === lastRenderedTableSig) return;
 lastRenderedTableSig = sig;
-const container = document.getElementById("wbTableStateContainer");
-if (appState.tableUiMode === "loading") {
-container.innerHTML = `
-<div style="display:flex; flex-direction:column; gap:10px; padding:var(--s-4);" aria-busy="true" aria-label="Loading MPAbs benchmark cells">
-<div class="skeleton" style="height:32px; width:100%;"></div>
-<div class="skeleton" style="height:28px; width:96%;"></div>
-<div class="skeleton" style="height:28px; width:98%;"></div>
-<div class="skeleton" style="height:28px; width:92%;"></div>
-<div class="skeleton" style="height:28px; width:95%;"></div>
-</div>
-`;
-return;
+var filtered = ALL_112_CELLS.filter(function(c){
+return (cellLetter === 'all' || c.letter === cellLetter) && (cellCat === 'all' || c.category === cellCat);
+});
+var totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+if(cellPage > totalPages) cellPage = totalPages;
+var start = (cellPage - 1) * pageSize, pageItems = filtered.slice(start, start + pageSize);
+$('pageIndicator').textContent = 'Page ' + cellPage + ' of ' + totalPages + ' (' + filtered.length + ' cells)';
+$('prevPageBtn').disabled = (cellPage <= 1);
+$('nextPageBtn').disabled = (cellPage >= totalPages);
+function pc(v){ return (v === null || v === undefined) ? '—' : (v * 100).toFixed(1) + '%'; }
+var rows = pageItems.map(function(c){
+return '<tr><td class="mono" style="font-weight:600">' + c.cellId + '</td><td class="num">' + c.n + '</td>' +
+'<td style="color:var(--muted); font-size:13px; max-width:240px; overflow:hidden; text-overflow:ellipsis;">' + c.words + '</td>' +
+MKEYS.map(function(k){ return '<td class="num"' + (k === 'DR-SAE' ? ' style="color:var(--brand); font-weight:700;"' : '') + '>' + pc(c[k]) + '</td>'; }).join('') + '</tr>';
+}).join('');
+$('cellsTbl').innerHTML = '<thead><tr><th>Cell</th><th>Tokens</th><th>Example words</th>' + MKEYS.map(function(k){ return '<th>' + ((D.display || {})[k] || k) + '</th>'; }).join('') + '</tr></thead><tbody>' + (rows || '<tr><td colspan="' + (3 + MKEYS.length) + '" class="empty">No cells match filters</td></tr>') + '</tbody>';
 }
-if (appState.tableUiMode === "error") {
-container.innerHTML = `
-<div style="padding:var(--s-6); text-align:center; border:1px solid var(--danger); border-radius:var(--r-sm); background:var(--bg-0);">
-<span class="badge badge-unavail"><span class="badge-dot"></span>UNAVAILABLE · SIMULATED ENDPOINT FAILURE</span>
-<h3 style="font-size:var(--step-1); margin:var(--s-2) 0;">Unable to Load MPAbs Cell Partition</h3>
-<p style="font-size:var(--step--1); color:var(--fg-1); max-width:520px; margin:0 auto var(--s-4);">
-The SQLite connection pool reported a simulated timeout while fetching cell partition page ${appState.cellPage}. Retry to restore from the local store cache.
-</p>
-<button id="retryTableErrorBtn" type="button" class="btn btn-primary">Retry from Local Store Cache</button>
-</div>
-`;
-document.getElementById("retryTableErrorBtn").addEventListener("click", () => {
-appState.tableUiMode = "ready";
-renderPaginatedCellsTable();
+$('cellLetterFilter').addEventListener('change', function(e){ cellLetter = e.target.value; cellPage = 1; renderCells(); });
+$('cellCatFilter').addEventListener('change', function(e){ cellCat = e.target.value; cellPage = 1; renderCells(); });
+$('prevPageBtn').addEventListener('click', function(){ if(cellPage > 1){ cellPage--; renderCells(); } });
+$('nextPageBtn').addEventListener('click', function(){ cellPage++; renderCells(); });
+document.addEventListener('click', function(e){
+var b = e.target.closest('th button'); if(!b) return;
+var s = b.dataset.t === 'm' ? sortM : sortC, k = b.dataset.k, low = (b.dataset.lowbest === '1');
+if(s.k === k) s.asc = !s.asc; else { s.k = k; s.asc = low; }
+renderLeader();
 });
-return;
+var PAGES = ['explorer', 'routing', 'leaderboard'];
+function route(){
+var h = (location.hash || '').slice(1);
+if(PAGES.indexOf(h) < 0) h = 'explorer';
+page = h;
+PAGES.forEach(function(p){
+var el = $('page-' + p);
+if(el) el.hidden = (p !== h);
+});
+document.querySelectorAll('.nav a').forEach(function(a){
+if(a.getAttribute('href') === '#' + h) a.setAttribute('aria-current', 'page');
+else a.removeAttribute('aria-current');
+});
+if(h !== 'routing') stopPlay();
+if(h === 'explorer' || h === 'routing'){
+$('slot-' + h).appendChild(Scene3D.el);
+if(h === 'explorer') renderExplorer(); else renderSim();
 }
-const filtered = appState.tableUiMode === "empty" ? [] : ALL_112_CELLS.filter(c => {
-const lOk = appState.cellLetter === "all" || c.letter === appState.cellLetter;
-const cOk = appState.cellCategory === "all" || c.category === appState.cellCategory;
-return lOk && cOk;
-});
-if (filtered.length === 0) {
-container.innerHTML = `
-<div style="padding:var(--s-6); text-align:center; border:1px solid var(--glass-border); border-radius:var(--r-sm); background:var(--bg-0);">
-<h3 style="font-size:var(--step-1); margin-bottom:var(--s-2);">No MPAbs Cells Match Current Filter</h3>
-<p style="font-size:var(--step--1); color:var(--fg-1); margin-bottom:var(--s-4);">
-0 of 112 stratified cells matched Letter = "${appState.cellLetter}" and Category = "${appState.cellCategory}".
-</p>
-<button id="resetEmptyFilterBtn" type="button" class="btn btn-primary">Reset Cell Filters</button>
-</div>
-`;
-document.getElementById("resetEmptyFilterBtn").addEventListener("click", () => {
-appState.cellLetter = "all";
-appState.cellCategory = "all";
-appState.tableUiMode = "ready";
-document.getElementById("wbCellLetterFilter").value = "all";
-document.getElementById("wbCellCatFilter").value = "all";
-renderPaginatedCellsTable();
-});
-return;
+closeMenu();
+window.scrollTo(0, 0);
 }
-function renderTableHtml(items, totalPages, totalCount, sourceNote) {
-document.getElementById("wbPageIndicator").textContent = `Page ${appState.cellPage} / ${totalPages} (${totalCount} cells${sourceNote ? ' · ' + sourceNote : ''})`;
-container.innerHTML = `
-<div style="overflow-x:auto;">
-<table class="data-table" aria-label="Paginated MPAbs cells table">
-<thead>
-<tr>
-<th>Cell ID</th>
-<th>Letter Parent</th>
-<th>WordNet Category</th>
-<th>Case Parent</th>
-<th>Exemplar Words</th>
-<th class="num">BatchTopK ↓</th>
-<th class="num">Matryoshka ↓</th>
-<th class="num">H-SAE (Tree) ↓</th>
-<th class="num">DR-SAE (Eff L0) ↓</th>
-<th class="num">DR-SAE (Ours) ↓</th>
-</tr>
-</thead>
-<tbody>
-${items.map(c => `
-<tr>
-<td class="mono-num">${c.cellId}</td>
-<td class="mono-num"><strong>${c.letter}</strong></td>
-<td class="mono-num">${c.category}</td>
-<td class="mono-num">${c.caseLabel}</td>
-<td style="color:var(--fg-1);">${c.words}</td>
-<td class="num" style="color:var(--danger);">${c.btk}</td>
-<td class="num" style="color:var(--highlight);">${c.mat}</td>
-<td class="num">${c.hsae}</td>
-<td class="num" style="color:var(--ok); font-weight:600;">${c.drEff}</td>
-<td class="num" style="color:var(--ok); font-weight:700;">${c.drOurs}</td>
-</tr>
-`).join("")}
-</tbody>
-</table>
-</div>
-`;
+window.addEventListener('hashchange', route);
+var side = $('side'), scrim = $('scrim'), menuBtn = $('menuBtn');
+function closeMenu(){
+side.classList.remove('open'); scrim.classList.remove('show');
+menuBtn.setAttribute('aria-expanded', 'false');
 }
-const totalPages = Math.max(1, Math.ceil(filtered.length / appState.cellPageSize));
-if (appState.cellPage > totalPages) appState.cellPage = totalPages;
-const start = (appState.cellPage - 1) * appState.cellPageSize;
-const pageItems = filtered.slice(start, start + appState.cellPageSize);
-renderTableHtml(pageItems, totalPages, filtered.length, backendState.isOnline ? "SQLite Pool" : "Local Store Cache");
-if (backendState.isOnline && appState.tableUiMode === "ready") {
-const url = `/api/v1/cells?page=${appState.cellPage}&page_size=${appState.cellPageSize}&letter=${appState.cellLetter}&category=${appState.cellCategory}`;
-fetch(url)
-.then(res => res.ok ? res.json() : null)
-.then(data => {
-if (data && Array.isArray(data.items) && data.items.length > 0) {
-const mapped = data.items.map(item => ({
-cellId: item.cell_id,
-letter: item.letter,
-category: item.category,
-caseLabel: item.case_label,
-words: Array.isArray(item.words) ? item.words.join(", ") : item.words,
-btk: (item.mpabs_batchtopk * 100).toFixed(1) + "%",
-mat: (item.mpabs_matryoshka * 100).toFixed(1) + "%",
-hsae: (item.mpabs_hsae * 100).toFixed(1) + "%",
-drEff: (item.mpabs_dr_eff_l0 * 100).toFixed(1) + "%",
-drOurs: (item.mpabs_dr_sae * 100).toFixed(1) + "%"
-}));
-renderTableHtml(mapped, data.total_pages, data.total_items, "SQLite Pool (Zero N+1)");
-}
-})
-.catch(() => {});
-}
-}
-function initThreeDSceneLazy() {
-const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-if (prefersReduced || typeof THREE === "undefined") {
-document.getElementById("qualityTierBadge").innerHTML = `<span class="badge-dot"></span>Static Fallback`;
-return;
-}
-const canvas = document.getElementById("threeCanvas");
-let renderer;
-try {
-renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
-} catch (e) {
-return; // Graceful fallback to #noWebglFallback SVG poster
-}
-const cores = navigator.hardwareConcurrency || 4;
-const isMobile = /Mobi|Android/i.test(navigator.userAgent || "");
-let qualityTier = (isMobile || cores <= 4) ? "Medium" : "High";
-let dprCap = qualityTier === "High" ? 2.0 : 1.5;
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, dprCap));
-renderer.setSize(window.innerWidth, window.innerHeight);
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(0, 0.4, 7.2);
-const group = new THREE.Group();
-scene.add(group);
-const sphereGeo = new THREE.SphereGeometry(0.18, 16, 16);
-const nodeMeshes = {};
-MASTER_DATA.nodes.forEach(n => {
-const col = n.tier === 0 ? 0x34d399 : (n.tier === 1 ? 0xf5a524 : 0x6366f1);
-const mat = new THREE.MeshBasicMaterial({ color: col });
-const mesh = new THREE.Mesh(sphereGeo, mat);
-mesh.position.set(n.x3d, n.y3d, n.z3d);
-group.add(mesh);
-nodeMeshes[n.id] = mesh;
+menuBtn.addEventListener('click', function(){
+var o = side.classList.toggle('open');
+scrim.classList.toggle('show', o);
+menuBtn.setAttribute('aria-expanded', String(o));
 });
-const edgeLines = [];
-MASTER_DATA.edges.forEach(e => {
-const pN = MASTER_DATA.nodes.find(n => n.id === e.p);
-const cN = MASTER_DATA.nodes.find(n => n.id === e.c);
-const pts = [new THREE.Vector3(cN.x3d, cN.y3d, cN.z3d), new THREE.Vector3(pN.x3d, pN.y3d, pN.z3d)];
-const lGeo = new THREE.BufferGeometry().setFromPoints(pts);
-const lMat = new THREE.LineBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0.55 });
-const line = new THREE.Line(lGeo, lMat);
-group.add(line);
-edgeLines.push({ line, e });
-});
-const CAM_STATES = [
-{ x: 0.0, y: 0.4, z: 7.2, rotY: 0.15 },  // 0: Hero
-{ x: -0.6, y: 1.2, z: 5.8, rotY: -0.25 }, // 1: Problem
-{ x: 0.0, y: 0.2, z: 6.4, rotY: 0.0 },   // 2: Pipeline
-{ x: -1.2, y: -0.3, z: 5.2, rotY: 0.35 }, // 3: Live Proof
-{ x: 0.8, y: 0.5, z: 6.8, rotY: -0.18 },  // 4: Evidence
-{ x: 0.0, y: 0.0, z: 8.2, rotY: 0.05 },   // 5: Limits
-{ x: 0.0, y: 1.5, z: 7.5, rotY: 0.22 }    // 6: CTA
-];
-let frameCount = 0;
-let lastFpsTime = performance.now();
-function animate(now) {
-requestAnimationFrame(animate);
-if (appState.pause3D || document.hidden || appState.activeLayer !== "story") return;
-frameCount++;
-if (now - lastFpsTime >= 1000) {
-const fps = Math.round((frameCount * 1000) / (now - lastFpsTime));
-frameCount = 0;
-lastFpsTime = now;
-if (fps < 28 && qualityTier !== "Low") {
-qualityTier = "Low";
-renderer.setPixelRatio(1.0);
-}
-const badge = document.getElementById("qualityTierBadge");
-if (badge) badge.innerHTML = `<span class="badge-dot"></span>Tier: ${qualityTier} · ${Math.min(60, fps)} FPS`;
-}
-const target = CAM_STATES[appState.sceneStateIndex] || CAM_STATES[0];
-camera.position.x += (target.x - camera.position.x) * 0.05;
-camera.position.y += (target.y - camera.position.y) * 0.05;
-camera.position.z += (target.z - camera.position.z) * 0.05;
-group.rotation.y += (target.rotY + Math.sin(now * 0.0004) * 0.18 - group.rotation.y) * 0.04;
-renderer.render(scene, camera);
-}
-requestAnimationFrame(animate);
-window.addEventListener("resize", debounce(() => {
-camera.aspect = window.innerWidth / window.innerHeight;
-camera.updateProjectionMatrix();
-renderer.setSize(window.innerWidth, window.innerHeight);
-}, 150));
-}
-function switchLayer(targetLayer) {
-appState.activeLayer = targetLayer;
-const isStory = targetLayer === "story";
-document.getElementById("layerStory").classList.toggle("hidden", !isStory);
-document.getElementById("layerWorkbench").classList.toggle("hidden", isStory);
-document.getElementById("storyAnchorNav").classList.toggle("hidden", !isStory);
-document.getElementById("sceneContainer").classList.toggle("hidden", !isStory);
-document.getElementById("layerSwitchStoryBtn").className = isStory ? "btn btn-primary" : "btn";
-document.getElementById("layerSwitchWbBtn").className = !isStory ? "btn btn-primary" : "btn";
-if (!isStory) {
-renderWorkbenchGraph();
-renderPaginatedCellsTable();
-}
-window.scrollTo({ top: 0, behavior: "smooth" });
-}
-document.getElementById("layerSwitchStoryBtn").addEventListener("click", () => switchLayer("story"));
-document.getElementById("layerSwitchWbBtn").addEventListener("click", () => switchLayer("workbench"));
-document.getElementById("heroOpenWbBtn").addEventListener("click", () => switchLayer("workbench"));
-document.getElementById("ctaOpenWbBtn").addEventListener("click", () => switchLayer("workbench"));
-document.getElementById("toggleThemeBtn").addEventListener("click", () => {
-const root = document.documentElement;
-const next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
-root.setAttribute("data-theme", next);
-});
-document.getElementById("toggle3dPauseBtn").addEventListener("click", e => {
-appState.pause3D = !appState.pause3D;
-e.currentTarget.setAttribute("aria-pressed", String(appState.pause3D));
-e.currentTarget.textContent = appState.pause3D ? "Resume 3D" : "Pause 3D";
-});
-window.addEventListener("scroll", () => {
-const docH = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-const pct = Math.min(100, Math.max(0, (window.scrollY / docH) * 100));
-const bar = document.getElementById("scrollProgressBar");
-bar.style.width = pct.toFixed(1) + "%";
-bar.setAttribute("aria-valuenow", String(Math.round(pct)));
-}, { passive: true });
-if ("IntersectionObserver" in window) {
-const secObs = new IntersectionObserver(entries => {
-entries.forEach(entry => {
-if (entry.isIntersecting) {
-const idx = Number(entry.target.getAttribute("data-scene-state") || 0);
-appState.sceneStateIndex = idx;
-}
-});
-}, { threshold: 0.35 });
-document.querySelectorAll(".story-section").forEach(sec => secObs.observe(sec));
-}
-["storySigma1", "storySigma2", "storyLambda"].forEach(id => {
-document.getElementById(id).addEventListener("input", debounce(updateStoryProp2Simulator, 120));
-});
-document.getElementById("storyChildSelect").addEventListener("change", e => {
-appState.selectedNodeId = Number(e.target.value);
-});
-document.getElementById("wbSearchInput").addEventListener("input", debounce(e => {
-appState.searchQuery = e.target.value;
-renderWorkbenchGraph();
-}, 180));
-document.getElementById("wbFamilySelect").addEventListener("change", e => {
-appState.family = e.target.value;
-renderWorkbenchGraph();
-});
-document.getElementById("wbHopSlider").addEventListener("input", e => {
-appState.hops = Number(e.target.value);
-document.getElementById("wbHopLabel").textContent = `H = ${appState.hops} hop${appState.hops === 1 ? "" : "s"}`;
-renderWorkbenchGraph();
-});
-document.getElementById("wbResetGraphBtn").addEventListener("click", () => {
-appState.selectedNodeId = 11842;
-appState.family = "all";
-appState.hops = 4;
-appState.searchQuery = "";
-document.getElementById("wbFamilySelect").value = "all";
-document.getElementById("wbHopSlider").value = "4";
-document.getElementById("wbHopLabel").textContent = "H = 4 hops";
-document.getElementById("wbSearchInput").value = "";
-renderWorkbenchGraph();
-});
-document.getElementById("wbCellLetterFilter").addEventListener("change", e => {
-appState.cellLetter = e.target.value;
-appState.cellPage = 1;
-renderPaginatedCellsTable();
-});
-document.getElementById("wbCellCatFilter").addEventListener("change", e => {
-appState.cellCategory = e.target.value;
-appState.cellPage = 1;
-renderPaginatedCellsTable();
-});
-document.getElementById("wbPrevPageBtn").addEventListener("click", () => {
-if (appState.cellPage > 1) {
-appState.cellPage--;
-renderPaginatedCellsTable();
-}
-});
-document.getElementById("wbNextPageBtn").addEventListener("click", () => {
-appState.cellPage++;
-renderPaginatedCellsTable();
-});
-["Ready", "Loading", "Empty", "Error"].forEach(mode => {
-document.getElementById(`state${mode}Btn`).addEventListener("click", () => {
-appState.tableUiMode = mode.toLowerCase();
-renderPaginatedCellsTable();
-});
-});
-function triggerDownload(filename, content, mime) {
-const blob = new Blob([content], { type: mime });
-const url = URL.createObjectURL(blob);
-const a = document.createElement("a");
-a.href = url;
-a.download = filename;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
-}
-document.getElementById("ctaExportJsonBtn").addEventListener("click", () => {
-triggerDownload("topocircuit_master_results.json", JSON.stringify(MASTER_DATA, null, 2), "application/json");
-});
-document.getElementById("wbExportCsvBtn").addEventListener("click", () => {
-const header = "cell_id,letter,category,case_label,batchtopk,matryoshka,hsae,dr_sae_eff_l0,dr_sae_ours\n";
-const rows = ALL_112_CELLS.map(c => `${c.cellId},${c.letter},${c.category},${c.caseLabel},${c.btk},${c.mat},${c.hsae},${c.drEff},${c.drOurs}`).join("\n");
-triggerDownload("mpabs_112_cells.csv", header + rows, "text/csv");
-});
-window.addEventListener("DOMContentLoaded", () => {
-initStoryEvidenceTable();
-updateStoryProp2Simulator();
-checkBackendHealth();
-const scheduleLazy = window.requestIdleCallback || (cb => setTimeout(cb, 120));
-scheduleLazy(initThreeDSceneLazy);
-});
+scrim.addEventListener('click', closeMenu);
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeMenu(); });
+famSel.value = S.fam; simFam.value = R.fam; fillTargets();
+Scene3D.init();
+renderLeader();
+route();
+})();
 </script>
 </body>
 </html>
