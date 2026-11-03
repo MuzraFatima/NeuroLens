@@ -896,6 +896,8 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
   var page = 'explorer';
 
   /* ---------- 3. Explorer Page Logic ---------- */
+  var lastRenderedGraphSig = "";
+  var lastRenderedTableSig = "";
   var S = { fam: 'all', H: 2, sel: deepest('all'), q: '' };
   var famSel = $('famSel'), simFam = $('simFam');
   Object.keys(FAM).forEach(function(k){
@@ -955,15 +957,18 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
   }
 
   function renderExplorer(){
+    var sig = S.fam + '_' + S.sel + '_' + S.H;
+    if (sig === lastRenderedGraphSig) return;
+    lastRenderedGraphSig = sig;
     $('hVal').textContent = 'H = ' + S.H + (S.H === 1 ? ' hop' : ' hops');
     renderList(); renderDetail(); renderLegend(S.fam);
     if(page === 'explorer') Scene3D.setView(S.fam, S.sel, S.H);
   }
-  function select(id){ S.sel = id; renderExplorer(); }
+  function select(id){ S.sel = id; lastRenderedGraphSig = ""; renderExplorer(); }
   famSel.addEventListener('change', function(){
-    S.fam = famSel.value; S.sel = deepest(S.fam); S.q = ''; $('q').value = ''; renderExplorer();
+    S.fam = famSel.value; S.sel = deepest(S.fam); S.q = ''; $('q').value = ''; lastRenderedGraphSig = ""; renderExplorer();
   });
-  $('hRange').addEventListener('input', function(e){ S.H = +e.target.value; renderExplorer(); });
+  $('hRange').addEventListener('input', function(e){ S.H = +e.target.value; lastRenderedGraphSig = ""; renderExplorer(); });
   $('q').addEventListener('input', function(e){ S.q = e.target.value; renderList(); });
   $('latList').addEventListener('click', function(e){
     var b = e.target.closest('.row-btn'); if(b) select(b.dataset.id);
@@ -1213,6 +1218,9 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
   /* Cells pagination and filtering */
   var cellPage = 1, pageSize = 10, cellLetter = 'all', cellCat = 'all';
   function renderCells(){
+    var sig = cellPage + '_' + cellLetter + '_' + cellCat;
+    if (sig === lastRenderedTableSig) return;
+    lastRenderedTableSig = sig;
     var filtered = ALL_112_CELLS.filter(function(c){
       return (cellLetter === 'all' || c.letter === cellLetter) && (cellCat === 'all' || c.category === cellCat);
     });
