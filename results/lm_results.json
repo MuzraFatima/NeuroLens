@@ -1,0 +1,1683 @@
+{
+  "setting": {
+    "model": "EleutherAI/pythia-70m-deduped",
+    "layer": 3,
+    "n_cells": 52,
+    "n_tokens": 1828,
+    "n_cells_compared": 52,
+    "probes_kept": [
+      "case:TitleCase",
+      "case:lowercase",
+      "cat:noun.location",
+      "letter:B",
+      "letter:P",
+      "letter:S",
+      "letter:T"
+    ],
+    "probe_balanced_acc": {
+      "case:TitleCase": 0.9990842490842491,
+      "case:lowercase": 0.9990842490842491,
+      "cat:noun.act": 0.7834915611814346,
+      "cat:noun.artifact": 0.8021825396825397,
+      "cat:noun.communication": 0.8326357179096905,
+      "cat:noun.group": 0.7371031746031746,
+      "cat:noun.location": 0.9337546816479401,
+      "cat:noun.person": 0.8917442137914579,
+      "cat:noun.state": 0.6177966101694915,
+      "cat:noun.time": 0.7486111111111111,
+      "letter:A": 0.8487103174603174,
+      "letter:B": 0.9576643117105545,
+      "letter:C": 0.8977359208523592,
+      "letter:D": 0.7500968992248063,
+      "letter:E": 0.7804761904761904,
+      "letter:F": 0.7855113636363636,
+      "letter:G": 0.75,
+      "letter:H": 0.8841540404040404,
+      "letter:I": 0.7902777777777779,
+      "letter:L": 0.7633709981167609,
+      "letter:M": 0.845734126984127,
+      "letter:P": 0.9165755172728101,
+      "letter:R": 0.7026515151515151,
+      "letter:S": 0.9305555555555556,
+      "letter:T": 0.9062908496732026,
+      "letter:W": 0.8300744878957169
+    }
+  },
+  "per_run": {
+    "L3_w2048_k25_dr-saematchedeffl0_s42": {
+      "method": "DR-SAE (matched eff. L0)",
+      "tag": "L3_w2048_k25_dr-saematchedeffl0_s42",
+      "mpabs_mean": 0.00969932844932845,
+      "joint_abs_mean": 0.0,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.19047619047619047,
+        "case": 0.007285974499089253
+      },
+      "parent_false_negative": {
+        "letter": 0.1671388101983003,
+        "category": 0.47619047619047616,
+        "case": 0.04918032786885246
+      },
+      "false_negative_mean": 0.08222957461928049,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.5646701050656184,
+        "random_control_drop": 0.28981872827612926,
+        "selectivity": 8.849221443764288
+      },
+      "fidelity": {
+        "fvu": 0.06370218098163605,
+        "native_l0": 23.526649475097656,
+        "eff_l0": 31.836999893188477,
+        "dead_frac": 0.0087890625,
+        "loss_recovered": 0.9154045068341338
+      },
+      "circuits": {
+        "simple": {
+          "faithfulness": [
+            0.6555591821670532,
+            0.8393175601959229,
+            0.919618546962738,
+            0.9675453305244446,
+            0.9996132254600525,
+            1.0012762546539307,
+            0.9999865293502808,
+            0.9971874356269836,
+            1.000158667564392,
+            1.000020980834961,
+            1.000020980834961
+          ],
+          "nodes_at_0.8": 8.930183173041982,
+          "auc": 0.9929157763418525,
+          "model_accuracy": 1.0,
+          "m_full": 4.5161614418029785,
+          "m_empty": 0.38129425048828125
+        },
+        "across_pp": {
+          "faithfulness": [
+            0.6230663061141968,
+            0.7567951679229736,
+            0.7773461937904358,
+            0.7776682376861572,
+            0.9308096170425415,
+            0.9515184164047241,
+            0.9300532937049866,
+            0.9437306523323059,
+            0.9902262687683105,
+            0.9988597631454468,
+            0.9999820590019226
+          ],
+          "nodes_at_0.8": 32.91648962048968,
+          "auc": 0.9647696231952821,
+          "model_accuracy": 1.0,
+          "m_full": 1.5828603506088257,
+          "m_empty": 0.0193150844424963
+        },
+        "across_rc": {
+          "faithfulness": [
+            0.7915177345275879,
+            0.876100480556488,
+            0.7177424430847168,
+            0.6555420756340027,
+            0.7923398017883301,
+            0.83582603931427,
+            0.9600791335105896,
+            0.9957966208457947,
+            0.9962542653083801,
+            1.0003268718719482,
+            0.9999540448188782
+          ],
+          "nodes_at_0.8": 5.501418183398202,
+          "auc": 0.9591730766826205,
+          "model_accuracy": 0.9791666865348816,
+          "m_full": 2.0840606689453125,
+          "m_empty": -0.0165863037109375
+        },
+        "budgets": [
+          5,
+          10,
+          20,
+          30,
+          50,
+          75,
+          100,
+          150,
+          200,
+          300,
+          500
+        ]
+      }
+    },
+    "L3_w2048_k32_ag-sae-lite_s42": {
+      "method": "AG-SAE-lite",
+      "tag": "L3_w2048_k32_ag-sae-lite_s42",
+      "mpabs_mean": 0.007200091575091574,
+      "joint_abs_mean": 0.0,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.0,
+        "case": 0.010018214936247723
+      },
+      "parent_false_negative": {
+        "letter": 0.16997167138810199,
+        "category": 0.047619047619047616,
+        "case": 0.12932604735883424
+      },
+      "false_negative_mean": 0.13303236795883858,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.484529537814004,
+        "random_control_drop": 0.2501166915920164,
+        "selectivity": 9.933481536157139
+      },
+      "fidelity": {
+        "fvu": 0.058672528713941574,
+        "native_l0": 30.550500869750977,
+        "eff_l0": 32.681549072265625,
+        "dead_frac": 0.00244140625,
+        "loss_recovered": 0.925748060583672
+      },
+      "circuits": {
+        "simple": {
+          "faithfulness": [
+            0.799083411693573,
+            0.9477917551994324,
+            0.9125582575798035,
+            0.9652969837188721,
+            0.9914438128471375,
+            1.0025415420532227,
+            0.99295973777771,
+            1.0030481815338135,
+            0.9983338713645935,
+            1.0000232458114624,
+            1.0000232458114624
+          ],
+          "nodes_at_0.8": 5.030818321240572,
+          "auc": 0.994201414813899,
+          "model_accuracy": 1.0,
+          "m_full": 4.5161614418029785,
+          "m_empty": 0.46971383690834045
+        },
+        "across_pp": {
+          "faithfulness": [
+            0.7144575119018555,
+            0.7456750273704529,
+            0.8076197504997253,
+            0.7936475276947021,
+            0.8854284286499023,
+            1.0051647424697876,
+            1.0122621059417725,
+            0.9186739921569824,
+            0.9731534123420715,
+            0.9890220165252686,
+            1.0000531673431396
+          ],
+          "nodes_at_0.8": 18.769911141451914,
+          "auc": 0.9637480092169058,
+          "model_accuracy": 1.0,
+          "m_full": 1.5828603506088257,
+          "m_empty": -0.04106394574046135
+        },
+        "across_rc": {
+          "faithfulness": [
+            0.41507622599601746,
+            0.5401257872581482,
+            0.6660640239715576,
+            0.7163832187652588,
+            0.6931042075157166,
+            0.7011517286300659,
+            0.8912122845649719,
+            0.9961540699005127,
+            1.0047950744628906,
+            0.9961026310920715,
+            0.9999862909317017
+          ],
+          "nodes_at_0.8": 88.00220742326205,
+          "auc": 0.9358805016134725,
+          "model_accuracy": 0.9791666865348816,
+          "m_full": 2.0840606689453125,
+          "m_empty": -0.13974761962890625
+        },
+        "budgets": [
+          5,
+          10,
+          20,
+          30,
+          50,
+          75,
+          100,
+          150,
+          200,
+          300,
+          500
+        ]
+      }
+    },
+    "L3_w2048_k32_batchtopk_s42": {
+      "method": "BatchTopK",
+      "tag": "L3_w2048_k32_batchtopk_s42",
+      "mpabs_mean": 0.025852157102157103,
+      "joint_abs_mean": 0.0010683760683760683,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.09523809523809523,
+        "case": 0.03551912568306011
+      },
+      "parent_false_negative": {
+        "letter": 0.07365439093484419,
+        "category": 0.42857142857142855,
+        "case": 0.12112932604735883
+      },
+      "false_negative_mean": 0.11370429679253208,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.4658077231475284,
+        "random_control_drop": 0.12414316673363958,
+        "selectivity": 19.86261336830679
+      },
+      "fidelity": {
+        "fvu": 0.05579695478081703,
+        "native_l0": 30.380149841308594,
+        "eff_l0": 30.380149841308594,
+        "dead_frac": 0.00439453125,
+        "loss_recovered": 0.9294421869227928
+      },
+      "circuits": {
+        "simple": {
+          "faithfulness": [
+            0.7401076555252075,
+            0.9360867738723755,
+            0.9106045961380005,
+            0.9672008752822876,
+            1.0204226970672607,
+            0.9988976120948792,
+            0.9929448962211609,
+            0.9986531734466553,
+            0.9985437989234924,
+            1.0000197887420654,
+            1.0000197887420654
+          ],
+          "nodes_at_0.8": 6.528028717403715,
+          "auc": 0.9939723162337987,
+          "model_accuracy": 1.0,
+          "m_full": 4.5161614418029785,
+          "m_empty": 0.28282418847084045
+        },
+        "across_pp": {
+          "faithfulness": [
+            0.26637548208236694,
+            0.46876782178878784,
+            1.048402190208435,
+            0.9617314338684082,
+            0.9529144167900085,
+            1.0016945600509644,
+            1.0173264741897583,
+            0.9693900942802429,
+            0.9791597723960876,
+            0.998585045337677,
+            0.9999314546585083
+          ],
+          "nodes_at_0.8": 15.714502032425285,
+          "auc": 0.9782538043730187,
+          "model_accuracy": 1.0,
+          "m_full": 1.5828603506088257,
+          "m_empty": 0.1360727995634079
+        },
+        "across_rc": {
+          "faithfulness": [
+            0.5536282658576965,
+            0.7203815579414368,
+            0.8181939721107483,
+            0.8311852216720581,
+            0.8347885012626648,
+            0.9174895882606506,
+            0.9201539158821106,
+            0.9781184792518616,
+            0.9955505728721619,
+            0.9993555545806885,
+            0.9999449849128723
+          ],
+          "nodes_at_0.8": 18.13991167897707,
+          "auc": 0.9639039430955444,
+          "model_accuracy": 0.9791666865348816,
+          "m_full": 2.0840606689453125,
+          "m_empty": 0.0041325888596475124
+        },
+        "budgets": [
+          5,
+          10,
+          20,
+          30,
+          50,
+          75,
+          100,
+          150,
+          200,
+          300,
+          500
+        ]
+      }
+    },
+    "L3_w2048_k32_dr-sae_s42": {
+      "method": "DR-SAE",
+      "tag": "L3_w2048_k32_dr-sae_s42",
+      "mpabs_mean": 0.005132020757020756,
+      "joint_abs_mean": 0.0,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.0,
+        "case": 0.006375227686703097
+      },
+      "parent_false_negative": {
+        "letter": 0.14447592067988668,
+        "category": 0.23809523809523808,
+        "case": 0.03460837887067395
+      },
+      "false_negative_mean": 0.062329112880583466,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.282431444951466,
+        "random_control_drop": 0.25472404402015464,
+        "selectivity": 8.960408326317529
+      },
+      "fidelity": {
+        "fvu": 0.05995495244860649,
+        "native_l0": 30.039600372314453,
+        "eff_l0": 38.07939910888672,
+        "dead_frac": 0.00439453125,
+        "loss_recovered": 0.921315108976727
+      },
+      "circuits": {
+        "simple": {
+          "faithfulness": [
+            0.7352492809295654,
+            0.9818679690361023,
+            0.914084255695343,
+            0.9488365650177002,
+            0.9938917756080627,
+            1.0045266151428223,
+            1.0088790655136108,
+            1.002152442932129,
+            0.9993618726730347,
+            1.0000176429748535,
+            1.0000176429748535
+          ],
+          "nodes_at_0.8": 6.312769914255423,
+          "auc": 0.9947277361696417,
+          "model_accuracy": 1.0,
+          "m_full": 4.5161614418029785,
+          "m_empty": 0.5025965571403503
+        },
+        "across_pp": {
+          "faithfulness": [
+            0.5507414937019348,
+            0.6534997224807739,
+            0.7080917358398438,
+            0.7088825106620789,
+            0.8796131014823914,
+            1.0148489475250244,
+            0.9669461846351624,
+            0.9731345772743225,
+            0.9820111989974976,
+            0.9905455112457275,
+            0.9999263286590576
+          ],
+          "nodes_at_0.8": 40.67383277553667,
+          "auc": 0.9614667913528404,
+          "model_accuracy": 1.0,
+          "m_full": 1.5828603506088257,
+          "m_empty": 0.02945963479578495
+        },
+        "across_rc": {
+          "faithfulness": [
+            0.359870046377182,
+            0.643243670463562,
+            0.9287652969360352,
+            0.8475214838981628,
+            0.7999076843261719,
+            0.8266942501068115,
+            0.9241702556610107,
+            1.0051491260528564,
+            0.9938331246376038,
+            0.9968585968017578,
+            0.9999602437019348
+          ],
+          "nodes_at_0.8": 15.490173578936703,
+          "auc": 0.95981502999561,
+          "model_accuracy": 0.9791666865348816,
+          "m_full": 2.0840606689453125,
+          "m_empty": -0.21995799243450165
+        },
+        "budgets": [
+          5,
+          10,
+          20,
+          30,
+          50,
+          75,
+          100,
+          150,
+          200,
+          300,
+          500
+        ]
+      }
+    },
+    "L3_w2048_k32_dr-sae_s42__H1": {
+      "method": "DR-SAE",
+      "tag": "L3_w2048_k32_dr-sae_s42__H1",
+      "mpabs_mean": 0.01504884004884005,
+      "joint_abs_mean": 0.0,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.14285714285714285,
+        "case": 0.015482695810564663
+      },
+      "parent_false_negative": {
+        "letter": 0.14730878186968838,
+        "category": 1.0,
+        "case": 0.11020036429872496
+      },
+      "false_negative_mean": 0.13892369885016945,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.1352513262203763,
+        "random_control_drop": 0.17683849942737392,
+        "selectivity": 12.074584059096848
+      },
+      "fidelity": {
+        "fvu": 0.05988729000091553,
+        "native_l0": 30.090450286865234,
+        "eff_l0": 36.94675064086914,
+        "dead_frac": 0.00634765625,
+        "loss_recovered": 0.9220539342445512
+      }
+    },
+    "L3_w2048_k32_dr-sae_s42__bankorder": {
+      "method": "DR-SAE",
+      "tag": "L3_w2048_k32_dr-sae_s42__bankorder",
+      "mpabs_mean": 0.0071237789987789995,
+      "joint_abs_mean": 0.0,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.14285714285714285,
+        "case": 0.00819672131147541
+      },
+      "parent_false_negative": {
+        "letter": 0.13314447592067988,
+        "category": 1.0,
+        "case": 0.08652094717668488
+      },
+      "false_negative_mean": 0.11432052424699483,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.2120363882609775,
+        "random_control_drop": 0.1973584583029151,
+        "selectivity": 11.208216801460008
+      },
+      "fidelity": {
+        "fvu": 0.059791699051856995,
+        "native_l0": 30.200199127197266,
+        "eff_l0": 39.47795104980469,
+        "dead_frac": 0.00732421875,
+        "loss_recovered": 0.921315108976727
+      }
+    },
+    "L3_w2048_k32_dr-sae_s42__noortho": {
+      "method": "DR-SAE",
+      "tag": "L3_w2048_k32_dr-sae_s42__noortho",
+      "mpabs_mean": 0.004063644688644688,
+      "joint_abs_mean": 0.0,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.0,
+        "case": 0.004553734061930784
+      },
+      "parent_false_negative": {
+        "letter": 0.1558073654390935,
+        "category": 0.23809523809523808,
+        "case": 0.02459016393442623
+      },
+      "false_negative_mean": 0.057833404340757275,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.2767019889184406,
+        "random_control_drop": 0.25244409437956555,
+        "selectivity": 9.018638342536452
+      },
+      "fidelity": {
+        "fvu": 0.059888746589422226,
+        "native_l0": 30.10955047607422,
+        "eff_l0": 37.404048919677734,
+        "dead_frac": 0.0048828125,
+        "loss_recovered": 0.921315108976727
+      }
+    },
+    "L3_w2048_k32_matryoshka_s42": {
+      "method": "Matryoshka",
+      "tag": "L3_w2048_k32_matryoshka_s42",
+      "mpabs_mean": 0.0072382478632478636,
+      "joint_abs_mean": 0.0,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.0,
+        "case": 0.009107468123861567
+      },
+      "parent_false_negative": {
+        "letter": 0.16997167138810199,
+        "category": 0.09523809523809523,
+        "case": 0.12295081967213115
+      },
+      "false_negative_mean": 0.1310698628713335,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.465034621102469,
+        "random_control_drop": 0.21733393959168876,
+        "selectivity": 11.34215220012851
+      },
+      "fidelity": {
+        "fvu": 0.05950489640235901,
+        "native_l0": 30.21204948425293,
+        "eff_l0": 30.21204948425293,
+        "dead_frac": 0.00341796875,
+        "loss_recovered": 0.9250092353158478
+      },
+      "circuits": {
+        "simple": {
+          "faithfulness": [
+            0.7973005771636963,
+            0.9403563737869263,
+            0.9092197418212891,
+            0.9725914597511292,
+            0.9851032495498657,
+            1.0060386657714844,
+            0.9970667958259583,
+            0.9993613958358765,
+            0.9997338652610779,
+            1.0000087022781372,
+            1.0000087022781372
+          ],
+          "nodes_at_0.8": 5.094348599677634,
+          "auc": 0.9944039014252749,
+          "model_accuracy": 1.0,
+          "m_full": 4.5161614418029785,
+          "m_empty": 0.37883758544921875
+        },
+        "across_pp": {
+          "faithfulness": [
+            0.7030786275863647,
+            0.6838228106498718,
+            0.8049536347389221,
+            0.8051992058753967,
+            0.8821134567260742,
+            1.0053226947784424,
+            0.9971303939819336,
+            0.9251564145088196,
+            0.9713938236236572,
+            0.9913973808288574,
+            0.9999704957008362
+          ],
+          "nodes_at_0.8": 19.591050772148183,
+          "auc": 0.9637835329831249,
+          "model_accuracy": 1.0,
+          "m_full": 1.5828603506088257,
+          "m_empty": -0.0531056709587574
+        },
+        "across_rc": {
+          "faithfulness": [
+            0.4160003960132599,
+            0.5441805124282837,
+            0.6751447916030884,
+            0.6550896167755127,
+            0.714056134223938,
+            0.6715025901794434,
+            0.8833914995193481,
+            1.0035661458969116,
+            1.0037931203842163,
+            0.9956585764884949,
+            0.9999516010284424
+          ],
+          "nodes_at_0.8": 90.16094089285107,
+          "auc": 0.9333820254212678,
+          "model_accuracy": 0.9791666865348816,
+          "m_full": 2.0840606689453125,
+          "m_empty": -0.12376657873392105
+        },
+        "budgets": [
+          5,
+          10,
+          20,
+          30,
+          50,
+          75,
+          100,
+          150,
+          200,
+          300,
+          500
+        ]
+      }
+    },
+    "L3_w2048_k32_post-hocdr_s42": {
+      "method": "Post-hoc DR",
+      "tag": "L3_w2048_k32_post-hocdr_s42",
+      "mpabs_mean": 0.009428418803418803,
+      "joint_abs_mean": 0.0,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.19047619047619047,
+        "case": 0.00819672131147541
+      },
+      "parent_false_negative": {
+        "letter": 0.17280453257790368,
+        "category": 1.0,
+        "case": 0.11202185792349727
+      },
+      "false_negative_mean": 0.13735420353067412,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.2666647263935635,
+        "random_control_drop": 0.15842468185084208,
+        "selectivity": 14.30752266573995
+      },
+      "fidelity": {
+        "fvu": 0.05875450000166893,
+        "native_l0": 30.49209976196289,
+        "eff_l0": 37.60459899902344,
+        "dead_frac": 0.0029296875,
+        "loss_recovered": 0.9250092353158478
+      },
+      "circuits": {
+        "simple": {
+          "faithfulness": [
+            0.786413311958313,
+            0.9398552775382996,
+            0.9037948846817017,
+            0.9718567728996277,
+            0.989017128944397,
+            1.0065053701400757,
+            1.0011707544326782,
+            1.004421591758728,
+            1.0007067918777466,
+            1.000014305114746,
+            1.000014305114746
+          ],
+          "nodes_at_0.8": 5.442730510580512,
+          "auc": 0.9947144115211988,
+          "model_accuracy": 1.0,
+          "m_full": 4.5161614418029785,
+          "m_empty": 0.4215952455997467
+        },
+        "across_pp": {
+          "faithfulness": [
+            0.6552358865737915,
+            0.7059738636016846,
+            0.778353750705719,
+            0.8810932636260986,
+            0.9497939348220825,
+            1.0088831186294556,
+            1.0303858518600464,
+            0.9287118911743164,
+            0.9739366173744202,
+            0.9885572791099548,
+            0.9999412298202515
+          ],
+          "nodes_at_0.8": 22.106905947701517,
+          "auc": 0.9688116149468855,
+          "model_accuracy": 1.0,
+          "m_full": 1.5828603506088257,
+          "m_empty": -0.0615692138671875
+        },
+        "across_rc": {
+          "faithfulness": [
+            0.09422426670789719,
+            0.4650048017501831,
+            0.7761738300323486,
+            0.6411564350128174,
+            0.598709225654602,
+            0.7109147310256958,
+            0.9059959650039673,
+            0.9944079518318176,
+            1.0069488286972046,
+            0.9977670311927795,
+            0.9999455213546753
+          ],
+          "nodes_at_0.8": 86.41643236268044,
+          "auc": 0.9307088089937513,
+          "model_accuracy": 0.9791666865348816,
+          "m_full": 2.0840606689453125,
+          "m_empty": -0.063873291015625
+        },
+        "budgets": [
+          5,
+          10,
+          20,
+          30,
+          50,
+          75,
+          100,
+          150,
+          200,
+          300,
+          500
+        ]
+      }
+    },
+    "L3_w2048_k32_treepriorm1_s42": {
+      "method": "Tree prior (m=1)",
+      "tag": "L3_w2048_k32_treepriorm1_s42",
+      "mpabs_mean": 0.004273504273504273,
+      "joint_abs_mean": 0.0,
+      "per_parent": {
+        "letter": 0.0,
+        "category": 0.0,
+        "case": 0.004553734061930784
+      },
+      "parent_false_negative": {
+        "letter": 0.1388101983002833,
+        "category": 0.19047619047619047,
+        "case": 0.018214936247723135
+      },
+      "false_negative_mean": 0.047550835602306184,
+      "n_cells_scored": 52,
+      "causal": {
+        "parent_logit_drop": 2.392403768641608,
+        "random_control_drop": 0.2331114908946412,
+        "selectivity": 10.262916510292907
+      },
+      "fidelity": {
+        "fvu": 0.059818416833877563,
+        "native_l0": 30.181150436401367,
+        "eff_l0": 33.377899169921875,
+        "dead_frac": 0.00341796875,
+        "loss_recovered": 0.9220539342445512
+      },
+      "circuits": {
+        "simple": {
+          "faithfulness": [
+            0.7624039053916931,
+            0.9885252118110657,
+            0.9483944773674011,
+            0.9524942636489868,
+            0.9874281883239746,
+            0.9940330982208252,
+            0.9976521730422974,
+            1.0041298866271973,
+            0.9998080730438232,
+            1.0000141859054565,
+            1.0000141859054565
+          ],
+          "nodes_at_0.8": 5.8313257834340195,
+          "auc": 0.9950643055366747,
+          "model_accuracy": 1.0,
+          "m_full": 4.5161614418029785,
+          "m_empty": 0.3947550356388092
+        },
+        "across_pp": {
+          "faithfulness": [
+            0.5722838640213013,
+            0.5695860385894775,
+            0.6235572695732117,
+            0.4872475862503052,
+            0.9631059169769287,
+            1.02712082862854,
+            0.9759566187858582,
+            0.9722340703010559,
+            0.9606046676635742,
+            0.9931715130805969,
+            0.9999008774757385
+          ],
+          "nodes_at_0.8": 43.14476989884327,
+          "auc": 0.9538141738886785,
+          "model_accuracy": 1.0,
+          "m_full": 1.5828603506088257,
+          "m_empty": 0.06893666833639145
+        },
+        "across_rc": {
+          "faithfulness": [
+            0.49978676438331604,
+            0.5270050168037415,
+            0.8971032500267029,
+            0.8067584037780762,
+            0.8100809454917908,
+            0.822353184223175,
+            0.9291212558746338,
+            0.982437789440155,
+            0.9966105818748474,
+            0.9988599419593811,
+            0.9999798536300659
+          ],
+          "nodes_at_0.8": 17.376284401070553,
+          "auc": 0.9567611532078849,
+          "model_accuracy": 0.9791666865348816,
+          "m_full": 2.0840606689453125,
+          "m_empty": -0.30712637305259705
+        },
+        "budgets": [
+          5,
+          10,
+          20,
+          30,
+          50,
+          75,
+          100,
+          150,
+          200,
+          300,
+          500
+        ]
+      }
+    }
+  },
+  "comparisons_vs_matryoshka": {
+    "DR-SAE vs Matryoshka": {
+      "mean_a": 0.005132020757020756,
+      "mean_b": 0.0072382478632478636,
+      "relative_reduction": 0.29098576696032613,
+      "ci_95_low": -1.4011814548983341,
+      "ci_95_high": 0.8107215181347381,
+      "wilcoxon_stat": 56.0,
+      "p_value_raw": 0.23105637016090724
+    },
+    "DR-SAE (matched eff. L0) vs Matryoshka": {
+      "mean_a": 0.00969932844932845,
+      "mean_b": 0.0072382478632478636,
+      "relative_reduction": -0.3400105429155983,
+      "ci_95_low": -3.1840630788250435,
+      "ci_95_high": 0.5910408163704854,
+      "wilcoxon_stat": 38.0,
+      "p_value_raw": 0.7002449107199984
+    },
+    "Post-hoc DR vs Matryoshka": {
+      "mean_a": 0.009428418803418803,
+      "mean_b": 0.0072382478632478636,
+      "relative_reduction": -0.3025830257884548,
+      "ci_95_low": -1.9230455400884257,
+      "ci_95_high": 0.32932146923789796,
+      "wilcoxon_stat": 3.0,
+      "p_value_raw": 0.7673955907739292
+    },
+    "AG-SAE-lite vs Matryoshka": {
+      "mean_a": 0.007200091575091574,
+      "mean_b": 0.0072382478632478636,
+      "relative_reduction": 0.005271481285513373,
+      "ci_95_low": -0.3759951345592972,
+      "ci_95_high": 0.29906592773316787,
+      "wilcoxon_stat": 3.0,
+      "p_value_raw": 0.5
+    },
+    "Tree prior (m=1) vs Matryoshka": {
+      "mean_a": 0.004273504273504273,
+      "mean_b": 0.0072382478632478636,
+      "relative_reduction": 0.409594095884372,
+      "ci_95_low": -1.0909322812998437,
+      "ci_95_high": 0.920289288248665,
+      "wilcoxon_stat": 34.5,
+      "p_value_raw": 0.23704693100562235
+    },
+    "BatchTopK vs Matryoshka": {
+      "mean_a": 0.025852157102157103,
+      "mean_b": 0.0072382478632478636,
+      "relative_reduction": -2.5716042871161657,
+      "ci_95_low": -8.883858440450418,
+      "ci_95_high": -0.6272717381798275,
+      "wilcoxon_stat": 49.0,
+      "p_value_raw": 0.9980728445259558
+    }
+  },
+  "exploratory_false_negative_vs_matryoshka": {
+    "DR-SAE vs Matryoshka": {
+      "mean_a": 0.062329112880583466,
+      "mean_b": 0.1310698628713335,
+      "relative_reduction": 0.52445885334988,
+      "ci_95_low": 0.38387993570607803,
+      "ci_95_high": 0.6589975827158848,
+      "wilcoxon_stat": 872.5,
+      "p_value_raw": 6.866864995229283e-07
+    },
+    "DR-SAE (matched eff. L0) vs Matryoshka": {
+      "mean_a": 0.08222957461928049,
+      "mean_b": 0.1310698628713335,
+      "relative_reduction": 0.37262790378918076,
+      "ci_95_low": 0.19535536272524406,
+      "ci_95_high": 0.5394007451769911,
+      "wilcoxon_stat": 730.0,
+      "p_value_raw": 5.154768124659569e-05
+    },
+    "Post-hoc DR vs Matryoshka": {
+      "mean_a": 0.13735420353067412,
+      "mean_b": 0.1310698628713335,
+      "relative_reduction": -0.04794649602603002,
+      "ci_95_low": -0.2502051948284771,
+      "ci_95_high": 0.0856141684790263,
+      "wilcoxon_stat": 52.0,
+      "p_value_raw": 0.15381767146853853
+    },
+    "AG-SAE-lite vs Matryoshka": {
+      "mean_a": 0.13303236795883858,
+      "mean_b": 0.1310698628713335,
+      "relative_reduction": -0.014972969716285096,
+      "ci_95_low": -0.05428551851615318,
+      "ci_95_high": 0.030675967427644994,
+      "wilcoxon_stat": 19.5,
+      "p_value_raw": 0.7927400735098531
+    },
+    "Tree prior (m=1) vs Matryoshka": {
+      "mean_a": 0.047550835602306184,
+      "mean_b": 0.1310698628713335,
+      "relative_reduction": 0.6372099996043917,
+      "ci_95_low": 0.4945626105644312,
+      "ci_95_high": 0.7682232796000815,
+      "wilcoxon_stat": 828.0,
+      "p_value_raw": 1.252061235752558e-07
+    },
+    "BatchTopK vs Matryoshka": {
+      "mean_a": 0.11370429679253208,
+      "mean_b": 0.1310698628713335,
+      "relative_reduction": 0.13249091513673178,
+      "ci_95_low": -0.12450912881780545,
+      "ci_95_high": 0.32405744262910624,
+      "wilcoxon_stat": 454.0,
+      "p_value_raw": 0.11281881049256542
+    }
+  },
+  "h4_circuit_node_reduction": {
+    "Matryoshka": {
+      "dr_nodes": 20.825592089576265,
+      "ref_nodes": 38.28211342155896,
+      "reduction": 0.4559968029913385
+    },
+    "BatchTopK": {
+      "dr_nodes": 20.825592089576265,
+      "ref_nodes": 13.460814142935357,
+      "reduction": -0.5471272293367312
+    }
+  },
+  "holm": {
+    "H2": {
+      "p_raw": 0.7002449107199984,
+      "p_holm_adjusted": 0.7002449107199984,
+      "alpha_threshold": 0.05,
+      "significant": 0.0
+    }
+  },
+  "cells": [
+    {
+      "cell": "A|noun.act",
+      "letter": "A",
+      "category": "noun.act",
+      "n_tokens": 38,
+      "DR-SAE (matched eff. L0)": 0.041666666666666664,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.041666666666666664,
+      "DR-SAE": 0.041666666666666664,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.041666666666666664
+    },
+    {
+      "cell": "A|noun.artifact",
+      "letter": "A",
+      "category": "noun.artifact",
+      "n_tokens": 26,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "A|noun.communication",
+      "letter": "A",
+      "category": "noun.communication",
+      "n_tokens": 22,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "A|noun.person",
+      "letter": "A",
+      "category": "noun.person",
+      "n_tokens": 48,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.03333333333333333,
+      "BatchTopK": 0.1,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.03333333333333333,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "B|noun.artifact",
+      "letter": "B",
+      "category": "noun.artifact",
+      "n_tokens": 62,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "B|noun.person",
+      "letter": "B",
+      "category": "noun.person",
+      "n_tokens": 26,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "C|noun.act",
+      "letter": "C",
+      "category": "noun.act",
+      "n_tokens": 38,
+      "DR-SAE (matched eff. L0)": 0.041666666666666664,
+      "AG-SAE-lite": 0.041666666666666664,
+      "BatchTopK": 0.041666666666666664,
+      "DR-SAE": 0.041666666666666664,
+      "Matryoshka": 0.041666666666666664,
+      "Post-hoc DR": 0.041666666666666664,
+      "Tree prior (m=1)": 0.041666666666666664
+    },
+    {
+      "cell": "C|noun.artifact",
+      "letter": "C",
+      "category": "noun.artifact",
+      "n_tokens": 72,
+      "DR-SAE (matched eff. L0)": 0.023809523809523808,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.07142857142857142,
+      "DR-SAE": 0.023809523809523808,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "C|noun.communication",
+      "letter": "C",
+      "category": "noun.communication",
+      "n_tokens": 62,
+      "DR-SAE (matched eff. L0)": 0.027777777777777776,
+      "AG-SAE-lite": 0.027777777777777776,
+      "BatchTopK": 0.027777777777777776,
+      "DR-SAE": 0.027777777777777776,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.05555555555555555
+    },
+    {
+      "cell": "C|noun.group",
+      "letter": "C",
+      "category": "noun.group",
+      "n_tokens": 66,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.027777777777777776,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.027777777777777776,
+      "Post-hoc DR": 0.027777777777777776,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "C|noun.location",
+      "letter": "C",
+      "category": "noun.location",
+      "n_tokens": 20,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.041666666666666664,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "C|noun.person",
+      "letter": "C",
+      "category": "noun.person",
+      "n_tokens": 68,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.023809523809523808,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "C|noun.state",
+      "letter": "C",
+      "category": "noun.state",
+      "n_tokens": 26,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "D|noun.act",
+      "letter": "D",
+      "category": "noun.act",
+      "n_tokens": 22,
+      "DR-SAE (matched eff. L0)": 0.08333333333333333,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.08333333333333333,
+      "DR-SAE": 0.08333333333333333,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.08333333333333333
+    },
+    {
+      "cell": "D|noun.communication",
+      "letter": "D",
+      "category": "noun.communication",
+      "n_tokens": 32,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "D|noun.person",
+      "letter": "D",
+      "category": "noun.person",
+      "n_tokens": 52,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.1,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.1,
+      "Post-hoc DR": 0.1,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "E|noun.act",
+      "letter": "E",
+      "category": "noun.act",
+      "n_tokens": 26,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "E|noun.communication",
+      "letter": "E",
+      "category": "noun.communication",
+      "n_tokens": 20,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "E|noun.person",
+      "letter": "E",
+      "category": "noun.person",
+      "n_tokens": 22,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "F|noun.communication",
+      "letter": "F",
+      "category": "noun.communication",
+      "n_tokens": 24,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "F|noun.group",
+      "letter": "F",
+      "category": "noun.group",
+      "n_tokens": 22,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "F|noun.person",
+      "letter": "F",
+      "category": "noun.person",
+      "n_tokens": 20,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "G|noun.person",
+      "letter": "G",
+      "category": "noun.person",
+      "n_tokens": 34,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.125,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "H|noun.artifact",
+      "letter": "H",
+      "category": "noun.artifact",
+      "n_tokens": 28,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.05555555555555555,
+      "BatchTopK": 0.16666666666666666,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.05555555555555555,
+      "Post-hoc DR": 0.05555555555555555,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "H|noun.person",
+      "letter": "H",
+      "category": "noun.person",
+      "n_tokens": 28,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.1111111111111111,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "I|noun.communication",
+      "letter": "I",
+      "category": "noun.communication",
+      "n_tokens": 20,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "L|noun.artifact",
+      "letter": "L",
+      "category": "noun.artifact",
+      "n_tokens": 28,
+      "DR-SAE (matched eff. L0)": 0.05555555555555555,
+      "AG-SAE-lite": 0.05555555555555555,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.05555555555555555,
+      "Post-hoc DR": 0.05555555555555555,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "L|noun.person",
+      "letter": "L",
+      "category": "noun.person",
+      "n_tokens": 24,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.05555555555555555,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "M|noun.act",
+      "letter": "M",
+      "category": "noun.act",
+      "n_tokens": 22,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "M|noun.artifact",
+      "letter": "M",
+      "category": "noun.artifact",
+      "n_tokens": 30,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.05555555555555555,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "M|noun.communication",
+      "letter": "M",
+      "category": "noun.communication",
+      "n_tokens": 36,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.05555555555555555,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "M|noun.person",
+      "letter": "M",
+      "category": "noun.person",
+      "n_tokens": 48,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.1,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "P|noun.act",
+      "letter": "P",
+      "category": "noun.act",
+      "n_tokens": 34,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.041666666666666664,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "P|noun.artifact",
+      "letter": "P",
+      "category": "noun.artifact",
+      "n_tokens": 58,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.013888888888888888,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "P|noun.communication",
+      "letter": "P",
+      "category": "noun.communication",
+      "n_tokens": 42,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "P|noun.group",
+      "letter": "P",
+      "category": "noun.group",
+      "n_tokens": 26,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "P|noun.person",
+      "letter": "P",
+      "category": "noun.person",
+      "n_tokens": 70,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.011904761904761904,
+      "BatchTopK": 0.08333333333333333,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "R|noun.artifact",
+      "letter": "R",
+      "category": "noun.artifact",
+      "n_tokens": 28,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "R|noun.communication",
+      "letter": "R",
+      "category": "noun.communication",
+      "n_tokens": 28,
+      "DR-SAE (matched eff. L0)": 0.05555555555555555,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "S|noun.act",
+      "letter": "S",
+      "category": "noun.act",
+      "n_tokens": 34,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "S|noun.artifact",
+      "letter": "S",
+      "category": "noun.artifact",
+      "n_tokens": 48,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.03333333333333333,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "S|noun.communication",
+      "letter": "S",
+      "category": "noun.communication",
+      "n_tokens": 42,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.020833333333333332,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "S|noun.group",
+      "letter": "S",
+      "category": "noun.group",
+      "n_tokens": 24,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.027777777777777776,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "S|noun.location",
+      "letter": "S",
+      "category": "noun.location",
+      "n_tokens": 24,
+      "DR-SAE (matched eff. L0)": 0.13333333333333333,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.08518518518518518,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.13333333333333333,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "S|noun.person",
+      "letter": "S",
+      "category": "noun.person",
+      "n_tokens": 62,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "S|noun.state",
+      "letter": "S",
+      "category": "noun.state",
+      "n_tokens": 22,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "S|noun.time",
+      "letter": "S",
+      "category": "noun.time",
+      "n_tokens": 20,
+      "DR-SAE (matched eff. L0)": 0.041666666666666664,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.041666666666666664,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "T|noun.act",
+      "letter": "T",
+      "category": "noun.act",
+      "n_tokens": 34,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "T|noun.artifact",
+      "letter": "T",
+      "category": "noun.artifact",
+      "n_tokens": 32,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "T|noun.communication",
+      "letter": "T",
+      "category": "noun.communication",
+      "n_tokens": 38,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.020833333333333332,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.020833333333333332,
+      "Post-hoc DR": 0.020833333333333332,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "T|noun.person",
+      "letter": "T",
+      "category": "noun.person",
+      "n_tokens": 22,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.041666666666666664,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    },
+    {
+      "cell": "W|noun.person",
+      "letter": "W",
+      "category": "noun.person",
+      "n_tokens": 28,
+      "DR-SAE (matched eff. L0)": 0.0,
+      "AG-SAE-lite": 0.0,
+      "BatchTopK": 0.0,
+      "DR-SAE": 0.0,
+      "Matryoshka": 0.0,
+      "Post-hoc DR": 0.0,
+      "Tree prior (m=1)": 0.0
+    }
+  ]
+}

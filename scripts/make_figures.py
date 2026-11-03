@@ -129,9 +129,9 @@ def fig_mpabs(lm):
     axes[0].set_title("A. Multi-parent absorption on Pythia-70M (test split)")
     axes[0].legend(fontsize=8)
     for i, slot in enumerate(["letter", "category", "case"]):
-        axes[1].bar(x + (i - 1) * 0.26, [mr[m]["per_parent"][slot] for m in ms], 0.26, label=slot)
+        axes[1].bar(x + (i - 1) * 0.26, [mr[m]["parent_false_negative"][slot] for m in ms], 0.26, label=slot)
     axes[1].set_xticks(x, ms, rotation=25, ha="right", fontsize=8)
-    axes[1].set_title("B. Absorption by parent type")
+    axes[1].set_title("B. Parent false-negative rate by parent type (exploratory)")
     axes[1].legend(fontsize=8)
     fig.tight_layout()
     fig.savefig(os.path.join(OUT, "fig3_mpabs_by_method.png"))

@@ -1,0 +1,26 @@
+{
+  "run": "L3_w2048_k32_dr-sae_s42__bankorder",
+  "method": "DR-SAE",
+  "seed": 42,
+  "layer": 3,
+  "width": 2048,
+  "k": 32,
+  "steps": 753,
+  "train_seconds": 2115.2,
+  "scale": 1.0798394680023193,
+  "overrides": {
+    "use_frequency_order": false
+  },
+  "fvu": 0.059791699051856995,
+  "native_l0": 30.200199127197266,
+  "eff_l0": 39.47795104980469,
+  "dead_frac": 0.00732421875,
+  "n_edges": 797,
+  "n_multi_parent": 202,
+  "longest_path": 6,
+  "acyclic": true,
+  "ce_clean": 3.822265625,
+  "ce_zero_ablation": 9.109375,
+  "ce_sae": 4.23828125,
+  "loss_recovered": 0.921315108976727
+}
