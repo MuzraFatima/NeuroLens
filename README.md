@@ -7,6 +7,11 @@
 [![Models: Pythia--160M%20%7C%20Pythia--70M](https://img.shields.io/badge/Models-Pythia--160M%20%7C%20Pythia--70M-orange.svg)](configs/preregistration_v1.yaml)
 [![Dictionary: 16k Latents](https://img.shields.io/badge/Dictionary-16%2C384%20Latents-blueviolet.svg)](topocircuit/models/dr_sae.py)
 
+> **Status: results are being rebuilt.** Earlier numbers in this README were not produced by
+> running the language models and have been withdrawn. Experiments are being re-run on CPU at a
+> smaller scale; see [docs/DEVIATIONS.md](docs/DEVIATIONS.md). Treat every number below as a
+> placeholder until this notice is removed.
+
 **Author & Project Owner:** Muzra Fatima  
 **Version:** `1.0.0` (Preregistered Phase 8 Release)  
 **Track:** AIML Capstone & Mechanistic Interpretability Research Submission  
