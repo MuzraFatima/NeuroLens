@@ -60,6 +60,7 @@ ignore = [
     "B019",  # use of lru_cache on class methods (intentional for database query memoization)
     "UP006", # use `list` instead of `List` (keep 3.9 compat)
     "UP007", # use `X | Y` instead of `Optional[X]` (keep 3.9 compat)
+    "UP045", # same rule for `Optional[X]` in newer ruff releases
     "UP035", # `typing` imports (keep 3.9 compat)
 ]
 
