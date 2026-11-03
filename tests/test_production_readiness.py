@@ -15,10 +15,40 @@ from topocircuit.server.serve import create_server
 
 
 class TestProductionReadiness(unittest.TestCase):
+    FIXTURE = {
+        "provenance": "test fixture",
+        "methodKeys": ["Matryoshka", "DR-SAE"],
+        "raw": {
+            "all": {
+                "name": "all",
+                "nodes": [
+                    ["1", "Letter B", 5.0, []],
+                    ["2", "noun.animal", 4.0, []],
+                    ["3", '"bat"', 0.5, [["1", 0.4], ["2", 0.3]]],
+                ],
+            }
+        },
+        "extra": {"3": {"tokens": ["bat", "bats"], "causal": ""}},
+        "cells": [
+            {
+                "idx": i,
+                "cellId": f"B · cat{i}",
+                "letter": "B",
+                "category": f"noun.c{i % 3}",
+                "n": 20,
+                "words": "bat",
+                "Matryoshka": 0.3,
+                "DR-SAE": 0.2,
+            }
+            for i in range(30)
+        ],
+    }
+
     def setUp(self):
         self.db = TopoCircuitDatabase(":memory:", pool_size=4)
-        self.db.seed_from_benchmark()
+        self.db.seed_from_results(self.FIXTURE)
         self.app = TopoCircuitAPIApp(db=self.db)
+        self.db.seed_from_results(self.FIXTURE)
 
     def tearDown(self):
         self.db.pool.close_all()
@@ -33,7 +63,9 @@ class TestProductionReadiness(unittest.TestCase):
         nodes = self.db.get_dag_with_parents_single_query("all")
         q1 = self.db.query_counter
         self.assertEqual(q1 - q0, 1, "Expected exactly 1 SQL JOIN query (no N+1 queries)!")
-        self.assertEqual(len(nodes), 14)
+        self.assertEqual(len(nodes), 3)
+        bat = [n for n in nodes if n["latent_id"] == 3][0]
+        self.assertEqual({p["parent_id"] for p in bat["parents"]}, {1, 2})
 
         # Second call must hit @lru_cache with 0 new SQL queries
         _ = self.db.get_dag_with_parents_single_query("all")
