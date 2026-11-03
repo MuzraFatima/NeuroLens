@@ -1,0 +1,43 @@
+{
+  "data": {
+    "generator_seed": 42,
+    "rho": 0.25,
+    "model_seeds": [
+      42,
+      137
+    ],
+    "k": 9
+  },
+  "Tree prior (m=1)": {
+    "cross_seed_edge_repro": 0.125,
+    "mnn_matched_frac": 0.53125,
+    "n_ref_edges": 48.0,
+    "gt_space_edge_jaccard": 0.08536585365853659,
+    "gt_space_edges_seed42": 48,
+    "gt_space_edges_seed137": 41
+  },
+  "AG-SAE-lite": {
+    "cross_seed_edge_repro": 0.2,
+    "mnn_matched_frac": 0.515625,
+    "n_ref_edges": 5.0,
+    "gt_space_edge_jaccard": 0.125,
+    "gt_space_edges_seed42": 5,
+    "gt_space_edges_seed137": 4
+  },
+  "Post-hoc DR": {
+    "cross_seed_edge_repro": 0.05263157894736842,
+    "mnn_matched_frac": 0.515625,
+    "n_ref_edges": 38.0,
+    "gt_space_edge_jaccard": 0.02247191011235955,
+    "gt_space_edges_seed42": 38,
+    "gt_space_edges_seed137": 53
+  },
+  "DR-SAE": {
+    "cross_seed_edge_repro": 0.06976744186046512,
+    "mnn_matched_frac": 0.453125,
+    "n_ref_edges": 43.0,
+    "gt_space_edge_jaccard": 0.043010752688172046,
+    "gt_space_edges_seed42": 43,
+    "gt_space_edges_seed137": 54
+  }
+}
