@@ -1,3 +1,5 @@
+# Hypotheses and thresholds from the Master Research Blueprint (unchanged).
+# The tag named below is superseded; see PREREGISTRATION.md and docs/DEVIATIONS.md.
 project:
   name: "TopoCircuit-SAE"
   version: "1.0.0"

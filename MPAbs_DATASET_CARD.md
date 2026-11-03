@@ -1,35 +1,47 @@
-# Dataset Card for MPAbs (Multi-Parent Feature Absorption Benchmark)
+# Dataset card: MPAbs (multi-parent absorption)
 
-## Dataset Summary
-**MPAbs** is the first evaluation benchmark designed to measure **multi-parent feature absorption** in Sparse Autoencoders (SAEs). Existing benchmarks—most notably the first-letter task in SAEBench (Chanin et al., NeurIPS 2025; Karvonen et al., ICML 2025)—evaluate feature absorption exclusively on single-parent hierarchies where each word belongs to a single orthographic parent (its initial letter). In real language models, however, concepts routinely inherit from multiple simultaneous parents (e.g., `"bat"` implies both `noun.animal` and `flier`; `"Paris"` implies `First-Letter: P`, `noun.location`, and `TitleCase`).
+MPAbs measures **feature absorption when a token has several parents at once**. Existing absorption
+scores (Chanin et al.; SAEBench) use the first-letter task, where each token has one parent.
 
-MPAbs provides:
-1. **112 Stratified Multi-Parent Cells (`Letter × WordNet Category × Case`):** Every target token simultaneously carries three crisp, verifiable parent concepts:
-   - **Orthographic Parent:** Initial letter ($14$ high-coverage letters).
-   - **Semantic Parent:** WordNet lexicographer noun category (`noun.animal`, `noun.food`, `noun.artifact`, `noun.location`, `noun.person`, `noun.plant`, `noun.substance`, `noun.body`, etc.).
-   - **Morphological/Surface Parent:** Capitalization state (`lowercase` vs `TitleCase`).
-2. **Dual-Hypernym Semantic Multiple-Inheritance Subset:** Exemplar nouns whose WordNet synset exhibits true semantic multiple inheritance (e.g., `"salmon"` $\to$ `noun.animal` $\cap$ `noun.food`; `"piano"` $\to$ `noun.artifact` $\cap$ `musical_instrument`).
-3. **Mixed-Topology Synthetic Ground-Truth Generator:** Extension of SynthSAEBench supporting controllable multi-parent ratio $\rho \in \{0.0, 0.10, 0.25, 0.50\}$, per-parent conditional magnitude variance $\sigma_i^2$ (for testing Proposition 2 selective absorption ordering), and $36+$ structured hard negatives (transitive ancestors, correlation-only pairs, and incomplete parent subsets).
+## What is in it
 
----
+Built by `topocircuit/benchmarks/mpabs_lm.py` for **Pythia-70M-deduped, layer 3**:
 
-## Dataset Structure & Splits
-- **Unit of Analysis:** Stratified cell ($N_{\text{cells}} = 112$, each with $\ge 25$ tokens; $20\%$ spot-checked by hand).
-- **Splits:** Stratified $60\% / 20\% / 20\%$ split into `train`, `validation`, and `test`.
-  - `train`: Used to train L2-regularized logistic regression probes per parent concept.
-  - `validation`: Used to enforce the $\ge 0.90$ probe accuracy gate (achieved mean validation probe accuracy: **$98.7\%$**) and select main parent latents.
-  - `test`: Held-out split opened once in Phase 6 for headline MPAbs per-parent and joint absorption reporting.
+| Item | Value |
+|---|---|
+| Tokens | Single-token nouns whose lowercase (`" dog"`) and TitleCase (`" Dog"`) forms are both one token |
+| Parents per token | 3: first letter, WordNet lexicographer category of the most frequent noun sense, case |
+| Categories considered | 15 `noun.*` lexicographer files |
+| Cells | letter x category groups with at least 20 tokens: **52 cells, 1,828 tokens** |
+| Context | 3 short templates per token (e.g. `"I looked at the{w}"`); activation read at the token |
+| Splits | 60 / 20 / 20 by word, stratified by cell; both case forms of a word share a split |
 
----
+The blueprint targeted at least 100 cells; Pythia-70M's vocabulary only supports 52 at this
+threshold. Category labels come from WordNet and were not hand-checked in this rebuild.
 
-## Metrics Provided
-1. **`mean_mpabs` (Per-Parent Multi-Parent Absorption):** Mean fraction of probe-positive child tokens across all parents $p \in \mathrm{Pa}(c)$ where the main parent latent $l^*(p)$ fails to fire while other active latents carry the parent probe direction.
-2. **`mean_joint_abs` (Joint Multi-Parent Absorption):** Fraction of child tokens where a specific latent simultaneously absorbs two or more distinct parent directions.
-3. **Parent-Specific Breakdown:** `first_letter_abs` (SAEBench-compatible single-parent baseline), `semantic_cat_abs`, and `case_abs`.
+## Probes
 
----
+One logistic-regression probe per parent concept (26 in total) on train-split activations, kept only
+if its **balanced accuracy** on the val split is at least 0.90. **7 of 26 pass**: both case probes,
+`noun.location`, and letters B, P, S and T. Only kept probes are scored. Category structure is weakly
+linearly decodable at this layer of this small model.
 
-## Citation & Attribution
-- **Author:** Muzra Fatima
-- **Built Upon:** SAEBench (Karvonen et al., ICML 2025), A is for Absorption (Chanin et al., NeurIPS 2025), SynthSAEBench (Chanin & Garriga-Alonso, 2026), and WordNet (Miller, 1995).
-- **License:** MIT License
+## Metrics
+
+For each kept parent $p$ of a test token $t$:
+- **Absorbed** if the probe fires, the SAE's best-F1 latent for $p$ is silent, and another active
+  latent contributes at least 40% of the token's probe projection (SAEBench-style criterion, fixed
+  before results).
+- **Parent false negative** (exploratory, added after results) if the probe fires and the main latent
+  is silent.
+
+`MPAbs` = mean over cells of the mean per-parent absorption rate; `joint` = share of tokens with two
+or more absorbed parents. A causal check removes a parent's main latent from the reconstruction and
+compares the drop in that probe's logit with removing a random latent.
+
+## Known limitations
+- One model, one layer, one seed.
+- Strict absorption is below 3% for every SAE tested, so it separates methods poorly at this scale.
+- No dual-hypernym subset (e.g. "salmon" = animal + food) in this version.
+
+Results: `results/mpabs/`, `results/lm_results.json`.

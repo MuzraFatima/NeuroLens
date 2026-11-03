@@ -85,3 +85,6 @@ TopoCircuit_SAE_Complete_Presentation.pptx
 /data/
 .hf_cache/
 results/runs/
+
+# Personal deck and its generator (kept in the project folder, never committed)
+/personal/
