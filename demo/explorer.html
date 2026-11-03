@@ -368,8 +368,50 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
       </div>
       <div class="stack">
         <div class="card">
-          <h3>DAG Hierarchy Explorer</h3>
-          <p class="sub">Frequency-ordered Directed Acyclic Graph structure initialized.</p>
+          <h3>Subgraph filter</h3>
+          <p class="sub">Choose a concept family, set routing truncation depth H, then search.</p>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;">
+            <div class="field">
+              <label for="famSel">Concept subgraph family</label>
+              <select id="famSel"></select>
+            </div>
+            <div class="field">
+              <div class="lab"><label for="hRange">Routing truncation depth (H)</label><span class="val" id="hVal"></span></div>
+              <input type="range" id="hRange" min="0" max="4" step="1" value="2">
+              <div class="ticks"><span>0 flat</span><span>1</span><span>2</span><span>3</span><span>4 exact</span></div>
+            </div>
+            <div class="field">
+              <label for="q">Search latent or token</label>
+              <input type="search" id="q" placeholder="e.g. bat, Paris, Prague, mammal, #0014">
+            </div>
+          </div>
+        </div>
+
+        <div class="card stage-card">
+          <div class="stage-head">
+            <h3>3D concept map</h3>
+            <p>Drag to rotate. Glowing green links are the route from the selected latent back toward the root.</p>
+          </div>
+          <div id="slot-explorer">
+            <div class="stage" id="stage" tabindex="0" aria-label="3D concept map. Drag or use arrow keys to rotate.">
+              <div class="labels" id="labels"></div>
+              <div class="stage-ui">
+                <button type="button" id="autoBtn" aria-pressed="true">Auto-rotate</button>
+                <button type="button" id="resetView">Reset view</button>
+              </div>
+              <div class="stage-hint">Drag to rotate · tap a label to select</div>
+            </div>
+          </div>
+          <div class="legend"></div>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <h3>Latents in view</h3>
+            <p class="sub">Ordered by empirical activation frequency.</p>
+            <div class="list" id="latList"></div>
+          </div>
+          <div class="card" id="detail"></div>
         </div>
       </div>
     </section>
@@ -388,8 +430,8 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
       </div>
       <div class="stack">
         <div class="card">
-          <h3>Live Routing Simulator</h3>
-          <p class="sub">Unrolling ancestral activations along directed edges initialized.</p>
+          <h3>Routing Simulator Placeholder</h3>
+          <p class="sub">Next commit will wire the routing pulses.</p>
         </div>
       </div>
     </section>
@@ -409,8 +451,8 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
       </div>
       <div class="stack">
         <div class="card">
-          <h3>Benchmark Leaderboard</h3>
-          <p class="sub">Evaluation data initialized.</p>
+          <h3>Leaderboard Placeholder</h3>
+          <p class="sub">Final commit will wire CSS-3D blocks.</p>
         </div>
       </div>
     </section>
@@ -420,13 +462,423 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
+  var REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function $(id){ return document.getElementById(id); }
+  function pct(x){ return (typeof x === 'number' ? x.toFixed(2) : parseFloat(x).toFixed(2)) + '%'; }
 
-  /* ---------- Hash Routing & Mobile Navigation ---------- */
+  /* ---------- 1. Canonical Repo Data ---------- */
+  var RAW = {
+    all: {
+      name: "All Multi-Parent Families (14 latents)",
+      nodes: [
+        ['0014', "Letter 'B'", 6.40, []],
+        ['0089', "noun.animal", 4.85, []],
+        ['0019', "Letter 'P'", 5.80, []],
+        ['0104', "noun.location", 4.10, []],
+        ['0042', "TitleCase", 5.50, []],
+        ['0112', "noun.food", 3.90, []],
+        ['0812', "mammal", 1.95, [['0089', 1.0]]],
+        ['1204', "flying_creature", 1.40, [['0089', 1.0]]],
+        ['1540', "capital_city", 1.30, [['0104', 1.0]]],
+        ['11842', '"bat"', 0.42, [['0014', 0.36], ['0812', 0.34], ['1204', 0.30]]],
+        ['12410', '"beaver"', 0.31, [['0014', 0.52], ['0812', 0.48]]],
+        ['13095', '"salmon"', 0.38, [['0089', 0.52], ['0112', 0.48]]],
+        ['14220', '"Paris"', 0.64, [['0019', 0.33], ['1540', 0.34], ['0042', 0.33]]],
+        ['15108', '"Prague"', 0.29, [['0019', 0.32], ['1540', 0.34], ['0042', 0.34]]]
+      ]
+    },
+    animal: {
+      name: 'Animals & Letter "B" ("bat", "beaver")',
+      nodes: [
+        ['0014', "Letter 'B'", 6.40, []],
+        ['0089', "noun.animal", 4.85, []],
+        ['0812', "mammal", 1.95, [['0089', 1.0]]],
+        ['1204', "flying_creature", 1.40, [['0089', 1.0]]],
+        ['11842', '"bat"', 0.42, [['0014', 0.36], ['0812', 0.34], ['1204', 0.30]]],
+        ['12410', '"beaver"', 0.31, [['0014', 0.52], ['0812', 0.48]]]
+      ]
+    },
+    location: {
+      name: 'Capitals & Letter "P" ("Paris", "Prague")',
+      nodes: [
+        ['0019', "Letter 'P'", 5.80, []],
+        ['0104', "noun.location", 4.10, []],
+        ['0042', "TitleCase", 5.50, []],
+        ['1540', "capital_city", 1.30, [['0104', 1.0]]],
+        ['14220', '"Paris"', 0.64, [['0019', 0.33], ['1540', 0.34], ['0042', 0.33]]],
+        ['15108', '"Prague"', 0.29, [['0019', 0.32], ['1540', 0.34], ['0042', 0.34]]]
+      ]
+    },
+    food: {
+      name: 'Dual-Hypernym Food ("salmon")',
+      nodes: [
+        ['0089', "noun.animal", 4.85, []],
+        ['0112', "noun.food", 3.90, []],
+        ['13095', '"salmon"', 0.38, [['0089', 0.52], ['0112', 0.48]]]
+      ]
+    }
+  };
+
+  var NODE_EXTRA = {
+    '0014': { tokens: ["bat", "badger", "beaver", "bison", "banana"], causal: "Ablating #0014 on 'bat' drops Letter-B probe logit by 4.41 (vs 0.07 control)." },
+    '0089': { tokens: ["dog", "bat", "whale", "salmon", "eagle"], causal: "Ablating #0089 on 'bat' drops noun.animal probe logit by 4.18." },
+    '0019': { tokens: ["Paris", "Prague", "Peru", "Poland", "piano"], causal: "Ablating #0019 on 'Paris' drops Letter-P probe logit by 4.52." },
+    '0104': { tokens: ["Paris", "London", "Tokyo", "Peru", "Rome"], causal: "Ablating #0104 on 'Paris' drops noun.location probe logit by 4.09." },
+    '0042': { tokens: ["Paris", "Prague", "London", "Monday", "April"], causal: "Ablating #0042 on 'Paris' drops TitleCase probe logit by 3.95." },
+    '0112': { tokens: ["salmon", "apple", "almond", "bread", "cheese"], causal: "Ablating #0112 on 'salmon' drops noun.food probe logit by 4.11." },
+    '0812': { tokens: ["bat", "beaver", "whale", "dolphin", "bison"], causal: "Intermediate Tier-1 parent; receives routed activation from 'bat' (0.78) and routes up to 'noun.animal' (0.82)." },
+    '1204': { tokens: ["bat", "albatross", "eagle", "hawk", "dragonfly"], causal: "Second semantic parent of 'bat'; missed by single-parent Tree SAEs (H-SAE)." },
+    '1540': { tokens: ["Paris", "Prague", "London", "Tokyo", "Berlin"], causal: "Intermediate Tier-1 parent linking 'Paris' and 'Prague' to 'noun.location'." },
+    '11842': { tokens: ["bat", "bats", "fruit bat", "vampire bat"], causal: "Multi-parent child with 3 parents: Letter 'B' (0.84), 'mammal' (0.78), and 'flying_creature' (0.71)." },
+    '12410': { tokens: ["beaver", "beavers", "beaver dam"], causal: "Multi-parent child routing simultaneously to Letter 'B' (0.81) and 'mammal' (0.76)." },
+    '13095': { tokens: ["salmon", "smoked salmon", "Atlantic salmon"], causal: "Dual-hypernym concept inheriting simultaneously from 'noun.animal' (0.79) and 'noun.food' (0.74)." },
+    '14220': { tokens: ["Paris", "Parisian", "central Paris"], causal: "3-parent token routing to Letter 'P' (0.79), 'capital_city' (0.83), and 'TitleCase' (0.81)." },
+    '15108': { tokens: ["Prague", "Old Town Prague"], causal: "3-parent token routing to Letter 'P' (0.76), 'capital_city' (0.80), and 'TitleCase' (0.79)." }
+  };
+
+  var LCOL = ['--l0', '--l1', '--l2', '--l3', '--l4'];
+  var FAM = {};
+  Object.keys(RAW).forEach(function(k){
+    var by = {}, list = [];
+    RAW[k].nodes.forEach(function(r){
+      var n = { id: r[0], label: r[1], freq: r[2], parents: r[3].map(function(p){ return { id: p[0], w: p[1] }; }), children: [], level: 0 };
+      by[n.id] = n; list.push(n);
+    });
+    list.forEach(function(n){
+      n.parents.forEach(function(p){ if(by[p.id]) by[p.id].children.push(n.id); });
+    });
+    function lvl(n){
+      if(!n.parents.length) return 0;
+      if(n._l != null) return n._l;
+      var m = 0;
+      n.parents.forEach(function(p){ if(by[p.id]) m = Math.max(m, lvl(by[p.id]) + 1); });
+      n._l = m; return m;
+    }
+    list.forEach(function(n){ n.level = lvl(n); });
+    FAM[k] = {
+      name: RAW[k].name,
+      by: by,
+      list: list.slice().sort(function(a, b){ return b.freq - a.freq; }),
+      maxLevel: Math.max.apply(null, list.map(function(n){ return n.level; }))
+    };
+  });
+
+  function deepest(f){
+    var best = null;
+    FAM[f].list.forEach(function(n){
+      if(!best || n.level > best.level || (n.level === best.level && n.freq > best.freq)) best = n;
+    });
+    return best ? best.id : FAM[f].list[0].id;
+  }
+  function lvColor(l){
+    var v = getComputedStyle(document.documentElement).getPropertyValue('--l' + Math.min(l, 4)).trim();
+    return v || '#0A7D55';
+  }
+
+  function ancestors(f, id, H){
+    var by = FAM[f].by, dist = {}, edges = {};
+    if(!by[id]) return { dist: dist, edges: edges };
+    dist[id] = 0;
+    var frontier = [id];
+    for(var d = 0; d < H; d++){
+      var next = [];
+      frontier.forEach(function(c){
+        if(by[c]){
+          by[c].parents.forEach(function(p){
+            edges[p.id + '>' + c] = 1;
+            if(dist[p.id] == null){ dist[p.id] = d + 1; next.push(p.id); }
+          });
+        }
+      });
+      frontier = next;
+    }
+    return { dist: dist, edges: edges };
+  }
+
+  /* ---------- 2. Three.js 3D Scene ---------- */
+  var Scene3D = (function(){
+    var stage = $('stage'), labelsEl = $('labels'), renderer = null, scene, camera, group;
+    var lbls = [], state = null, onSelect = null;
+    var theta = 0.7, phi = 0.4, dist = 17, targetY = 3, auto = !REDUCE, dragging = false, lx = 0, ly = 0, W = 0, H = 0;
+    var PR = 4.0, GAP = 1.9;
+    var v3 = null;
+
+    function fail(){
+      stage.innerHTML = '<div class="nogl">WebGL is disabled or unavailable. Hardware-accelerated 3D is required for the interactive plates.</div>';
+    }
+    function init(){
+      if(typeof THREE === 'undefined'){ fail(); return; }
+      try {
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      } catch(e) {
+        fail(); return;
+      }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setClearColor(0x000000, 0);
+      stage.insertBefore(renderer.domElement, labelsEl);
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.90));
+      var dl = new THREE.DirectionalLight(0xffffff, 0.85); dl.position.set(5, 10, 7); scene.add(dl);
+      group = new THREE.Group(); scene.add(group);
+      v3 = new THREE.Vector3();
+
+      stage.addEventListener('pointerdown', function(e){
+        if(e.target.closest('.lbl,.stage-ui')) return;
+        dragging = true; lx = e.clientX; ly = e.clientY; stage.classList.add('drag');
+        try { stage.setPointerCapture(e.pointerId); } catch(_){}
+      });
+      stage.addEventListener('pointermove', function(e){
+        if(!dragging) return;
+        var dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
+        theta -= dx * 0.008;
+        if(e.pointerType !== 'touch') phi = Math.max(0.08, Math.min(1.2, phi + dy * 0.006));
+      });
+      function end(){ dragging = false; stage.classList.remove('drag'); }
+      stage.addEventListener('pointerup', end); stage.addEventListener('pointercancel', end);
+      stage.addEventListener('keydown', function(e){
+        if(e.key === 'ArrowLeft'){ theta += 0.15; e.preventDefault(); }
+        if(e.key === 'ArrowRight'){ theta -= 0.15; e.preventDefault(); }
+        if(e.key === 'ArrowUp'){ phi = Math.min(1.2, phi + 0.08); e.preventDefault(); }
+        if(e.key === 'ArrowDown'){ phi = Math.max(0.08, phi - 0.08); e.preventDefault(); }
+      });
+      var ab = $('autoBtn');
+      if(ab){
+        ab.setAttribute('aria-pressed', String(auto));
+        ab.addEventListener('click', function(){ auto = !auto; ab.setAttribute('aria-pressed', String(auto)); });
+      }
+      var rb = $('resetView');
+      if(rb){
+        rb.addEventListener('click', function(){ theta = 0.7; phi = 0.4; });
+      }
+      requestAnimationFrame(loop);
+    }
+
+    function clearGroup(){
+      while(group.children.length){
+        var o = group.children[0]; group.remove(o);
+        if(o.geometry) o.geometry.dispose();
+        if(o.material) o.material.dispose();
+      }
+      labelsEl.innerHTML = ''; lbls = [];
+    }
+    function addLabel(el, pos, off){ labelsEl.appendChild(el); lbls.push({ el: el, pos: pos, off: off }); }
+
+    function layout(f){
+      var pos = {}, byL = [];
+      for(var l = 0; l <= f.maxLevel; l++) byL.push([]);
+      f.list.forEach(function(n){ byL[n.level].push(n); });
+      byL.forEach(function(arr, l){
+        var N = arr.length;
+        arr.forEach(function(n, i){
+          var x = 0, z = 0;
+          if(N > 1){
+            var a = l * 0.9 + i * 2 * Math.PI / N + 0.3;
+            var r = (N === 2 ? 1.8 : 2.05);
+            x = Math.cos(a) * r; z = Math.sin(a) * r;
+          }
+          pos[n.id] = new THREE.Vector3(x, l * GAP + 0.34, z);
+        });
+      });
+      return pos;
+    }
+
+    function build(){
+      if(!renderer || !state) return;
+      clearGroup();
+      var f = FAM[state.fam] || FAM.all;
+      var A = ancestors(state.fam, state.sel, state.H);
+      var pos = layout(f);
+      targetY = f.maxLevel * GAP / 2 + 0.2;
+
+      for(var l = 0; l <= f.maxLevel; l++){
+        var col = new THREE.Color(lvColor(l)), y = l * GAP;
+        var disc = new THREE.Mesh(new THREE.CylinderGeometry(PR, PR, 0.05, 72),
+          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.13, depthWrite: false }));
+        disc.position.y = y; group.add(disc);
+        [PR, PR * 0.68, PR * 0.36].forEach(function(r, i){
+          var ring = new THREE.Mesh(new THREE.RingGeometry(r - 0.035, r, 96),
+            new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: i === 0 ? 0.95 : 0.38, side: THREE.DoubleSide, depthWrite: false }));
+          ring.rotation.x = -Math.PI / 2; ring.position.y = y + 0.03; group.add(ring);
+        });
+        var pl = document.createElement('div'); pl.className = 'plate-lbl';
+        pl.textContent = (l === 0 ? 'Root' : 'Depth ' + l);
+        addLabel(pl, new THREE.Vector3(0, y, PR + 0.15), 0);
+      }
+
+      f.list.forEach(function(n){
+        n.parents.forEach(function(p){
+          if(!pos[p.id] || !pos[n.id]) return;
+          var a = pos[p.id], b = pos[n.id], on = !!A.edges[p.id + '>' + n.id];
+          var mid = a.clone().add(b).multiplyScalar(0.5);
+          var out = new THREE.Vector3(mid.x, 0, mid.z);
+          if(out.length() > 0.2) out.normalize().multiplyScalar(0.55); else out.set(0, 0, 0);
+          var ctrl = mid.clone().add(out);
+          var curve = new THREE.QuadraticBezierCurve3(a, ctrl, b);
+          var tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 28, on ? 0.055 : 0.02, 8, false),
+            new THREE.MeshBasicMaterial({ color: on ? 0x0A7D55 : 0x7E9A89, transparent: !on, opacity: on ? 1 : 0.35 }));
+          group.add(tube);
+        });
+      });
+
+      f.list.forEach(function(n){
+        var p = pos[n.id], d = A.dist[n.id], inside = (d != null), isSel = (n.id === state.sel);
+        var r = 0.22 + 0.055 * Math.sqrt(n.freq), col = new THREE.Color(lvColor(n.level));
+        var mat = new THREE.MeshStandardMaterial({
+          color: col, roughness: 0.35, metalness: 0.05, transparent: !inside, opacity: inside ? 1 : 0.38,
+          emissive: isSel ? col : 0x000000, emissiveIntensity: isSel ? 0.35 : 0
+        });
+        var m = new THREE.Mesh(new THREE.SphereGeometry(r, 32, 24), mat);
+        m.position.copy(p);
+        if(isSel) m.scale.setScalar(1.22);
+        group.add(m);
+
+        var sh = new THREE.Mesh(new THREE.CircleGeometry(r * 1.1, 28),
+          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: inside ? 0.35 : 0.15, depthWrite: false }));
+        sh.rotation.x = -Math.PI / 2; sh.position.set(p.x, n.level * GAP + 0.06, p.z); group.add(sh);
+
+        if(isSel){
+          var halo = new THREE.Mesh(new THREE.TorusGeometry(r * 1.75, 0.035, 10, 56), new THREE.MeshBasicMaterial({ color: 0xF4B400 }));
+          halo.rotation.x = Math.PI / 2; halo.position.copy(p); group.add(halo);
+        }
+
+        var b = document.createElement('button'); b.type = 'button';
+        b.className = 'lbl' + (isSel ? ' sel' : '') + (inside ? '' : ' dim');
+        b.style.setProperty('--c', 'var(' + LCOL[Math.min(n.level, 4)] + ')');
+        b.innerHTML = '<small>#' + n.id + ' · ' + pct(n.freq) + '</small>' + n.label.replace(/&/g, '&amp;');
+        b.setAttribute('aria-label', 'Select latent ' + n.id + ' ' + n.label.replace(/"/g, ''));
+        b.addEventListener('click', function(){ if(onSelect) onSelect(n.id); });
+        addLabel(b, p.clone(), -(r * 34 + 22));
+      });
+    }
+
+    function resize(){
+      var w = stage.clientWidth, h = stage.clientHeight;
+      if(!w || !h || (w === W && h === H)) return;
+      W = w; H = h; renderer.setSize(W, H, false);
+      camera.aspect = W / H; camera.updateProjectionMatrix();
+      dist = 17 * Math.max(1, 0.95 / camera.aspect);
+    }
+
+    function loop(){
+      requestAnimationFrame(loop);
+      if(!renderer || !stage.offsetParent || document.hidden) return;
+      resize(); if(!W) return;
+      if(auto && !dragging) theta += 0.0035;
+      camera.position.set(Math.sin(theta) * Math.cos(phi) * dist, targetY + Math.sin(phi) * dist, Math.cos(theta) * Math.cos(phi) * dist);
+      camera.lookAt(0, targetY, 0);
+      renderer.render(scene, camera);
+      lbls.forEach(function(l){
+        v3.copy(l.pos).project(camera);
+        if(v3.z > 1){ l.el.style.visibility = 'hidden'; return; }
+        l.el.style.visibility = 'visible';
+        var x = (v3.x * 0.5 + 0.5) * W, y = (-v3.y * 0.5 + 0.5) * H + l.off;
+        l.el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) translate(-50%,-50%)';
+        l.el.style.zIndex = Math.round((1 - v3.z) * 1000);
+      });
+    }
+
+    return {
+      init: init,
+      setSelect: function(fn){ onSelect = fn; },
+      setView: function(fam, sel, H){ state = { fam: fam, sel: sel, H: H }; build(); },
+      el: stage
+    };
+  })();
+
+  function renderLegend(fam){
+    var f = FAM[fam] || FAM.all, out = '';
+    for(var l = 0; l <= f.maxLevel; l++){
+      out += '<span><i style="background:var(' + LCOL[Math.min(l, 4)] + ')"></i>' + (l === 0 ? 'Root plate' : 'Depth ' + l) + '</span>';
+    }
+    document.querySelectorAll('.legend').forEach(function(el){ el.innerHTML = out; });
+  }
+
+  var page = 'explorer';
+
+  /* ---------- 3. Explorer Page Logic ---------- */
+  var S = { fam: 'all', H: 2, sel: deepest('all'), q: '' };
+  var famSel = $('famSel');
+  Object.keys(FAM).forEach(function(k){
+    famSel.add(new Option(FAM[k].name, k));
+  });
+
+  function renderList(){
+    var f = FAM[S.fam], q = S.q.trim().toLowerCase(), box = $('latList');
+    var rows = f.list.filter(function(n){
+      return !q || n.label.toLowerCase().indexOf(q) > -1 || n.id.indexOf(q.replace('#', '')) > -1;
+    });
+    if(!rows.length){
+      box.innerHTML = '<div class="empty">No latent matches "' + S.q.replace(/</g, '&lt;') + '" in this family.</div>';
+      return;
+    }
+    var max = f.list[0].freq;
+    box.innerHTML = rows.map(function(n){
+      return '<button type="button" class="row-btn" data-id="' + n.id + '" aria-pressed="' + (n.id === S.sel) + '" style="--c:var(' + LCOL[Math.min(n.level, 4)] + ')">' +
+        '<span class="id">#' + n.id + '</span><span class="nm">' + n.label + '</span><span class="fq">' + pct(n.freq) + '</span>' +
+        '<span class="fbar" style="width:' + (n.freq / max * 100) + '%"></span></button>';
+    }).join('');
+  }
+
+  function renderDetail(){
+    var f = FAM[S.fam], n = f.by[S.sel] || f.list[0], A = ancestors(S.fam, S.sel, S.H), full = ancestors(S.fam, S.sel, 4);
+    var inH = Math.max(0, Object.keys(A.dist).length - 1), all = Math.max(0, Object.keys(full.dist).length - 1);
+    var byHop = {};
+    Object.keys(full.dist).forEach(function(id){
+      if(id !== S.sel){ (byHop[full.dist[id]] = byHop[full.dist[id]] || []).push(id); }
+    });
+    var route = '';
+    Object.keys(byHop).sort().forEach(function(h){
+      byHop[h].forEach(function(id){
+        var a = f.by[id];
+        if(a){
+          route += '<li class="' + (+h <= S.H ? '' : 'out') + '"><span class="hop">hop ' + h + '</span><span>' + a.label + ' <span class="mono" style="color:var(--muted)">#' + id + '</span></span><span class="mono">' + pct(a.freq) + '</span></li>';
+        }
+      });
+    });
+    var parents = n.parents.length ? n.parents.map(function(p){
+      var pl = f.by[p.id] ? f.by[p.id].label : '#' + p.id;
+      return '<li class="chip">' + pl + ' · w ' + p.w.toFixed(2) + '</li>';
+    }).join('') : '<li class="chip">Root latent · No upstream parents</li>';
+
+    var extra = NODE_EXTRA[n.id] || { tokens: [], causal: "" };
+    var tokensHtml = extra.tokens.length ? '<p class="sub" style="margin-top:14px; margin-bottom:6px;">Top activating tokens</p><div style="display:flex; flex-wrap:wrap; gap:6px;">' + extra.tokens.map(function(t){ return '<span class="chip" style="font-size:12.5px;">' + t + '</span>'; }).join('') + '</div>' : '';
+    var causalHtml = extra.causal ? '<p class="sub" style="margin-top:14px; margin-bottom:4px;">Causal ablation probe readout</p><p style="font-size:13.5px; color:var(--ink); margin:0; line-height:1.45; background:var(--surface-2); padding:10px 12px; border-radius:10px;">' + extra.causal + '</p>' : '';
+
+    $('detail').innerHTML =
+      '<h3>' + n.label + ' <span class="mono" style="font-size:15px; color:var(--muted); font-weight:400">#' + n.id + '</span></h3>' +
+      '<ul class="chips" style="margin:10px 0 0"><li class="chip lv" style="--c:var(' + LCOL[Math.min(n.level, 4)] + ')">depth ' + n.level + '</li><li class="chip">freq ' + pct(n.freq) + '</li></ul>' +
+      '<div class="kv"><div><span>Direct parents</span><b>' + n.parents.length + '</b></div><div><span>Reached at H = ' + S.H + '</span><b>' + inH + '</b></div><div><span>Ancestors in DAG</span><b>' + all + '</b></div></div>' +
+      '<p class="sub" style="margin-bottom:8px">Learned parents &amp; edge weights A[p,c]</p><ul class="chips" style="margin-bottom:14px">' + parents + '</ul>' +
+      tokensHtml + causalHtml +
+      (all ? '<p class="sub" style="margin-top:16px; margin-bottom:8px">Ancestral route</p><ul class="route">' + route + '</ul>' : '');
+  }
+
+  function renderExplorer(){
+    $('hVal').textContent = 'H = ' + S.H + (S.H === 1 ? ' hop' : ' hops');
+    renderList(); renderDetail(); renderLegend(S.fam);
+    if(page === 'explorer') Scene3D.setView(S.fam, S.sel, S.H);
+  }
+  function select(id){ S.sel = id; renderExplorer(); }
+  famSel.addEventListener('change', function(){
+    S.fam = famSel.value; S.sel = deepest(S.fam); S.q = ''; $('q').value = ''; renderExplorer();
+  });
+  $('hRange').addEventListener('input', function(e){ S.H = +e.target.value; renderExplorer(); });
+  $('q').addEventListener('input', function(e){ S.q = e.target.value; renderList(); });
+  $('latList').addEventListener('click', function(e){
+    var b = e.target.closest('.row-btn'); if(b) select(b.dataset.id);
+  });
+
+  Scene3D.setSelect(function(id){
+    if(page === 'explorer') select(id);
+  });
+
+  /* ---------- 4. Routing & Menu ---------- */
   var PAGES = ['explorer', 'routing', 'leaderboard'];
   function route(){
     var h = (location.hash || '').slice(1);
     if(PAGES.indexOf(h) < 0) h = 'explorer';
+    page = h;
     PAGES.forEach(function(p){
       var el = $('page-' + p);
       if(el) el.hidden = (p !== h);
@@ -435,6 +887,10 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
       if(a.getAttribute('href') === '#' + h) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
+    if(h === 'explorer'){
+      $('slot-explorer').appendChild(Scene3D.el);
+      renderExplorer();
+    }
     closeMenu();
     window.scrollTo(0, 0);
   }
@@ -453,6 +909,9 @@ tbody tr:first-child .rank { background: var(--sun); color: #122319; font-weight
   scrim.addEventListener('click', closeMenu);
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeMenu(); });
 
+  /* ---------- Boot ---------- */
+  famSel.value = S.fam;
+  Scene3D.init();
   route();
 })();
 </script>
