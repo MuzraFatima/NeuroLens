@@ -1,0 +1,26 @@
+{
+  "G2_baselines_show_multi_parent_absorption": {
+    "gate": "G2",
+    "checks": {
+      "batchtopk_multi_parent_absorption": {
+        "value": 0.7081758233207307,
+        "op": ">=",
+        "threshold": 0.05,
+        "passed": true
+      }
+    },
+    "passed": true
+  },
+  "G3_dr_sae_structure": {
+    "gate": "G3",
+    "checks": {
+      "parent_set_f1": {
+        "value": 0.131343984962406,
+        "op": ">=",
+        "threshold": 0.8,
+        "passed": false
+      }
+    },
+    "passed": false
+  }
+}

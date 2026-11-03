@@ -26,7 +26,7 @@ import torch  # noqa: E402
 from topocircuit.data.synth_generator import MixedTopologySyntheticGenerator  # noqa: E402
 from topocircuit.eval.metrics import check_gate  # noqa: E402
 from topocircuit.eval.prop2 import run_grid  # noqa: E402
-from topocircuit.eval.structure import cross_seed_edge_reproducibility, evaluate_synthetic  # noqa: E402
+from topocircuit.eval.structure import evaluate_synthetic  # noqa: E402
 from topocircuit.models import train_method  # noqa: E402
 from topocircuit.utils import load_yaml_config  # noqa: E402
 
@@ -54,7 +54,6 @@ def main():
     torch.set_num_threads(max(1, os.cpu_count() or 1))
 
     rows = []
-    models_by = {}
     t_start = time.time()
     for rho in rhos:
         for seed in seeds:
@@ -102,7 +101,6 @@ def main():
                     seconds=round(time.time() - t0, 1),
                 )
                 rows.append(res)
-                models_by.setdefault((rho, method), []).append(model)
                 print(
                     f"rho={rho} seed={seed} {method:18s} F1={res['parent_set_f1']:.3f} "
                     f"edgeF1={res['edge_f1']:.3f} roRec(multi)={res['readout_parent_recall_multi']:.3f} "
@@ -111,10 +109,8 @@ def main():
                     flush=True,
                 )
 
-    repro = {}
-    for (rho, method), ms in models_by.items():
-        if hasattr(ms[0], "parent_sets") and len(ms) > 1:
-            repro[f"{rho}|{method}"] = cross_seed_edge_reproducibility(ms)
+    # Cross-seed reproducibility needs the same data under different model seeds; here every seed
+    # draws a new DAG, so it is measured separately by scripts/run_synthetic_repro.py.
 
     summary = {}
     for rho in rhos:
@@ -141,7 +137,6 @@ def main():
                 },
                 "runs": rows,
                 "summary": summary,
-                "cross_seed": repro,
             },
             f,
             indent=2,
