@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Comprehensive Production Readiness & Immersive UI/UX Playbook Audit Runner."""
+"""Engineering checklist audit: measures what can be measured locally, writes nothing it did not measure.
+
+Checks: single-JOIN graph query and its cache, index usage, server cache and ETag 304s, gzip saving,
+PNG compression of figures and screenshots, a rebuilt minified explorer, and a placeholder scan.
+Lighthouse is not run here; use the `lighthouse` CLI against `python scripts/serve_app.py` for that.
+"""
 
 import json
 import os
 import re
-import shutil
 import sys
-import tempfile
-import time
 
 from PIL import Image
 
@@ -83,74 +85,6 @@ def run_dev_guard_placeholder_scan(root_dir: str) -> dict:
     return {"scanned_files": scanned_files, "violations": violations, "passed": len(violations) == 0}
 
 
-def run_headless_chromium_lighthouse_audit(html_path: str) -> dict:
-    """Runs headless Chromium via CDP Page.setDocumentContent to audit Web Vitals, DOM & A11y."""
-    from selenium import webdriver
-    from selenium.webdriver.chrome import options as chrome_options
-
-    user_dir = tempfile.mkdtemp(prefix="lh_audit_")
-    opts = chrome_options.Options()
-    opts.add_argument("--headless=new")
-    opts.add_argument("--no-sandbox")
-    opts.add_argument("--disable-dev-shm-usage")
-    opts.add_argument("--disable-gpu")
-    opts.add_argument("--window-size=1440,900")
-    opts.add_argument(f"--user-data-dir={user_dir}")
-
-    driver = webdriver.Chrome(options=opts)
-    try:
-        raw_html = open(html_path, encoding="utf-8").read()
-        # Strip external CDN tags during hermetic VM test so Chromium doesn't block on outbound DNS
-        hermetic_html = re.sub(r'<link[^>]+href="https://[^"]+"[^>]*>', "", raw_html)
-        hermetic_html = re.sub(r'<script[^>]+src="https://[^"]+"[^>]*></script>', "", hermetic_html)
-
-        driver.get("about:blank")
-        ft = driver.execute_cdp_cmd("Page.getFrameTree", {})
-        fid = ft["frameTree"]["frame"]["id"]
-        t0 = time.time()
-        driver.execute_cdp_cmd("Page.setDocumentContent", {"frameId": fid, "html": hermetic_html})
-        # Trigger DOMContentLoaded handlers if needed
-        driver.execute_script("initStoryEvidenceTable(); updateStoryProp2Simulator();")
-        load_ms = round((time.time() - t0) * 1000, 1)
-
-        metrics = driver.execute_script(
-            """
-            return {
-                dom_elements: document.getElementsByTagName('*').length,
-                has_skip_link: !!document.querySelector('.skip-link'),
-                has_main_landmark: !!document.querySelector('main'),
-                has_aria_hidden_canvas: document.getElementById('sceneContainer')?.getAttribute('aria-hidden') === 'true',
-                provenance_badges_count: document.querySelectorAll('.badge').length,
-                story_sections_count: document.querySelectorAll('.story-section').length,
-                story_table_rows: document.querySelectorAll('#storyMainTableBody tr').length
-            };
-            """
-        )
-        # Switch to Workbench (/app) and test interactive state modes
-        driver.find_element("id", "layerSwitchWbBtn").click()
-        wb_checks = driver.execute_script(
-            """
-            const wbVisible = !document.getElementById('layerWorkbench').classList.contains('hidden');
-            const initialCells = document.querySelectorAll('#wbTableStateContainer tbody tr').length;
-            document.getElementById('stateLoadingBtn').click();
-            const skeletonCount = document.querySelectorAll('#wbTableStateContainer .skeleton').length;
-            document.getElementById('stateReadyBtn').click();
-            return {
-                workbench_switch_verified: wbVisible,
-                paginated_rows_per_page: initialCells,
-                skeleton_elements_verified: skeletonCount
-            };
-            """
-        )
-        metrics.update(wb_checks)
-        metrics["cdp_render_time_ms"] = load_ms
-        # Lighthouse scores, CLS and INP are not measured here; run the `lighthouse` CLI for those.
-        return metrics
-    finally:
-        driver.quit()
-        shutil.rmtree(user_dir, ignore_errors=True)
-
-
 def main():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     fig_dir = os.path.join(base_dir, "results", "figures")
@@ -158,7 +92,8 @@ def main():
     demo_min_html = os.path.join(base_dir, "demo", "explorer.min.html")
 
     db = TopoCircuitDatabase(":memory:", pool_size=4)
-    db.seed_from_benchmark()
+    if db.seed_from_results() == 0:
+        raise SystemExit("results/demo_data.json is missing: run scripts/build_demo_data.py first")
     q_before = db.query_counter
     _ = db.get_dag_with_parents_single_query("all")
     q_after_miss = db.query_counter
@@ -182,10 +117,10 @@ def main():
     gz_ratio = round((1.0 - gz_len / max(1, raw_len)) * 100.0, 2)
 
     img_stats = compress_project_images(fig_dir)
+    shot_stats = compress_project_images(os.path.join(base_dir, "demo", "screenshots"))
     min_stats = minify_html_bundle(demo_html, demo_min_html)
     dev_guard = run_dev_guard_placeholder_scan(base_dir)
     assert dev_guard["passed"], f"Dev guard failed: {dev_guard['violations']}"
-    lh_metrics = run_headless_chromium_lighthouse_audit(demo_html)
 
     audit_report = {
         "database_and_queries": {
@@ -203,14 +138,15 @@ def main():
             "gzip_compression_saving_pct": gz_ratio,
         },
         "asset_optimization": {
-            "image_compression": img_stats,
+            "figure_compression": img_stats,
+            "screenshot_compression": shot_stats,
             "html_css_js_minification": min_stats,
         },
         "dev_guard_honesty_scan": dev_guard,
-        "lighthouse_and_a11y_audit": lh_metrics,
+        "lighthouse": "not measured by this script",
     }
 
-    out_json = os.path.join(base_dir, "results", "tables", "production_audit_report.json")
+    out_json = os.path.join(base_dir, "results", "production_audit_report.json")
     with open(out_json, "w", encoding="utf-8") as f:
         json.dump(audit_report, f, indent=2)
 

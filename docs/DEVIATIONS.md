@@ -50,7 +50,12 @@ as constants, every method was initialised from the ground-truth DAG, and the ci
 came from a formula rather than a circuit search. The pre-registration tag
 `v1.0-prereg-phase5` was created after those results existed.
 
-All of that has been withdrawn. The old tag is superseded and should not be cited; the real
-pre-registration is the tag `v2.0-prereg-cpu`, created before the test split was scored. The
-constants are gone, and every number now in `results/` is produced by the scripts in this
-repository from the configs in `configs/`.
+All of that has been withdrawn. The old tag is superseded and should not be cited. No new tag was
+created: the hypotheses and thresholds are the blueprint's, unchanged, and the fast-track cuts were
+declared in commit `18bcd1e` (2026-11-03 22:33 +0530), before the first language-model result was
+recorded (commit `69a0079`, 2026-11-04 02:01 +0530). The constants are gone, and every number now
+in `results/` is produced by the scripts in this repository from the configs in `configs/`.
+
+One analysis was added after results were seen and is labelled exploratory everywhere: the parent
+false-negative rate on MPAbs, added because the pre-specified absorption score was near zero for
+every method.

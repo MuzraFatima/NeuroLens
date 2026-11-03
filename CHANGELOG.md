@@ -5,7 +5,36 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
-## [1.0.0] — 2026-10-31
+## [2.0.0] — 2026-11-04
+
+### Rebuilt on real runs (CPU only)
+
+The 1.0.0 results were not produced by running the language models and are withdrawn
+(see `docs/DEVIATIONS.md`). Everything below was rebuilt and measured.
+
+**Models** (`topocircuit/models/`): BatchTopK, Matryoshka and DR-SAE in PyTorch, all from random
+init; DR-SAE with scheduled frequency-ordered parent refresh, sparse routing and a hub cap;
+Post-hoc DR and AG-SAE-lite on a trained Matryoshka encoder; a one-parent tree prior.
+
+**Data and benchmarks:** cached Pythia-70M layer activations (857,504 pile-10k tokens); MPAbs on
+real WordNet nouns (52 cells, 1,828 tokens, probes gated at 0.90 balanced accuracy).
+
+**Evaluation:** exact parent-set F1 with Hungarian matching; Proposition 2 tested by training an
+SAE per cell; cross-seed reproducibility on fixed data; attribution-patched agreement circuits;
+Wilcoxon, bootstrap CIs and Holm correction; gates that only accept measured numbers.
+
+**Outcomes:** H1 not supported, H2 falsified (floor effect), H3 falsified, H4 not supported;
+exploratory: DR-SAE and the tree prior lower parent false negatives against Matryoshka.
+
+**Demo:** explorer and local API now read only generated, measured data; screenshots retaken.
+
+**Removed:** the simulated pipeline and its tables and figures, ground-truth-seeded models, the
+formula-based circuit evaluator, the synthetic 112-cell MPAbs, unmeasured Lighthouse scores,
+`pandas`, an obsolete UI spec and unused `web/src` stubs.
+
+---
+
+## [1.0.0] — 2026-10-31 (withdrawn)
 
 ### Initial release
 

@@ -1,10 +1,10 @@
 [build-system]
 requires = ["setuptools>=67", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "topocircuit-sae"
-version = "1.0.0"
+version = "2.0.0"
 description = "Frequency-Ordered DAG Routing to Measure and Remove Multi-Parent Feature Absorption in Sparse Autoencoders"
 readme = "README.md"
 license = { text = "MIT" }
@@ -13,7 +13,6 @@ requires-python = ">=3.9"
 dependencies = [
     "numpy>=1.24.0",
     "scipy>=1.10.0",
-    "pandas>=2.0.0",
     "matplotlib>=3.7.0",
     "PyYAML>=6.0",
     "Pillow>=9.5.0",

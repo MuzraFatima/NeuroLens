@@ -91,3 +91,19 @@ When $m = 1$, this recovers the single-parent HiPACE phase boundary (Zhang et al
 - **Regime II ($\sigma_1^2 < \lambda < \sigma_2^2$):** Parent $p_1$ is selectively absorbed while $p_2$ continues to fire ($A_{\text{abs}}^* = \{1\}$).
 - **Regime III ($\sigma_2^2 < \lambda < \sigma_1^2$):** Parent $p_2$ is selectively absorbed while $p_1$ continues to fire ($A_{\text{abs}}^* = \{2\}$).
 - **Regime IV ($\lambda > \max(\sigma_1^2, \sigma_2^2)$):** Joint absorption—both parents $p_1$ and $p_2$ are simultaneously absorbed into $c$ ($A_{\text{abs}}^* = \{1, 2\}$). $\blacksquare$
+
+---
+
+## 5. Empirical test (CPU rebuild)
+
+The derivation above is a cost-counting argument under idealised assumptions (orthonormal
+directions, an exact $L_0$ penalty, optimal decoders). It was tested by training a plain ReLU SAE
+with an $L_1$ penalty on a toy with one child and two parents, over a $5 \times 5$ grid of
+$(\sigma_1^2, \sigma_2^2)$ and four values of $\lambda$ (`topocircuit/eval/prop2.py`).
+
+Result (`results/synthetic/prop2_grid.json`): in the 43 of 100 cells where the two parents'
+absorption rates differ by more than 0.1, the lower-variance parent is absorbed first in **65%**.
+The pre-registered bar to confirm was 80% and the falsification line 60%, so the proposition is
+**neither confirmed nor rejected** by this test. Likely reasons are that an $L_1$-trained SAE only
+approximates the $L_0$ trade-off and that SGD from a random init does not always reach the
+optimum the argument assumes.

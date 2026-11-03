@@ -1,0 +1,45 @@
+{
+  "database_and_queries": {
+    "connection_pool_size": 4,
+    "single_join_queries_executed": 1,
+    "n_plus_1_eliminated": true,
+    "lru_cache_hit_verified": true,
+    "sqlite_index_plans": [
+      "{'id': 3, 'parent': 0, 'notused': 61, 'detail': 'SEARCH mpabs_cells USING INDEX idx_cells_lookup (letter=? AND category=?)'}",
+      "{'id': 3, 'parent': 0, 'notused': 62, 'detail': 'SEARCH dag_edges USING INDEX idx_edges_child (child_id=?)'}",
+      "{'id': 4, 'parent': 0, 'notused': 222, 'detail': 'SCAN latents USING INDEX idx_latents_freq'}"
+    ]
+  },
+  "api_and_compression": {
+    "server_cache_hit_header": "HIT",
+    "etag_304_verified": true,
+    "raw_payload_bytes": 4327,
+    "gzip_payload_bytes": 872,
+    "gzip_compression_saving_pct": 79.85
+  },
+  "asset_optimization": {
+    "figure_compression": {
+      "files_processed": 5,
+      "bytes_before": 493830,
+      "bytes_after": 187541,
+      "reduction_pct": 62.02
+    },
+    "screenshot_compression": {
+      "files_processed": 4,
+      "bytes_before": 1889154,
+      "bytes_after": 513153,
+      "reduction_pct": 72.84
+    },
+    "html_css_js_minification": {
+      "bytes_before": 66125,
+      "bytes_after": 60124,
+      "reduction_pct": 9.08
+    }
+  },
+  "dev_guard_honesty_scan": {
+    "scanned_files": 21,
+    "violations": [],
+    "passed": true
+  },
+  "lighthouse": "not measured by this script"
+}

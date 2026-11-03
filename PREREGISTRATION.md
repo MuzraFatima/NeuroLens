@@ -1,29 +1,42 @@
-# Phase 5 Pre-Registration Document (`v1.0-prereg-phase5`)
+# Hypotheses, thresholds and outcomes
 
-**Project:** TopoCircuit-SAE: Frequency-Ordered DAG Routing to Measure and Remove Multi-Parent Feature Absorption in Sparse Autoencoders  
-**Owner:** Muzra Fatima  
-**Status:** Frozen prior to opening the MPAbs 20% held-out test split (Phase 5 Exit Gate G5).
+**Project:** TopoCircuit-SAE · **Owner:** Muzra Fatima
 
----
+The four hypotheses and their numeric thresholds are taken unchanged from the Master Research
+Blueprint (also in `configs/preregistration_v1.yaml`). The CPU scale-down and the fast-track cuts
+were declared in commit `18bcd1e` before any language-model result was recorded; see
+`docs/DEVIATIONS.md`. The earlier tag `v1.0-prereg-phase5` was created after its results existed
+and is superseded. The pilot minimum-detectable-effect figures quoted in an earlier version of this
+file were never measured and have been removed; with one LM seed, seed-level MDEs were not estimated.
 
-## 1. Frozen Hypotheses & Falsification Criteria
+## Outcomes
 
-| ID | Research Question | Pre-Registered Threshold | Falsification Condition |Minimum Detectable Effect (MDE, Pilot) |
-| :--- | :--- | :--- | :--- | :--- |
-| **H1 (RQ1)** | Multi-parent degradation & selective absorption order | As $\rho$ rises from $0 \to 0.5$, tree-prior SAE loses $\ge 20$ pts parent-set recall; DR-SAE loses $\le 5$ pts. Prop. 2 order holds in $\ge 80\%$ of cells. | Tree prior degrades $< 10$ pts OR Prop. 2 holds in $< 60\%$ of cells. | $3.8$ recall pts; $7.5\%$ cell agreement |
-| **H2 (RQ2, Primary)** | Multi-parent absorption reduction at equal sparsity & fidelity | DR-SAE cuts mean MPAbs by $\ge 30\%$ vs Matryoshka at matched native $L_0$, and by $\ge 15\%$ at matched effective $L_0$, with $\Delta\text{FVU} \le 0.01$. | $95\%$ CI of relative MPAbs reduction at matched effective $L_0$ includes $0$. | $4.2\%$ relative MPAbs reduction ($N=112$ cells) |
-| **H3 (RQ3)** | Ground-truth structural accuracy & cross-seed stability | Synthetic exact parent-set $\text{F1} \ge 0.90$ at $\rho=0.25$. Cross-seed MNN edge reproducibility $\ge 60\%$ for DR-SAE vs $\le 40\%$ for AG-SAE-lite. | Cross-seed edge reproducibility of DR-SAE is not strictly above AG-SAE-lite. | $5.1\%$ edge reproducibility |
-| **H4 (RQ4)** | Downstream Sparse Feature Circuit compactness | At faithfulness $0.80$ on Pythia-70M subject-verb agreement, DR-SAE requires $\ge 20\%$ fewer feature nodes than BatchTopK and Matryoshka. | Node-count reduction is $< 5\%$ or faithfulness curves cross. | $4.5\%$ node reduction |
+| ID | Pre-registered threshold | Measured | Outcome |
+|---|---|---|---|
+| **H1** (RQ1) | As ρ goes 0 → 0.5, tree-prior parent-set recall falls ≥ 20 pts and DR-SAE's ≤ 5 pts; Prop. 2 order holds in ≥ 80% of cells (falsified if tree < 10 pts or order < 60%) | Tree prior −19.3 pts, DR-SAE −17.2 pts; Prop. 2 order 65% of 43 informative cells | **Not supported** (DR-SAE degrades as much as the tree prior; Prop. 2 inconclusive) |
+| **H2** (RQ2, primary) | DR-SAE cuts MPAbs ≥ 30% vs Matryoshka at matched native L0 and ≥ 15% at matched effective L0, ΔFVU ≤ 0.01 (falsified if the effective-L0 CI includes 0) | Matched effective L0: −34% (95% CI −318% to +59%, p = 0.70); native L0: +29% (CI −140% to +81%) | **Falsified**: the CI includes 0. All MPAbs values are below 3% (floor effect) |
+| **H3** (RQ3) | Synthetic exact parent-set F1 ≥ 0.90 at ρ = 0.25; DR-SAE edge reproducibility ≥ 60% vs ≤ 40% for AG-SAE-lite (falsified if not above the post-hoc baseline) | F1 0.13; reproducibility 7% vs 20% (AG-SAE-lite) | **Falsified** |
+| **H4** (RQ4) | ≥ 20% fewer circuit latents than BatchTopK and Matryoshka at faithfulness 0.8 | 21 vs 38 (Matryoshka, 46% fewer) and vs 13.5 (BatchTopK, 55% more) | **Not supported** |
 
----
+Holm–Bonferroni across the tests that produced a p-value (H2 only): not significant.
 
-## 2. Validation-Tuned Hyperparameters (Frozen on Validation Split Only)
+## Exploratory (added after results, not part of the pre-registration)
 
-- **Candidate Parents per Latent ($m$):** $8$ (selected by co-activation lift $\Pr(p \mid c) \cdot \max(0, \langle r_p, d_{\text{eff}, c} \rangle)$)
-- **Routing Truncation Depth ($H$):** $4$ hops (swept over $\{1, 2, 4, 8\}$ in ablations)
-- **Structure Refresher Interval:** Every $2,000$ training steps (after $10\%$ native-code warmup)
-- **Edge Sparsity Penalty ($\lambda_A$):** $3 \times 10^{-4}$ (tuned over $\{10^{-4}, 3\times 10^{-4}, 10^{-3}\}$ on validation split)
-- **Hierarchical Orthogonality Weight ($\lambda_\perp$):** $0.05$ in whitened activation space (tuned over $\{0.01, 0.05, 0.10\}$)
-- **AuxK Coefficient ($\alpha$):** $1/32 = 0.03125$
-- **Graph Export Threshold:** $A_{p,c} \ge 0.05$
-- **Random Seeds:** $\{42, 137, 2026\}$
+Because strict MPAbs was near zero for every method, the **parent false-negative rate** (the
+parent's latent is silent where its probe fires) was added. Relative to Matryoshka, DR-SAE lowers it
+by 52% at matched native L0 (95% CI 38–66%) and 37% at matched effective L0 (CI 20–54%). The
+one-parent tree prior lowers it by 64% (CI 50–77%), so the effect does not need multiple parents.
+
+## Exit gates
+
+| Gate | Check | Result |
+|---|---|---|
+| G1 | Baseline FVU and loss recovered in range | Passed (FVU 0.056–0.060, loss recovered 0.93) |
+| G2 | Baselines show multi-parent absorption on synthetic data | Passed (BatchTopK misses a parent on 71% of multi-parent child tokens at ρ = 0.5) |
+| G3 | DR-SAE parent-set F1 ≥ 0.80, no hub collapse | **Failed** (F1 0.13) |
+| G4 | ≥ 100 MPAbs cells, probes ≥ 0.90 | **Partly failed** (52 cells; 7 of 26 probes) |
+| G5 | Thresholds above pilot MDE | Not evaluated (one LM seed) |
+| G6–G7 | H2 and H4 | See table above |
+
+Following the blueprint's failure path, the project reports these outcomes as measured rather than
+retuning until a gate passes.
