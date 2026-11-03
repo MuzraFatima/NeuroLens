@@ -2,6 +2,7 @@
 Generate TopoCircuit_SAE_Complete_Presentation.pptx
 Professional 16:9 widescreen presentation deck for TopoCircuit-SAE.
 """
+
 import os
 
 from pptx import Presentation
@@ -17,14 +18,14 @@ def create_deck():
     prs.slide_height = Inches(7.5)
 
     # Color Palette Constants
-    C_BG = RGBColor(248, 250, 246)         # #F8FAF6 soft eggshell
+    C_BG = RGBColor(248, 250, 246)  # #F8FAF6 soft eggshell
     C_WHITE = RGBColor(255, 255, 255)
-    C_BRAND = RGBColor(10, 107, 73)         # #0A6B49 deep forest emerald
-    C_INK = RGBColor(18, 35, 25)            # #122319 dark ink
-    C_MUTED = RGBColor(67, 90, 75)          # #435A4B muted green slate
-    C_LINE = RGBColor(211, 224, 203)        # #D3E0CB subtle green line
-    C_SURFACE_2 = RGBColor(232, 240, 224)   # #E8F0E0 sage tint
-    C_GOLD = RGBColor(244, 180, 0)          # #F4B400 gold accent
+    C_BRAND = RGBColor(10, 107, 73)  # #0A6B49 deep forest emerald
+    C_INK = RGBColor(18, 35, 25)  # #122319 dark ink
+    C_MUTED = RGBColor(67, 90, 75)  # #435A4B muted green slate
+    C_LINE = RGBColor(211, 224, 203)  # #D3E0CB subtle green line
+    C_SURFACE_2 = RGBColor(232, 240, 224)  # #E8F0E0 sage tint
+    C_GOLD = RGBColor(244, 180, 0)  # #F4B400 gold accent
     C_GOLD_TINT = RGBColor(254, 247, 224)
 
     blank_layout = prs.slide_layouts[6]
@@ -38,7 +39,9 @@ def create_deck():
 
     def add_header(slide, title, category="RESEARCH & ARCHITECTURE", subtitle=None):
         # Category pill
-        pill = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.45), Inches(2.8), Inches(0.32))
+        pill = slide.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.45), Inches(2.8), Inches(0.32)
+        )
         pill.fill.solid()
         pill.fill.fore_color.rgb = C_SURFACE_2
         pill.line.color.rgb = C_LINE
@@ -89,10 +92,21 @@ def create_deck():
     set_slide_background(s1, C_BRAND)
 
     # Decorative background card
-    create_card(s1, Inches(0.8), Inches(0.8), Inches(11.733), Inches(5.9), bg_color=C_WHITE, border_color=C_GOLD, border_width=2)
+    create_card(
+        s1,
+        Inches(0.8),
+        Inches(0.8),
+        Inches(11.733),
+        Inches(5.9),
+        bg_color=C_WHITE,
+        border_color=C_GOLD,
+        border_width=2,
+    )
 
     # Top Badge
-    badge = s1.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.3), Inches(1.3), Inches(3.2), Inches(0.36))
+    badge = s1.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE, Inches(1.3), Inches(1.3), Inches(3.2), Inches(0.36)
+    )
     badge.fill.solid()
     badge.fill.fore_color.rgb = C_SURFACE_2
     badge.line.color.rgb = C_BRAND
@@ -137,7 +151,7 @@ def create_deck():
         ("Multi-Parent DAG", "Solves feature absorption beyond trees"),
         ("Proposition 1 & 2", "Strict proofs of single-parent inadequacy & O(k^H) bounds"),
         ("Pythia-70M Circuits", "Recovers IOI & Gender Bias with >88% fidelity"),
-        ("Interactive 3D Explorer", "Full WebGL concept plates & live routing pulses")
+        ("Interactive 3D Explorer", "Full WebGL concept plates & live routing pulses"),
     ]
     for i, (title_p, desc_p) in enumerate(pill_data):
         px = Inches(1.3 + (i * 2.7))
@@ -169,20 +183,29 @@ def create_deck():
     # =========================================================================
     s2 = prs.slides.add_slide(blank_layout)
     set_slide_background(s2)
-    add_header(s2, "The Fundamental Bottleneck in Mechanistic Interpretability",
-               "MOTIVATION & CHALLENGE",
-               "Why standard flat sparse autoencoders fail to uncover the true hierarchical structure of language models.")
+    add_header(
+        s2,
+        "The Fundamental Bottleneck in Mechanistic Interpretability",
+        "MOTIVATION & CHALLENGE",
+        "Why standard flat sparse autoencoders fail to uncover the true hierarchical structure of language models.",
+    )
 
     cards_data = [
-        ("1. Feature Absorption",
-         "When a general concept (e.g., 'Verbs') absorbs fine-grained latents (e.g., 'Transitive Verbs' or 'Modal Verbs'), standard L1 regularization collapses distinct semantics into singular polysemantic nodes.",
-         "High MPAbs Score (~0.72)"),
-        ("2. Multi-Parent Polysemy",
-         "Real-world semantics do not form strict trees. A complex latent such as 'Medical Doctor' simultaneously inherits from 'Biological Health' and 'Professional Occupation'. Tree models fail completely.",
-         "Single-Parent Loss: 42%"),
-        ("3. Computational Explosion",
-         "Graph-based circuit discovery without depth bounds requires O(K^D) path explorations, which becomes intractable for production language models with 16k+ latents.",
-         "Unbounded Search: O(K^D)")
+        (
+            "1. Feature Absorption",
+            "When a general concept (e.g., 'Verbs') absorbs fine-grained latents (e.g., 'Transitive Verbs' or 'Modal Verbs'), standard L1 regularization collapses distinct semantics into singular polysemantic nodes.",
+            "High MPAbs Score (~0.72)",
+        ),
+        (
+            "2. Multi-Parent Polysemy",
+            "Real-world semantics do not form strict trees. A complex latent such as 'Medical Doctor' simultaneously inherits from 'Biological Health' and 'Professional Occupation'. Tree models fail completely.",
+            "Single-Parent Loss: 42%",
+        ),
+        (
+            "3. Computational Explosion",
+            "Graph-based circuit discovery without depth bounds requires O(K^D) path explorations, which becomes intractable for production language models with 16k+ latents.",
+            "Unbounded Search: O(K^D)",
+        ),
     ]
 
     for i, (title_c, desc_c, metric_c) in enumerate(cards_data):
@@ -190,7 +213,9 @@ def create_deck():
         create_card(s2, cx, Inches(2.0), Inches(3.78), Inches(3.6), bg_color=C_WHITE, border_color=C_LINE)
 
         # Pill inside card
-        pill = s2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, cx + Inches(0.2), Inches(2.2), Inches(3.38), Inches(0.4))
+        pill = s2.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE, cx + Inches(0.2), Inches(2.2), Inches(3.38), Inches(0.4)
+        )
         pill.fill.solid()
         pill.fill.fore_color.rgb = C_SURFACE_2
         pill.line.color.rgb = C_LINE
@@ -212,7 +237,9 @@ def create_deck():
         p.font.color.rgb = C_INK
 
         # Metric box at bottom of card
-        mbox = s2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, cx + Inches(0.2), Inches(4.7), Inches(3.38), Inches(0.65))
+        mbox = s2.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE, cx + Inches(0.2), Inches(4.7), Inches(3.38), Inches(0.65)
+        )
         mbox.fill.solid()
         mbox.fill.fore_color.rgb = C_GOLD_TINT
         mbox.line.color.rgb = C_GOLD
@@ -225,7 +252,15 @@ def create_deck():
         p.alignment = PP_ALIGN.CENTER
 
     # Bottom summary ribbon
-    create_card(s2, Inches(0.8), Inches(5.85), Inches(11.733), Inches(0.95), bg_color=C_SURFACE_2, border_color=C_BRAND)
+    create_card(
+        s2,
+        Inches(0.8),
+        Inches(5.85),
+        Inches(11.733),
+        Inches(0.95),
+        bg_color=C_SURFACE_2,
+        border_color=C_BRAND,
+    )
     tb = s2.shapes.add_textbox(Inches(1.0), Inches(5.95), Inches(11.333), Inches(0.75))
     tf = tb.text_frame
     tf.word_wrap = True
@@ -240,9 +275,12 @@ def create_deck():
     # =========================================================================
     s3 = prs.slides.add_slide(blank_layout)
     set_slide_background(s3)
-    add_header(s3, "Theoretical Foundations: MPAbs & Frequency Ordering",
-               "MATHEMATICAL RIGOR",
-               "Formulating Multi-Parent Absorption and proving strict acyclicity.")
+    add_header(
+        s3,
+        "Theoretical Foundations: MPAbs & Frequency Ordering",
+        "MATHEMATICAL RIGOR",
+        "Formulating Multi-Parent Absorption and proving strict acyclicity.",
+    )
 
     # Left Card: MPAbs Definition
     create_card(s3, Inches(0.8), Inches(2.0), Inches(5.7), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
@@ -322,23 +360,38 @@ def create_deck():
     # =========================================================================
     s4 = prs.slides.add_slide(blank_layout)
     set_slide_background(s4)
-    add_header(s4, "The DR-SAE 4-Step Architecture Pipeline",
-               "SYSTEM ARCHITECTURE",
-               "End-to-end training and graph induction methodology from residual streams to DAG hierarchy.")
+    add_header(
+        s4,
+        "The DR-SAE 4-Step Architecture Pipeline",
+        "SYSTEM ARCHITECTURE",
+        "End-to-end training and graph induction methodology from residual streams to DAG hierarchy.",
+    )
 
     steps = [
-        ("Step 1", "Activation Harvesting",
-         "Pythia-70M / 160M",
-         "• Hook Layer 6 residual stream\n• 512 / 768 hidden dimensions\n• 10M tokens from OpenWebText\n• Extract sparse activation vectors\n• Compute mean firing frequency"),
-        ("Step 2", "Affinity Induction",
-         "Co-occurrence Matrix",
-         "• Compute joint activation matrix C\n• Evaluate conditional affinity:\n  Aff(u, v) = P(u fires | v fires)\n• Filter spurious correlations\n• Keep top-k candidate parent edges"),
-        ("Step 3", "DAG Construction",
-         "Topological Layers",
-         "• Apply Lemma 1 frequency rule:\n  Keep edge (u, v) iff freq(u) > freq(v)\n• Remove cycle candidates\n• Assign nodes to depth levels L_0 to L_4\n• Prune redundant transitive edges"),
-        ("Step 4", "Depth-Bounded Routing",
-         "Inference Engine",
-         "• Truncate propagation at depth H\n• Synthesize child activations as:\n  x_H = ∑_{h=0}^H α_h W_h z_h\n• Bound search space to O(k^H)\n• Real-time sub-millisecond routing")
+        (
+            "Step 1",
+            "Activation Harvesting",
+            "Pythia-70M / 160M",
+            "• Hook Layer 6 residual stream\n• 512 / 768 hidden dimensions\n• 10M tokens from OpenWebText\n• Extract sparse activation vectors\n• Compute mean firing frequency",
+        ),
+        (
+            "Step 2",
+            "Affinity Induction",
+            "Co-occurrence Matrix",
+            "• Compute joint activation matrix C\n• Evaluate conditional affinity:\n  Aff(u, v) = P(u fires | v fires)\n• Filter spurious correlations\n• Keep top-k candidate parent edges",
+        ),
+        (
+            "Step 3",
+            "DAG Construction",
+            "Topological Layers",
+            "• Apply Lemma 1 frequency rule:\n  Keep edge (u, v) iff freq(u) > freq(v)\n• Remove cycle candidates\n• Assign nodes to depth levels L_0 to L_4\n• Prune redundant transitive edges",
+        ),
+        (
+            "Step 4",
+            "Depth-Bounded Routing",
+            "Inference Engine",
+            "• Truncate propagation at depth H\n• Synthesize child activations as:\n  x_H = ∑_{h=0}^H α_h W_h z_h\n• Bound search space to O(k^H)\n• Real-time sub-millisecond routing",
+        ),
     ]
 
     for i, (step_num, step_name, step_sub, step_details) in enumerate(steps):
@@ -346,7 +399,9 @@ def create_deck():
         create_card(s4, cx, Inches(2.0), Inches(2.8), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
 
         # Step tag
-        stag = s4.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, cx + Inches(0.2), Inches(2.2), Inches(2.4), Inches(0.35))
+        stag = s4.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE, cx + Inches(0.2), Inches(2.2), Inches(2.4), Inches(0.35)
+        )
         stag.fill.solid()
         stag.fill.fore_color.rgb = C_BRAND
         stag.line.color.rgb = C_BRAND
@@ -386,9 +441,12 @@ def create_deck():
     # =========================================================================
     s5 = prs.slides.add_slide(blank_layout)
     set_slide_background(s5)
-    add_header(s5, "Proposition 2: Exponential Sparsity & Error Bounds",
-               "EFFICIENCY GUARANTEE",
-               "Proving why truncating propagation at depth H ≤ 4 preserves 98.4% circuit fidelity.")
+    add_header(
+        s5,
+        "Proposition 2: Exponential Sparsity & Error Bounds",
+        "EFFICIENCY GUARANTEE",
+        "Proving why truncating propagation at depth H ≤ 4 preserves 98.4% circuit fidelity.",
+    )
 
     # Left: Proposition 2 Formal Card
     create_card(s5, Inches(0.8), Inches(2.0), Inches(5.7), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
@@ -437,11 +495,31 @@ def create_deck():
     p.font.color.rgb = C_INK
 
     hops_data = [
-        ("Hop 0 (Flat)", "MPAbs: 0.68  |  Fidelity: 54.2%  |  Eval Time: 0.12ms", "Baseline flat SAE; high absorption error."),
-        ("Hop 1 (Direct)", "MPAbs: 0.41  |  Fidelity: 78.4%  |  Eval Time: 0.35ms", "Immediate parents only; recovers major grammar rules."),
-        ("Hop 2 (Sub-root)", "MPAbs: 0.22  |  Fidelity: 91.8%  |  Eval Time: 0.58ms", "Captures semantic domains and syntactic roles."),
-        ("Hop 3 (Recommended)", "MPAbs: 0.12  |  Fidelity: 98.4%  |  Eval Time: 0.84ms", "★ Optimal plateau: 98.4% fidelity at sub-millisecond speed."),
-        ("Hop 4 (Exact DAG)", "MPAbs: 0.10  |  Fidelity: 99.1%  |  Eval Time: 1.22ms", "Complete exact DAG; minor marginal gain over H=3.")
+        (
+            "Hop 0 (Flat)",
+            "MPAbs: 0.68  |  Fidelity: 54.2%  |  Eval Time: 0.12ms",
+            "Baseline flat SAE; high absorption error.",
+        ),
+        (
+            "Hop 1 (Direct)",
+            "MPAbs: 0.41  |  Fidelity: 78.4%  |  Eval Time: 0.35ms",
+            "Immediate parents only; recovers major grammar rules.",
+        ),
+        (
+            "Hop 2 (Sub-root)",
+            "MPAbs: 0.22  |  Fidelity: 91.8%  |  Eval Time: 0.58ms",
+            "Captures semantic domains and syntactic roles.",
+        ),
+        (
+            "Hop 3 (Recommended)",
+            "MPAbs: 0.12  |  Fidelity: 98.4%  |  Eval Time: 0.84ms",
+            "★ Optimal plateau: 98.4% fidelity at sub-millisecond speed.",
+        ),
+        (
+            "Hop 4 (Exact DAG)",
+            "MPAbs: 0.10  |  Fidelity: 99.1%  |  Eval Time: 1.22ms",
+            "Complete exact DAG; minor marginal gain over H=3.",
+        ),
     ]
 
     for h_title, h_stats, h_desc in hops_data:
@@ -460,9 +538,12 @@ def create_deck():
     # =========================================================================
     s6 = prs.slides.add_slide(blank_layout)
     set_slide_background(s6)
-    add_header(s6, "Comprehensive Empirical Benchmark Evaluation",
-               "RESULTS & STATE-OF-THE-ART",
-               "Evaluating DR-SAE against leading sparse autoencoder baselines on Pythia-70M.")
+    add_header(
+        s6,
+        "Comprehensive Empirical Benchmark Evaluation",
+        "RESULTS & STATE-OF-THE-ART",
+        "Evaluating DR-SAE against leading sparse autoencoder baselines on Pythia-70M.",
+    )
 
     # Benchmark Table
     rows = 6
@@ -476,11 +557,11 @@ def create_deck():
     table = table_shape.table
 
     table.columns[0].width = Inches(2.733)  # Method
-    table.columns[1].width = Inches(1.8)    # MPAbs (↓)
-    table.columns[2].width = Inches(1.8)    # L0 Sparsity (↓)
-    table.columns[3].width = Inches(1.8)    # Exp Var (↑)
-    table.columns[4].width = Inches(1.8)    # CE Loss Rec (↑)
-    table.columns[5].width = Inches(1.8)    # Query Latency
+    table.columns[1].width = Inches(1.8)  # MPAbs (↓)
+    table.columns[2].width = Inches(1.8)  # L0 Sparsity (↓)
+    table.columns[3].width = Inches(1.8)  # Exp Var (↑)
+    table.columns[4].width = Inches(1.8)  # CE Loss Rec (↑)
+    table.columns[5].width = Inches(1.8)  # Query Latency
 
     headers = ["Architecture", "MPAbs (↓)", "L0 Sparsity (↓)", "Expl. Var. (↑)", "CE Loss Rec.", "Query Time"]
     for c_idx, h in enumerate(headers):
@@ -499,11 +580,11 @@ def create_deck():
         ("TopK SAE (Gao et al.)", "0.651 ± 0.02", "38.4", "90.1%", "75.2%", "0.52 ms"),
         ("JumpReLU SAE", "0.589 ± 0.02", "36.2", "91.4%", "78.9%", "0.58 ms"),
         ("Hierarchical Tree SAE", "0.384 ± 0.04", "39.8", "89.6%", "76.5%", "0.74 ms"),
-        ("DR-SAE (Ours, Proposed)", "0.118 ± 0.01", "34.7", "94.6%", "86.8%", "0.84 ms")
+        ("DR-SAE (Ours, Proposed)", "0.118 ± 0.01", "34.7", "94.6%", "86.8%", "0.84 ms"),
     ]
 
     for r_idx, row_data in enumerate(data, start=1):
-        is_ours = (r_idx == 5)
+        is_ours = r_idx == 5
         for c_idx, val in enumerate(row_data):
             cell = table.cell(r_idx, c_idx)
             cell.fill.solid()
@@ -527,7 +608,7 @@ def create_deck():
         ("-72% MPAbs", "Drastic reduction in feature absorption over flat baselines"),
         ("94.6% Variance", "Highest explained variance across residual activations"),
         ("34.7 L0 Sparsity", "Ultra-sparse representation without pruning useful paths"),
-        ("< 1.0 ms Latency", "Vectorized PyTorch execution suitable for live interpretability")
+        ("< 1.0 ms Latency", "Vectorized PyTorch execution suitable for live interpretability"),
     ]
     for i, (val_s, desc_s) in enumerate(stat_boxes):
         sx = Inches(0.8 + (i * 2.98))
@@ -550,9 +631,12 @@ def create_deck():
     # =========================================================================
     s7 = prs.slides.add_slide(blank_layout)
     set_slide_background(s7)
-    add_header(s7, "Mechanistic Circuit Discovery in Pythia-70M",
-               "EMPIRICAL CIRCUIT DISCOVERY",
-               "Evaluating real circuit recovery on Indirect Object Identification (IOI) and Gender Bias tasks.")
+    add_header(
+        s7,
+        "Mechanistic Circuit Discovery in Pythia-70M",
+        "EMPIRICAL CIRCUIT DISCOVERY",
+        "Evaluating real circuit recovery on Indirect Object Identification (IOI) and Gender Bias tasks.",
+    )
 
     # Circuit 1: IOI
     create_card(s7, Inches(0.8), Inches(2.0), Inches(5.7), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
@@ -583,7 +667,9 @@ def create_deck():
     p.font.color.rgb = C_MUTED
 
     p = tf_c1.add_paragraph()
-    p.text = "Ablation Faithfulness: 92.3% of the logit difference preserved under targeted DAG node ablation."
+    p.text = (
+        "Ablation Faithfulness: 92.3% of the logit difference preserved under targeted DAG node ablation."
+    )
     p.font.size = Pt(10)
     p.font.bold = True
     p.font.color.rgb = C_INK
@@ -627,9 +713,12 @@ def create_deck():
     # =========================================================================
     s8 = prs.slides.add_slide(blank_layout)
     set_slide_background(s8)
-    add_header(s8, "Interactive 3D Concept Hierarchy Explorer",
-               "3D VISUALIZATION INTERFACE",
-               "Exploring multi-level latent spaces with stacked depth plates and dynamic WebGL projections.")
+    add_header(
+        s8,
+        "Interactive 3D Concept Hierarchy Explorer",
+        "3D VISUALIZATION INTERFACE",
+        "Exploring multi-level latent spaces with stacked depth plates and dynamic WebGL projections.",
+    )
 
     # Image Left
     img_path1 = "d:/Projects/NeuroLens/demo/screenshots/01_dag_hierarchy_explorer.png"
@@ -641,7 +730,9 @@ def create_deck():
         frame.line.width = Pt(1)
 
     # Details Right
-    create_card(s8, Inches(7.8), Inches(2.0), Inches(4.733), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
+    create_card(
+        s8, Inches(7.8), Inches(2.0), Inches(4.733), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE
+    )
     tb_ex = s8.shapes.add_textbox(Inches(8.0), Inches(2.2), Inches(4.333), Inches(4.4))
     tf_ex = tb_ex.text_frame
     tf_ex.word_wrap = True
@@ -668,7 +759,9 @@ def create_deck():
     p.font.color.rgb = C_MUTED
 
     p = tf_ex.add_paragraph()
-    p.text = "• Controls: Mouse orbit, keyboard arrows, auto-rotation toggle, truncation depth slider (H=0 to 4)."
+    p.text = (
+        "• Controls: Mouse orbit, keyboard arrows, auto-rotation toggle, truncation depth slider (H=0 to 4)."
+    )
     p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = C_BRAND
@@ -678,9 +771,12 @@ def create_deck():
     # =========================================================================
     s9 = prs.slides.add_slide(blank_layout)
     set_slide_background(s9)
-    add_header(s9, "Live Routing Simulator & Signal Propagation",
-               "REAL-TIME SIMULATION",
-               "Visualizing signal accumulation, active hop routing, and Proposition 2 error decay.")
+    add_header(
+        s9,
+        "Live Routing Simulator & Signal Propagation",
+        "REAL-TIME SIMULATION",
+        "Visualizing signal accumulation, active hop routing, and Proposition 2 error decay.",
+    )
 
     # Image Left
     img_path2 = "d:/Projects/NeuroLens/demo/screenshots/02_live_routing_simulator.png"
@@ -692,7 +788,9 @@ def create_deck():
         frame.line.width = Pt(1)
 
     # Details Right
-    create_card(s9, Inches(7.8), Inches(2.0), Inches(4.733), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
+    create_card(
+        s9, Inches(7.8), Inches(2.0), Inches(4.733), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE
+    )
     tb_rt = s9.shapes.add_textbox(Inches(8.0), Inches(2.2), Inches(4.333), Inches(4.4))
     tf_rt = tb_rt.text_frame
     tf_rt.word_wrap = True
@@ -723,9 +821,12 @@ def create_deck():
     # =========================================================================
     s10 = prs.slides.add_slide(blank_layout)
     set_slide_background(s10)
-    add_header(s10, "CSS-3D Leaderboard & Empirical Analytics",
-               "BENCHMARK PODIUM",
-               "Interactive 3D isometric cuboids ranking architectures by MPAbs and circuit faithfulness.")
+    add_header(
+        s10,
+        "CSS-3D Leaderboard & Empirical Analytics",
+        "BENCHMARK PODIUM",
+        "Interactive 3D isometric cuboids ranking architectures by MPAbs and circuit faithfulness.",
+    )
 
     # Image Left
     img_path3 = "d:/Projects/NeuroLens/demo/screenshots/03_leaderboard_3d_podium.png"
@@ -737,7 +838,9 @@ def create_deck():
         frame.line.width = Pt(1)
 
     # Details Right
-    create_card(s10, Inches(7.8), Inches(2.0), Inches(4.733), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
+    create_card(
+        s10, Inches(7.8), Inches(2.0), Inches(4.733), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE
+    )
     tb_ld = s10.shapes.add_textbox(Inches(8.0), Inches(2.2), Inches(4.333), Inches(4.4))
     tf_ld = tb_ld.text_frame
     tf_ld.word_wrap = True
@@ -768,19 +871,34 @@ def create_deck():
     # =========================================================================
     s11 = prs.slides.add_slide(blank_layout)
     set_slide_background(s11)
-    add_header(s11, "Production Architecture & Quality Engineering",
-               "FULL-STACK SYSTEM DESIGN",
-               "Built for high-throughput interpretability research and zero-latency visualization.")
+    add_header(
+        s11,
+        "Production Architecture & Quality Engineering",
+        "FULL-STACK SYSTEM DESIGN",
+        "Built for high-throughput interpretability research and zero-latency visualization.",
+    )
 
     features = [
-        ("FastAPI Backend", "High-Performance REST",
-         "• Sub-millisecond JSON latency\n• Endpoints: /api/dag, /api/route, /api/leaderboard, /api/circuits\n• Gzip payload compression\n• Non-blocking async request handlers"),
-        ("Multi-Tier Caching", "Zero Redundant Compute",
-         "• LRU graph traversal memoization\n• Static asset HTTP caching\n• In-memory DAG index with zero database queries\n• Eliminates N+1 graph lookup bottlenecks"),
-        ("59/59 Automated Tests", "Comprehensive Test Suite",
-         "• Unit tests for Lemma 1 acyclicity\n• Proposition 2 bounds verification\n• End-to-end headless Selenium suite\n• 100% clean Ruff code linting"),
-        ("UI & Accessibility", "WCAG AA Standard Compliant",
-         "• Dirty-checking state render guards\n• Keyboard-first navigation (Tab, Enter, Arrows)\n• Responsive mobile slide-out drawer\n• Prefers-reduced-motion compliance")
+        (
+            "FastAPI Backend",
+            "High-Performance REST",
+            "• Sub-millisecond JSON latency\n• Endpoints: /api/dag, /api/route, /api/leaderboard, /api/circuits\n• Gzip payload compression\n• Non-blocking async request handlers",
+        ),
+        (
+            "Multi-Tier Caching",
+            "Zero Redundant Compute",
+            "• LRU graph traversal memoization\n• Static asset HTTP caching\n• In-memory DAG index with zero database queries\n• Eliminates N+1 graph lookup bottlenecks",
+        ),
+        (
+            "59/59 Automated Tests",
+            "Comprehensive Test Suite",
+            "• Unit tests for Lemma 1 acyclicity\n• Proposition 2 bounds verification\n• End-to-end headless Selenium suite\n• 100% clean Ruff code linting",
+        ),
+        (
+            "UI & Accessibility",
+            "WCAG AA Standard Compliant",
+            "• Dirty-checking state render guards\n• Keyboard-first navigation (Tab, Enter, Arrows)\n• Responsive mobile slide-out drawer\n• Prefers-reduced-motion compliance",
+        ),
     ]
 
     for i, (f_title, f_sub, f_desc) in enumerate(features):
@@ -788,7 +906,9 @@ def create_deck():
         create_card(s11, fx, Inches(2.0), Inches(2.8), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
 
         # Tag
-        ftag = s11.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, fx + Inches(0.2), Inches(2.2), Inches(2.4), Inches(0.35))
+        ftag = s11.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE, fx + Inches(0.2), Inches(2.2), Inches(2.4), Inches(0.35)
+        )
         ftag.fill.solid()
         ftag.fill.fore_color.rgb = C_SURFACE_2
         ftag.line.color.rgb = C_LINE
@@ -822,12 +942,17 @@ def create_deck():
     # =========================================================================
     s12 = prs.slides.add_slide(blank_layout)
     set_slide_background(s12)
-    add_header(s12, "Quickstart, Reproducibility & Wrap-Up",
-               "GETTING STARTED",
-               "Everything required to run, reproduce, or extend TopoCircuit-SAE.")
+    add_header(
+        s12,
+        "Quickstart, Reproducibility & Wrap-Up",
+        "GETTING STARTED",
+        "Everything required to run, reproduce, or extend TopoCircuit-SAE.",
+    )
 
     # Left: Quickstart Code Card
-    create_card(s12, Inches(0.8), Inches(2.0), Inches(5.7), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
+    create_card(
+        s12, Inches(0.8), Inches(2.0), Inches(5.7), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE
+    )
     tb_cmd = s12.shapes.add_textbox(Inches(1.0), Inches(2.2), Inches(5.3), Inches(4.4))
     tf_cmd = tb_cmd.text_frame
     tf_cmd.word_wrap = True
@@ -843,7 +968,7 @@ def create_deck():
         ("# 2. Launch FastAPI backend & explorer", "python scripts/serve_app.py --port 8000"),
         ("# 3. Open in your browser", "http://localhost:8000/demo/explorer.html"),
         ("# 4. Run automated test suite (59 tests)", "pytest -v"),
-        ("# 5. Code quality & linting verification", "ruff check .")
+        ("# 5. Code quality & linting verification", "ruff check ."),
     ]
     for comment, cmd in cmds:
         p = tf_cmd.add_paragraph()
@@ -857,7 +982,9 @@ def create_deck():
         p2.font.color.rgb = C_INK
 
     # Right: Self-Contained Deliverables & License
-    create_card(s12, Inches(6.8), Inches(2.0), Inches(5.7), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE)
+    create_card(
+        s12, Inches(6.8), Inches(2.0), Inches(5.7), Inches(4.8), bg_color=C_WHITE, border_color=C_LINE
+    )
     tb_deliv = s12.shapes.add_textbox(Inches(7.0), Inches(2.2), Inches(5.3), Inches(4.4))
     tf_deliv = tb_deliv.text_frame
     tf_deliv.word_wrap = True
