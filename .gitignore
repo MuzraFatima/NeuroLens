@@ -82,6 +82,6 @@ TopoCircuit_SAE_Complete_Presentation.pptx
 
 
 # Cached activations, downloaded models and datasets (kept inside the project folder, never committed)
-data/
+/data/
 .hf_cache/
 results/runs/

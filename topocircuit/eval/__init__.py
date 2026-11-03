@@ -1,42 +1,17 @@
-"""Public API for topocircuit.eval.
+"""Evaluation: statistics and gates, synthetic structure recovery, and the Proposition 2 test."""
 
-Exports structure-recovery metrics, cross-seed reproducibility,
-causal readout check, statistical tests, and the Sparse Feature
-Circuit faithfulness evaluator.
-"""
-
-from topocircuit.eval.circuits import SparseFeatureCircuitEvaluator
 from topocircuit.eval.metrics import (
-    compute_cross_seed_reproducibility,
+    check_gate,
     compute_fvu,
     compute_minimum_detectable_effect,
-    evaluate_dag_structure,
     holm_bonferroni_correction,
     paired_wilcoxon_and_bootstrap,
-    profile_token_throughput,
-    run_causal_readout_check,
-    verify_exit_gate_g1,
-    verify_exit_gate_g3,
-    verify_exit_gate_g5,
-    verify_exit_gate_g6,
-    verify_exit_gate_g7,
-    verify_exit_gate_g8,
 )
 
 __all__ = [
-    "evaluate_dag_structure",
-    "compute_cross_seed_reproducibility",
-    "run_causal_readout_check",
-    "paired_wilcoxon_and_bootstrap",
-    "holm_bonferroni_correction",
+    "check_gate",
     "compute_fvu",
-    "profile_token_throughput",
     "compute_minimum_detectable_effect",
-    "verify_exit_gate_g1",
-    "verify_exit_gate_g3",
-    "verify_exit_gate_g5",
-    "verify_exit_gate_g6",
-    "verify_exit_gate_g7",
-    "verify_exit_gate_g8",
-    "SparseFeatureCircuitEvaluator",
+    "holm_bonferroni_correction",
+    "paired_wilcoxon_and_bootstrap",
 ]

@@ -1,34 +1,23 @@
-"""Public API for topocircuit.models.
+"""SAE models (PyTorch, CPU-friendly) and the shared training loop."""
 
-Exposes the DR-SAE and all five baseline architectures,
-the SAELens/dictionary_learning compatibility wrapper, and
-the shared BatchTopK activation helper.
-"""
-
-from topocircuit.models.baselines import (
-    HSAE,
-    AGSAELite,
-    BatchTopKSAE,
-    MatryoshkaSAE,
-    PostHocDRSAE,
-)
-from topocircuit.models.dr_sae import DRSAE, batch_topk, recover_ista_codes
-from topocircuit.models.saelens_plugin import (
-    DRSAELensArchitecture,
-    DRSAELensConfig,
-    DRSAELensWrapper,
+from topocircuit.models.sae import DRSAE, BatchTopKSAE, MatryoshkaSAE, SAEConfig, batch_topk
+from topocircuit.models.train import (
+    fit_ag_sae_lite,
+    fit_post_hoc_dr,
+    induce_parent_sets_greedy,
+    train_method,
+    train_sae,
 )
 
 __all__ = [
-    "DRSAE",
-    "batch_topk",
-    "recover_ista_codes",
+    "SAEConfig",
     "BatchTopKSAE",
     "MatryoshkaSAE",
-    "HSAE",
-    "AGSAELite",
-    "PostHocDRSAE",
-    "DRSAELensConfig",
-    "DRSAELensWrapper",
-    "DRSAELensArchitecture",
+    "DRSAE",
+    "batch_topk",
+    "train_sae",
+    "train_method",
+    "fit_post_hoc_dr",
+    "fit_ag_sae_lite",
+    "induce_parent_sets_greedy",
 ]

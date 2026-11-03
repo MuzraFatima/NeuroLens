@@ -2,7 +2,8 @@
 
 Supports:
 - Configurable multi-parent share rho in {0.0, 0.1, 0.25, 0.5}
-- Configurable per-parent conditional magnitude variance sigma_i^2 (Proposition 2)
+- Per-parent conditional magnitude variance sigma_i^2 (the Proposition 2 test itself lives in
+  ``topocircuit.eval.prop2`` and trains real SAEs)
 - Guaranteed exact ground-truth orthogonal residual directions (Park et al., ICLR 2025)
 - 32+ structured hard negative pairs (transitive ancestors, correlation-only pairs,
   and incomplete parent subsets, following AG-SAE)
@@ -122,7 +123,9 @@ class MixedTopologySyntheticGenerator:
             if not possible_parents:
                 continue
             is_multi = bool(multi_flags[idx_c])
-            if is_multi and len(possible_parents) >= 2:
+            if is_multi and len(possible_parents) >= 3 and self.rng.random() < 0.3:
+                k_parents = 3
+            elif is_multi and len(possible_parents) >= 2:
                 k_parents = 2
             else:
                 k_parents = 1
@@ -229,57 +232,6 @@ class MixedTopologySyntheticGenerator:
             X += self.noise_std * self.rng.standard_normal(X.shape)
         return X, Z_native, Z_eff
 
-    @staticmethod
-    def simulate_proposition2_cell(
-        sigma1_sq: float,
-        sigma2_sq: float,
-        l0_penalty_lambda: float,
-        n_tokens: int = 3000,
-        seed: int = 0,
-    ) -> Dict[str, float]:
-        """Simulates a controlled 2-parent, 1-child cell for Proposition 2 phase boundary testing."""
-        rng = np.random.default_rng(seed)
-        mu1, mu2 = 1.0, 1.0
-        s_p1 = np.maximum(0.05, mu1 + np.sqrt(sigma1_sq) * rng.standard_normal(n_tokens))
-        s_p2 = np.maximum(0.05, mu2 + np.sqrt(sigma2_sq) * rng.standard_normal(n_tokens))
-
-        err_p1 = float(np.mean((s_p1 - np.mean(s_p1)) ** 2))
-        err_p2 = float(np.mean((s_p2 - np.mean(s_p2)) ** 2))
-
-        sgd_jitter1 = float(rng.normal(0.0, 0.015))
-        sgd_jitter2 = float(rng.normal(0.0, 0.015))
-
-        cost_absorb_p1 = (err_p1 + sgd_jitter1) - l0_penalty_lambda
-        cost_absorb_p2 = (err_p2 + sgd_jitter2) - l0_penalty_lambda
-
-        p1_absorbed = bool(cost_absorb_p1 < 0.0)
-        p2_absorbed = bool(cost_absorb_p2 < 0.0)
-
-        temp = 0.045
-        abs_rate_p1 = float(1.0 / (1.0 + np.exp(cost_absorb_p1 / temp)))
-        abs_rate_p2 = float(1.0 / (1.0 + np.exp(cost_absorb_p2 / temp)))
-
-        if abs(sigma1_sq - sigma2_sq) < 1e-9:
-            order_agrees = True
-        elif sigma1_sq < sigma2_sq:
-            order_agrees = abs_rate_p1 > abs_rate_p2
-        else:
-            order_agrees = abs_rate_p2 > abs_rate_p1
-
-        return {
-            "sigma1_sq": float(sigma1_sq),
-            "sigma2_sq": float(sigma2_sq),
-            "lambda": float(l0_penalty_lambda),
-            "emp_var_p1": err_p1,
-            "emp_var_p2": err_p2,
-            "abs_rate_p1": abs_rate_p1,
-            "abs_rate_p2": abs_rate_p2,
-            "p1_absorbed": float(p1_absorbed),
-            "p2_absorbed": float(p2_absorbed),
-            "joint_abs_rate": float(abs_rate_p1 * abs_rate_p2),
-            "order_agrees_with_prop2": float(order_agrees),
-        }
-
     sample_tokens = sample_batch
 
 
@@ -306,22 +258,3 @@ def run_synthetic_topology_sweep(
             "native_l0": float(np.mean(np.sum(Z_native > 0, axis=1))),
         }
     return results
-
-
-def verify_exit_gate_g2(sweep_results: Dict[float, Dict[str, object]]) -> Dict[str, bool]:
-    """Evaluates Phase 2 Exit Gate G2:
-    - Multi-parent edges/nodes are strictly positive for rho >= 0.10
-    - Multi-parent count scales monotonically with rho
-    """
-    rho_0 = sweep_results.get(0.0, {}).get("n_multi_parent_nodes", 0)
-    rho_25 = sweep_results.get(0.25, {}).get("n_multi_parent_nodes", 0)
-    rho_50 = sweep_results.get(0.5, {}).get("n_multi_parent_nodes", 0)
-
-    scaling_ok = (rho_0 <= rho_25) and (rho_25 <= rho_50) and (rho_50 > 0)
-    has_multi = rho_25 > 0
-    passed = bool(scaling_ok and has_multi)
-    return {
-        "multi_parent_measurable": bool(has_multi),
-        "monotonic_scaling_verified": bool(scaling_ok),
-        "gate_passed": passed,
-    }
