@@ -1,14 +1,24 @@
+/* TopoCircuit-SAE 3D Design Tokens */
 :root {
-  --bg-0: #0b0f17;
-  --bg-1: #151b26;
-  --fg-0: #eef2f8;
-  --fg-1: #a3adbd;
-  --accent-rgb: 99 102 241;
-  --accent: rgb(var(--accent-rgb));
-  --highlight: #f5a524;
-  --danger: #ff6b6b;
-  --ok: #34d399;
-  --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-text: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  color-scheme: light;
+  --bg: #F2F6EC;
+  --surface: #FFFFFF;
+  --surface-2: #E8F0E0;
+  --ink: #122319;
+  --muted: #435A4B;
+  --line: #D3E0CB;
+  --brand: #0A6B49;
+  --accent: #0A7D55;
+  --accent-ink: #FFFFFF;
+  --sun: #F4B400;
+  --sun-soft: #FFEFB0;
+  --l0: #0A7D55;
+  --l1: #5E9418;
+  --l2: #C99400;
+  --l3: #E0691D;
+  --l4: #C23B1A;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --radius: 16px;
 }
