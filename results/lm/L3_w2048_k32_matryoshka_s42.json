@@ -1,0 +1,20 @@
+{
+  "run": "L3_w2048_k32_matryoshka_s42",
+  "method": "Matryoshka",
+  "seed": 42,
+  "layer": 3,
+  "width": 2048,
+  "k": 32,
+  "steps": 753,
+  "train_seconds": 771.1,
+  "scale": 1.0798394680023193,
+  "overrides": {},
+  "fvu": 0.05950489640235901,
+  "native_l0": 30.21204948425293,
+  "eff_l0": 30.21204948425293,
+  "dead_frac": 0.00341796875,
+  "ce_clean": 3.822265625,
+  "ce_zero_ablation": 9.109375,
+  "ce_sae": 4.21875,
+  "loss_recovered": 0.9250092353158478
+}

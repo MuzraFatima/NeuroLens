@@ -1,0 +1,26 @@
+{
+  "run": "L3_w2048_k32_dr-sae_s42__noortho",
+  "method": "DR-SAE",
+  "seed": 42,
+  "layer": 3,
+  "width": 2048,
+  "k": 32,
+  "steps": 753,
+  "train_seconds": 2041.2,
+  "scale": 1.0798394680023193,
+  "overrides": {
+    "lambda_ortho": 0.0
+  },
+  "fvu": 0.059888746589422226,
+  "native_l0": 30.10955047607422,
+  "eff_l0": 37.404048919677734,
+  "dead_frac": 0.0048828125,
+  "n_edges": 668,
+  "n_multi_parent": 147,
+  "longest_path": 5,
+  "acyclic": true,
+  "ce_clean": 3.822265625,
+  "ce_zero_ablation": 9.109375,
+  "ce_sae": 4.23828125,
+  "loss_recovered": 0.921315108976727
+}
