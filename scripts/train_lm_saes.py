@@ -86,7 +86,7 @@ def loss_recovered(models: dict, cfg, layer: int, scale: float, n_ctx: int = 48)
     ids_all = np.load(os.path.join(ROOT, cfg["activations"]["cache_dir"], f"{tag}_tokens.npy"), mmap_mode="r")
     n_valid = n_filled_chunks(cfg)
     ids = torch.from_numpy(np.asarray(ids_all[n_valid - n_ctx : n_valid], dtype=np.int64))
-    lm = AutoModelForCausalLM.from_pretrained(cfg["language_model"]["name"]).eval()
+    lm = AutoModelForCausalLM.from_pretrained(cfg["language_model"]["name"], torch_dtype=torch.float32).eval()
     block = lm.gpt_neox.layers[layer]
     state = {"fn": None}
 
