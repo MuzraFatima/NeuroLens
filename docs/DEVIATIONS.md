@@ -17,6 +17,23 @@ experiments that depend on it, and repeated in the paper's limitations section.
 | Latent matching | FAISS | Exact cosine matching with NumPy/SciPy | 2,048 latents are small enough to match exactly |
 | Owner | Farhan Aaqil Durrani | Muzra Fatima | Ownership of the project was transferred |
 
+### Fast-track reductions (decided before any LM result was seen)
+
+The owner asked for the project to finish quickly, so the following were cut further:
+
+| Area | Plan above | Fast track |
+|---|---|---|
+| Seeds on the LM | 3 | 1 (seed 42). Seed spread on the LM is therefore not measured; LM differences are reported without seed CIs, only cell-level bootstrap CIs |
+| Tokens actually cached | 1M | 857,504 (extraction stopped early) |
+| Synthetic tier | 512 features, rho in {0, 0.1, 0.25, 0.5}, 3 seeds | 128 features, rho in {0, 0.25, 0.5}, 2 seeds |
+| Native k on synthetic data | ground-truth effective L0 | halfway between ground-truth native and effective L0, the same for every method |
+| MPAbs cells | at least 100 | 52 (all letter x category cells with at least 20 tokens that Pythia-70M's vocabulary allows) |
+| Probe gate | accuracy >= 0.90 | balanced accuracy >= 0.90 (plain accuracy is trivially high for a 1-in-26 letter label) |
+| Circuits | 6 layers, 4 agreement tasks | Layer 3 only, 3 agreement templates (simple, across a PP, across a relative clause), 48 prompts each |
+| H-SAE baseline | Expert-routing tree SAE | DR-SAE restricted to one parent per child (`Tree prior (m=1)`); the public H-SAE code is GPU-oriented |
+| AG-SAE-lite | Paper's induction + realignment | Greedy coverage-based parent-set induction on a trained Matryoshka SAE, cycle-free, non-redundant, then one realignment phase with the edge set fixed |
+| Ablations | 7 variants | 3 variants (no orthogonality loss, bank order instead of frequency order, H = 1), 1 seed |
+
 ## What these changes mean for the claims
 
 - The results are about a 70M-parameter model and 2k-wide dictionaries. They are evidence about

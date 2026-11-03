@@ -17,7 +17,7 @@ language_model:
 
 activations:
   dataset: "NeelNanda/pile-10k"            # blueprint: 150M streamed Pile tokens
-  n_tokens: 1_000_000
+  n_tokens: 1_000_000                      # extraction stopped at 857,504 tokens to save time
   dtype: "float16"
   cache_dir: "data/activations"
 
@@ -28,7 +28,7 @@ sae:
   batch_size: 2048
   epochs: 2
   lr: 0.001
-  seeds: [42, 137, 2026]
+  seeds: [42]                              # fast track: 1 seed on the LM (blueprint: 3)
 
 dr_sae:
   m_candidates: 8
@@ -42,15 +42,16 @@ dr_sae:
   hub_cap_frac: 0.02
 
 synthetic:
-  n_features: 512                          # blueprint: 4096 (16384 scale check)
-  d_model: 128
-  rhos: [0.0, 0.1, 0.25, 0.5]
-  n_tokens: 20000
+  n_features: 128                          # blueprint: 4096 (16384 scale check)
+  d_model: 48
+  rhos: [0.0, 0.25, 0.5]                   # blueprint: {0, 0.1, 0.25, 0.5}
+  n_tokens: 30000
+  seeds: [42, 137]
 
 circuits:
-  layers: [0, 1, 2, 3, 4, 5]
-  width: 1024
+  layers: [3]                              # fast track: one layer (blueprint: all 6)
+  width: 2048                              # reuses the main layer-3 SAEs
   k: 32
-  n_tokens_per_layer: 500_000
-  methods: ["BatchTopK", "Matryoshka", "DR-SAE"]
-  n_examples_per_task: 200
+
+  methods: "all main runs"
+  tasks: ["simple", "across_pp", "across_rc"]   # 48 prompts each
