@@ -230,6 +230,7 @@ def train_method(
         return fit(base, X, n_steps // 2, **train_kw)
     cfg = make_config(d_in, width, k, seed, **sae_kw)
     if method == "BatchTopK":
+        cfg.banks = None  # flat: one reconstruction term, never the Matryoshka banks
         model: BatchTopKSAE = BatchTopKSAE(cfg)
     elif method == "Matryoshka":
         model = MatryoshkaSAE(cfg)

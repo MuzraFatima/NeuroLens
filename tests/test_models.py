@@ -116,3 +116,11 @@ def test_greedy_induction_never_closes_a_cycle():
                 stack.append((p, path | {p}))
         seen.add(start)
     assert 1 in ps.get(2, [])
+
+
+def test_batchtopk_ignores_matryoshka_banks_passed_in_config(synth):
+    from topocircuit.models import train_method
+
+    _, X = synth
+    m = train_method("BatchTopK", X, 32, 64, 6, 0, 2, sae_kw={"banks": [8, 16, 32, 64]}, batch_size=256)
+    assert m.banks == [64]
